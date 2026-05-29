@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>so retro</title>
   <link rel="icon" type="image/png" href="favicon.png">
-<!-- im gonna intentionally leave this blank cause i dont wanna add font pointers lmao -->
+  <!-- im gonna intentionally leave this blank cause i dont wanna add font pointers lmao -->
   <style>
     /* ========================
        CUSTOM FONTS
@@ -66,7 +67,8 @@
       }
     }
 
-    html, body {
+    html,
+    body {
       height: var(--viewport-height);
       min-height: var(--viewport-height);
       width: 100%;
@@ -104,7 +106,8 @@
       LOGIN & SHUTDOWN SCREENS
       ==========================================================================
     */
-    #login-screen, #shutdown-screen {
+    #login-screen,
+    #shutdown-screen {
       position: fixed;
       top: 0;
       left: 0;
@@ -164,7 +167,7 @@
       background: rgba(255, 241, 130, 0.95);
       border: 1px solid rgba(0, 0, 0, 0.25);
       border-radius: 10px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
       opacity: 0;
       transition: opacity 0.4s ease-in-out;
       pointer-events: none;
@@ -189,330 +192,303 @@
     }
 
     @keyframes flicker {
-        0%, 100% { opacity: 0.9; }
-        25% { opacity: 0.8; }
-        50% { opacity: 0.95; }
-        75% { opacity: 0.85; }
+
+      0%,
+      100% {
+        opacity: 0.9;
+      }
+
+      25% {
+        opacity: 0.8;
+      }
+
+      50% {
+        opacity: 0.95;
+      }
+
+      75% {
+        opacity: 0.85;
+      }
     }
 
     /* Windows XP Welcome Screen Specific Styles */
     #login-welcome {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 18px;
-        color: white;
-        z-index: 1001;
-        background: linear-gradient(180deg, #0d3da5 0%, #1958d5 45%, #0b2f7b 100%);
-        padding: 40px 20px 30px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      color: white;
+      z-index: 1001;
+      background: #5a7edc;
+      background: radial-gradient(circle at 0% 0%, #a4c2f4 0%, #5a7edc 70%);
+      padding: 0;
+      box-sizing: border-box;
     }
 
     #login-welcome::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background:
-            radial-gradient(circle at 25% 35%, rgba(255,255,255,0.18), transparent 55%),
-            radial-gradient(circle at 80% 15%, rgba(255,255,255,0.15), transparent 55%);
-        pointer-events: none;
-        z-index: 0;
+      display: none;
     }
 
-    #login-welcome > * {
-        position: relative;
-        z-index: 1;
+    #login-welcome>* {
+      position: relative;
+      z-index: 1;
     }
 
     .login-frame {
-        width: clamp(320px, calc(100vw - 40px), 960px);
-        max-width: 960px;
-        display: flex;
-        flex-direction: column;
-        border-radius: 22px;
-        overflow: hidden;
-        border: 2px solid rgba(255,255,255,0.35);
-        box-shadow: 0 25px 60px rgba(0,0,0,0.45);
-        backdrop-filter: blur(4px);
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-radius: 0;
+      overflow: hidden;
+      border: none;
+      box-shadow: none;
+      backdrop-filter: none;
+      box-sizing: border-box;
     }
 
     .login-shell {
-        width: 100%;
-        min-height: clamp(360px, 60vh, 520px);
-        display: flex;
-        border-radius: 0;
-        overflow: hidden;
-        background: linear-gradient(180deg, rgba(14, 79, 182, 0.6) 0%, rgba(79, 143, 233, 0.35) 100%);
+      width: 100%;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      padding: 40px 10%;
+      box-sizing: border-box;
     }
 
     .welcome-panel {
-        flex: 0 0 40%;
-        background: linear-gradient(180deg, #0e4fb6 0%, #1b6be0 45%, #4f8fe9 100%);
-        color: #fff;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: flex-start;
-        padding: 48px 36px;
-        gap: 18px;
-        position: relative;
+      flex: 1;
+      background: transparent;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+      padding: 40px 48px;
+      gap: 24px;
+      text-align: right;
     }
 
     .welcome-panel::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.25), transparent 55%);
-        pointer-events: none;
-        z-index: 0;
+      display: none;
     }
 
-    .welcome-panel > * {
-        position: relative;
-        z-index: 1;
+    .welcome-panel img.xp-logo-full {
+      max-width: 280px;
+      height: auto;
+      image-rendering: auto;
     }
 
-    .xp-logo {
-        display: grid;
-        grid-template-columns: repeat(2, 18px);
-        grid-gap: 3px;
+    .welcome-message-xp {
+      font-family: var(--xp-font-main);
+      font-size: 18px;
+      color: #fff;
+      margin: 0;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     }
 
-    .xp-logo span {
-        width: 18px;
-        height: 18px;
-        border-radius: 2px;
-    }
-
-    .xp-logo .red { background:#d3302f; }
-    .xp-logo .green { background:#2f9a1f; }
-    .xp-logo .blue { background:#1a49d8; }
-    .xp-logo .yellow { background:#f3c641; }
-
-    .welcome-panel h1 {
-        font-family: var(--xp-font-title);
-        font-size: 46px;
-        text-transform: uppercase;
-        margin: 0;
-        text-shadow: 2px 2px 0 rgba(0,0,0,0.35);
-        letter-spacing: 0.08em;
-    }
-
-    .welcome-message {
-        font-family: var(--xp-font-main);
-        font-size: 16px;
-        margin: 0;
-        text-shadow: 1px 1px 0 rgba(0,0,0,0.25);
+    /* Vertical Divider */
+    .login-divider {
+      width: 1px;
+      height: 320px;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.7) 30%, rgba(255, 255, 255, 0.7) 70%, rgba(255, 255, 255, 0) 100%);
+      margin: 0 40px;
+      flex-shrink: 0;
     }
 
     .user-panel {
-        flex: 1;
-        background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(223,231,255,0.85) 100%);
-        display: flex;
-        flex-direction: column;
-        padding: 36px 32px;
-        position: relative;
-        color: #102b60;
+      flex: 1;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 48px;
+      color: #fff;
     }
 
     .user-panel::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-left: 1px solid rgba(255,255,255,0.6);
-        pointer-events: none;
-        opacity: 0.5;
-        z-index: 0;
+      display: none;
     }
 
     .user-panel h2 {
-        font-family: var(--xp-font-title);
-        font-size: 24px;
-        margin: 0 0 24px;
-        text-transform: uppercase;
-        text-shadow: 1px 1px 0 rgba(255,255,255,0.7);
-        z-index: 1;
-        position: relative;
+      display: none;
     }
 
     .user-list {
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-        overflow-y: auto;
-        padding-right: 6px;
-        z-index: 1;
-        position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      max-width: 320px;
     }
 
     .user-tile {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        padding: 12px 16px;
-        border-radius: 14px;
-        border: 1px solid rgba(49,106,197,0.25);
-        background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(198,213,246,0.8) 100%);
-        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.7);
-        text-align: left;
-        color: inherit;
-        text-decoration: none;
-        font-family: var(--xp-font-main);
-        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 6px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      background: transparent;
+      box-shadow: none;
+      text-align: left;
+      color: #fff;
+      font-family: var(--xp-font-main);
+      cursor: pointer;
+      transition: background 0.1s, border-color 0.1s;
     }
 
     .user-tile:hover {
-        border-color: rgba(49,106,197,0.8);
-        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.9), 0 8px 18px rgba(16,43,96,0.25);
-        transform: translateX(4px);
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.35);
+      box-shadow: none;
+      transform: none;
     }
 
     .user-tile img {
-        width: 56px;
-        height: 56px;
-        border-radius: 12px;
-        margin-right: 16px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      width: 48px;
+      height: 48px;
+      border-radius: 4px;
+      border: 2px solid #fff;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+      margin-right: 14px;
     }
 
     .user-info {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
 
     .user-name {
-        font-family: var(--xp-font-title);
-        font-size: 20px;
-        letter-spacing: 0.04em;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     }
 
     .user-sub {
-        font-size: 13px;
-        opacity: 0.85;
+      font-size: 12px;
+      color: #c4d4f8;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
     }
 
     .login-footer {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: linear-gradient(180deg, #0b3180 0%, #0a2c6a 100%);
-        color: rgba(255,255,255,0.9);
-        padding: 10px 24px;
-        font-family: var(--xp-font-main);
-        font-size: 12px;
-        letter-spacing: 0.03em;
-        border-top: 1px solid rgba(0, 0, 0, 0.35);
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #001c90;
+      border-top: 2px solid #e2a14b;
+      color: #fff;
+      padding: 14px 30px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 13px;
+      box-sizing: border-box;
     }
 
     @media (max-width: 900px) {
-        .login-frame {
-            width: calc(100vw - 40px);
-        }
+      .login-frame {
+        width: 100%;
+      }
 
-        .login-shell {
-            flex-direction: column;
-            min-height: auto;
-        }
+      .login-shell {
+        flex-direction: column;
+        padding: 20px;
+        gap: 20px;
+      }
 
-        .welcome-panel,
-        .user-panel {
-            flex: 1 0 auto;
-            width: 100%;
-        }
+      .welcome-panel {
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+      }
 
-        .welcome-panel {
-            align-items: center;
-            text-align: center;
-            padding: 36px 28px;
-        }
+      .login-divider {
+        width: 80%;
+        height: 1px;
+        margin: 10px 0;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.7) 30%, rgba(255, 255, 255, 0.7) 70%, rgba(255, 255, 255, 0) 100%);
+      }
 
-        .user-panel {
-            align-items: center;
-            text-align: center;
-            padding: 28px 28px 36px;
-        }
+      .user-panel {
+        align-items: center;
+        padding: 20px;
+      }
 
-        .user-list {
-            width: 100%;
-            align-items: center;
-        }
+      .login-footer {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+        padding: 16px 20px;
+      }
 
-        .login-footer {
-            flex-direction: column;
-            gap: 12px;
-            padding: 12px 24px 18px;
-            text-align: center;
-        }
-
-        .turn-off-btn {
-            order: -1;
-        }
+      .login-footer-text {
+        max-width: 100%;
+        text-align: center;
+      }
     }
 
-    @media (max-width: 520px) {
-        .login-frame {
-            width: calc(100vw - 24px);
-            border-radius: 18px;
-        }
-
-        .turn-off-btn {
-            width: 100%;
-            justify-content: center;
-        }
-    }
+    @media (max-width: 520px) {}
 
     @media (max-width: 768px) {
-        html, body {
-            height: 100%;
-            min-height: 100svh;
-        }
 
-        #login-screen,
-        #shutdown-screen,
-        #desktop {
-            min-height: 100svh;
-        }
+      html,
+      body {
+        height: 100%;
+        min-height: 100svh;
+      }
+
+      #login-screen,
+      #shutdown-screen,
+      #desktop {
+        min-height: 100svh;
+      }
     }
 
-    @media (max-width: 600px) {
-    }
+    @media (max-width: 600px) {}
 
     .login-footer-text {
-        opacity: 0.85;
+      font-size: 12px;
+      color: #c4d4f8;
+      max-width: 50%;
+      text-align: right;
+      opacity: 0.95;
     }
 
     .turn-off-btn {
-        display: flex;
-        align-items: center;
-        background-color: #b32a2a;
-        color: white;
-        padding: 8px 15px;
-        border: 1px solid #8e1e1e;
-        border-radius: 5px;
-        cursor: pointer;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        font-family: var(--xp-font-main);
-        font-size: 14px;
-        letter-spacing: 0.02em;
-        transition: background-color 0.15s ease, box-shadow 0.15s ease;
-    }
-    
-    .turn-off-btn img {
-        width: 24px;
-        height: 24px;
-        margin-right: 8px;
+      display: flex;
+      align-items: center;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: #fff !important;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: background 0.15s;
     }
 
     .turn-off-btn:hover {
-        background-color: #c63737;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.35);
+      background: rgba(255, 255, 255, 0.15) !important;
+    }
+
+    .turn-off-btn img {
+      width: 28px;
+      height: 28px;
+      margin-right: 10px;
     }
 
     /*
@@ -539,7 +515,7 @@
     #desktop.visible {
       opacity: 1;
     }
-    
+
     .desktop-icon {
       position: absolute;
       display: flex;
@@ -558,18 +534,18 @@
 
     .desktop-icon:hover {
       background-color: rgba(60, 120, 255, 0.45);
-      border: 1px dashed rgba(255,255,255,0.7);
+      border: 1px dashed rgba(255, 255, 255, 0.7);
     }
-    
+
     .desktop-icon img {
       width: 48px;
       height: 48px;
       pointer-events: none;
     }
-    
+
     .desktop-icon span {
       color: white;
-      text-shadow: 1px 1px 0 rgba(0,0,0,0.7), 0 0 3px rgba(255,255,255,0.6);
+      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.7), 0 0 3px rgba(255, 255, 255, 0.6);
       font-size: 12px;
       font-family: var(--xp-font-main);
       pointer-events: none;
@@ -581,10 +557,12 @@
         padding: 8px 6px 10px;
         gap: 6px;
       }
+
       .desktop-icon img {
         width: 64px;
         height: 64px;
       }
+
       .desktop-icon span {
         font-size: 14px;
       }
@@ -609,7 +587,7 @@
       padding: 0 5px;
       box-sizing: border-box;
     }
-    
+
     .taskbar-top-lip {
       position: absolute;
       top: -2px;
@@ -630,9 +608,9 @@
       background: url('winxp.png') no-repeat center center;
       background-size: cover;
     }
-    
+
     #start-btn:hover {
-      background-color: rgba(255,255,255,0.2);
+      background-color: rgba(255, 255, 255, 0.2);
       box-shadow: 0 0 10px #fff;
     }
 
@@ -670,7 +648,7 @@
       color: #0b2254;
       text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6);
     }
-    
+
     .taskbar-app-icon.active {
       background: linear-gradient(to bottom, #c4d7ed, #e6f0fa);
       border-top: 1px solid #c4d7ed;
@@ -691,7 +669,7 @@
       border-left: 1px solid #102e60;
       background-color: #316ac5;
     }
-    
+
     #notification-area {
       position: relative;
       margin-right: 10px;
@@ -707,7 +685,7 @@
       background-color: #fce899;
       border: 1px solid black;
       padding: 10px;
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
       font-size: 12px;
       width: 200px;
       display: flex;
@@ -717,26 +695,40 @@
       letter-spacing: 0.02em;
       animation: fade-in-up 0.5s ease-out;
     }
-    
+
     .notification img {
       width: 24px;
       height: 24px;
     }
-    
+
     .notification.fade-out {
       animation: fade-out-down 0.5s ease-in forwards;
     }
 
     @keyframes fade-in-up {
-      from { transform: translateY(100%); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+      from {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     @keyframes fade-out-down {
-      from { transform: translateY(0); opacity: 1; }
-      to { transform: translateY(100%); opacity: 0; }
+      from {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      to {
+        transform: translateY(100%);
+        opacity: 0;
+      }
     }
-    
+
     #system-tray .tray-icon {
       width: 16px;
       height: 16px;
@@ -752,7 +744,7 @@
       border-radius: 3px;
       cursor: pointer;
       font-family: var(--xp-font-main);
-      text-shadow: 1px 1px 0 rgba(0,0,0,0.6);
+      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
     }
 
     /* NEW: Calendar pop-up styles */
@@ -763,7 +755,7 @@
       width: 280px;
       background-color: var(--xp-window-bg);
       border: 1px solid var(--xp-window-border-dark);
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
       border-radius: 5px;
       z-index: 501;
       display: none;
@@ -773,7 +765,7 @@
     }
 
     #calendar-popup.visible {
-        display: block;
+      display: block;
     }
 
     .calendar-header {
@@ -788,15 +780,15 @@
     }
 
     .calendar-header button {
-        background: none;
-        border: 1px solid transparent;
-        font-size: 1.2em;
-        font-weight: bold;
-        cursor: pointer;
+      background: none;
+      border: 1px solid transparent;
+      font-size: 1.2em;
+      font-weight: bold;
+      cursor: pointer;
     }
 
     .calendar-header button:hover {
-        background-color: #d7e0f3;
+      background-color: #d7e0f3;
     }
 
     #calendar-grid {
@@ -829,16 +821,23 @@
       background-color: var(--start-menu-bg);
       border: 1px solid var(--start-menu-border);
       border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
       display: flex;
       z-index: 600;
       transform-origin: bottom left;
       animation: start-menu-open 0.2s ease-out;
     }
-    
+
     @keyframes start-menu-open {
-      from { transform: scale(0.1); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+      from {
+        transform: scale(0.1);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
 
     #start-menu.hidden {
@@ -886,9 +885,9 @@
       font-size: 13px;
       font-family: var(--xp-font-main);
       color: #000;
-      text-shadow: 1px 1px 0 rgba(255,255,255,0.7);
+      text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.7);
     }
-    
+
     .start-menu-entry:hover {
       background-color: var(--green-start-hover);
       color: white;
@@ -940,13 +939,13 @@
       height: 20px;
       margin-right: 5px;
     }
-    
+
     #logoff-btn {
       background-color: var(--orange-logoff);
       color: white;
       box-shadow: 0 0 10px var(--orange-logoff);
     }
-    
+
     #logoff-btn:hover {
       box-shadow: 0 0 20px var(--orange-logoff);
     }
@@ -956,7 +955,7 @@
       color: white;
       box-shadow: 0 0 10px var(--red-turn-off);
     }
-    
+
     #shutdown-btn:hover {
       box-shadow: 0 0 20px var(--red-turn-off);
     }
@@ -968,11 +967,11 @@
     */
     .xp-window {
       position: absolute;
-      background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,237,224,0.97) 52%, rgba(223,220,207,0.96) 100%);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(241, 237, 224, 0.97) 52%, rgba(223, 220, 207, 0.96) 100%);
       border-width: 1px 2px 2px 1px;
       border-style: solid;
       border-color: var(--xp-window-border-light) var(--xp-window-border-dark) var(--xp-window-border-dark) var(--xp-window-border-light);
-      box-shadow: 2px 2px 6px rgba(0,0,0,0.25);
+      box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.25);
       border-radius: 5px;
       min-width: 200px;
       min-height: 100px;
@@ -987,187 +986,186 @@
 
     .xp-window:not(.active-window) {
       filter: saturate(0.85);
-      box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+      box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
     }
 
     #window-Jukebox {
-        width: min(360px, calc(100vw - 24px));
-        min-width: 240px;
+      width: min(360px, calc(100vw - 24px));
+      min-width: 240px;
     }
 
     @media (max-width: 600px) {
-        #window-Jukebox {
-            width: calc(100vw - 12px);
-        }
+      #window-Jukebox {
+        width: calc(100vw - 12px);
+      }
     }
 
     #window-Chat {
-        width: min(540px, calc(100vw - 24px));
-        min-width: 260px;
-        min-height: clamp(520px, 72vh, 760px);
+      width: min(540px, calc(100vw - 24px));
+      min-width: 260px;
+      min-height: clamp(520px, 72vh, 760px);
     }
 
     #window-Calculator {
-        width: min(380px, calc(100vw - 16px));
-        min-width: 320px;
+      width: 320px;
     }
 
     #window-Calculator .window-content {
-        overflow: visible;
+      overflow: visible;
     }
 
     .chat-window {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        height: 100%;
-        min-height: clamp(520px, 68vh, 720px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      height: 100%;
+      min-height: clamp(520px, 68vh, 720px);
     }
 
     .chat-window p {
-        margin: 0;
-        font-size: 0.9rem;
-        color: #0a2d63;
+      margin: 0;
+      font-size: 0.9rem;
+      color: #0a2d63;
     }
 
     .chat-iframe {
-        flex: 1;
-        width: 100%;
-        min-height: clamp(400px, 60vh, 640px);
-        border-radius: 10px;
-        border: 0;
-        background: #0a2250;
-        box-shadow: inset 0 0 14px rgba(0,0,0,0.35);
+      flex: 1;
+      width: 100%;
+      min-height: clamp(400px, 60vh, 640px);
+      border-radius: 10px;
+      border: 0;
+      background: #0a2250;
+      box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.35);
     }
 
     .chat-status {
-        font-size: 0.8rem;
-        padding: 6px 10px;
-        border-radius: 6px;
-        border: 1px solid rgba(0,0,0,0.2);
-        background: rgba(255,255,255,0.7);
-        color: #0a2d63;
-        font-family: var(--xp-font-main);
-        letter-spacing: 0.03em;
+      font-size: 0.8rem;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.7);
+      color: #0a2d63;
+      font-family: var(--xp-font-main);
+      letter-spacing: 0.03em;
     }
 
     .chat-status[data-state="ready"] {
-        color: #0f5a2f;
-        border-color: rgba(17, 184, 73, 0.4);
-        background: rgba(17, 184, 73, 0.12);
+      color: #0f5a2f;
+      border-color: rgba(17, 184, 73, 0.4);
+      background: rgba(17, 184, 73, 0.12);
     }
 
     /* PowerShell Styles */
     .powershell-window {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        height: 100%;
-        background: radial-gradient(circle at 20% 20%, rgba(25,40,64,0.9), #020305 70%);
-        color: #c7d5ff;
-        border-radius: 12px;
-        border: 2px solid #0d3b9c;
-        box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 18px rgba(4,12,32,0.6);
-        font-family: "Consolas", "Courier New", monospace;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 100%;
+      background: radial-gradient(circle at 20% 20%, rgba(25, 40, 64, 0.9), #020305 70%);
+      color: #c7d5ff;
+      border-radius: 12px;
+      border: 2px solid #0d3b9c;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 0 18px rgba(4, 12, 32, 0.6);
+      font-family: "Consolas", "Courier New", monospace;
     }
 
     .powershell-output {
-        flex: 1;
-        background: #010204;
-        border-radius: 8px;
-        border: 1px solid #0b2f7a;
-        padding: 14px;
-        overflow-y: auto;
-        font-size: 0.9rem;
-        line-height: 1.4;
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+      flex: 1;
+      background: #010204;
+      border-radius: 8px;
+      border: 1px solid #0b2f7a;
+      padding: 14px;
+      overflow-y: auto;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
     }
 
     .ps-line {
-        margin-bottom: 6px;
-        white-space: pre-wrap;
+      margin-bottom: 6px;
+      white-space: pre-wrap;
     }
 
     .ps-line-command {
-        color: #4ec9b0;
+      color: #4ec9b0;
     }
 
     .ps-line-system {
-        color: #9cdcfe;
+      color: #9cdcfe;
     }
 
     .ps-line-error {
-        color: #f44747;
+      color: #f44747;
     }
 
     .powershell-input-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(2,12,28,0.85);
-        border-radius: 8px;
-        border: 1px solid #0b2f7a;
-        padding: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(2, 12, 28, 0.85);
+      border-radius: 8px;
+      border: 1px solid #0b2f7a;
+      padding: 8px;
     }
 
     .powershell-prompt {
-        color: #9cdcfe;
-        font-weight: bold;
-        font-size: 0.85rem;
+      color: #9cdcfe;
+      font-weight: bold;
+      font-size: 0.85rem;
     }
 
     .powershell-input {
-        flex: 1;
-        background: #050c19;
-        border: 1px solid #0b2f7a;
-        border-radius: 6px;
-        color: #d7e6ff;
-        padding: 8px 10px;
-        font-family: "Consolas", "Courier New", monospace;
-        font-size: 0.92rem;
-        box-shadow: inset 0 0 6px rgba(0,0,0,0.6);
+      flex: 1;
+      background: #050c19;
+      border: 1px solid #0b2f7a;
+      border-radius: 6px;
+      color: #d7e6ff;
+      padding: 8px 10px;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 0.92rem;
+      box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.6);
     }
 
     .powershell-input:focus {
-        outline: 1px solid #3ea6ff;
+      outline: 1px solid #3ea6ff;
     }
 
     .powershell-submit {
-        background: linear-gradient(180deg, #1f6de2 0%, #0e3a87 100%);
-        color: white;
-        border: 1px solid #0d2c73;
-        padding: 6px 14px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.85rem;
-        font-weight: bold;
-        text-transform: uppercase;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+      background: linear-gradient(180deg, #1f6de2 0%, #0e3a87 100%);
+      color: white;
+      border: 1px solid #0d2c73;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
 
     .powershell-submit:hover {
-        background: linear-gradient(180deg, #2e7bff 0%, #1348a5 100%);
+      background: linear-gradient(180deg, #2e7bff 0%, #1348a5 100%);
     }
 
     .powershell-hint {
-        margin: 0;
-        font-size: 0.75rem;
-        letter-spacing: 0.02em;
-        color: rgba(199, 213, 255, 0.75);
+      margin: 0;
+      font-size: 0.75rem;
+      letter-spacing: 0.02em;
+      color: rgba(199, 213, 255, 0.75);
     }
 
     /* UPDATED: Calculator styles */
     .calculator-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 4px;
-      padding: 10px;
-      background-color: #c0c0c0;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      padding: 8px;
+      background-color: #d8d8d8;
       border: 2px outset #f0f0f0;
       position: relative;
       overflow: visible;
-      width: clamp(280px, 40vw, 340px);
-      margin: 0 auto;
+      box-sizing: border-box;
+      width: 100%;
     }
 
     .calculator-display-wrapper {
@@ -1191,7 +1189,7 @@
       border: 2px inset #5e7e5e;
       background: linear-gradient(180deg, #cbe2c0 0%, #b4d29e 100%);
       padding: 8px;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.25);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
       transition: opacity 0.45s ease, transform 0.45s ease;
       position: relative;
       z-index: 2;
@@ -1247,10 +1245,25 @@
       cursor: default;
     }
 
-    .calc-screw.top-left { top: -8px; left: -8px; }
-    .calc-screw.top-right { top: -8px; right: -8px; }
-    .calc-screw.bottom-left { bottom: -8px; left: -8px; }
-    .calc-screw.bottom-right { bottom: -8px; right: -8px; }
+    .calc-screw.top-left {
+      top: -8px;
+      left: -8px;
+    }
+
+    .calc-screw.top-right {
+      top: -8px;
+      right: -8px;
+    }
+
+    .calc-screw.bottom-left {
+      bottom: -8px;
+      left: -8px;
+    }
+
+    .calc-screw.bottom-right {
+      bottom: -8px;
+      right: -8px;
+    }
 
     .calculator-maintenance-panel {
       position: absolute;
@@ -1259,7 +1272,7 @@
       border: 2px solid #8b8b7a;
       border-radius: 10px;
       padding: 10px;
-      box-shadow: 0 10px 18px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.3);
       opacity: 0;
       pointer-events: none;
       transform: translateY(12px) scale(0.98);
@@ -1289,7 +1302,7 @@
       min-height: 34px;
       border: 2px dashed #7a7a6b;
       border-radius: 6px;
-      background: rgba(255,255,255,0.85);
+      background: rgba(255, 255, 255, 0.85);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1303,12 +1316,12 @@
       border-style: solid;
       border-color: #5c7a5c;
       background: #fff;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
     }
 
     .secret-slot.selected {
       border-color: #4d6fd3;
-      background: rgba(77,111,211,0.15);
+      background: rgba(77, 111, 211, 0.15);
     }
 
     .secret-token-tray {
@@ -1377,148 +1390,197 @@
       height: 38px;
       background-color: #e0e0e0;
       border: 2px outset #f0f0f0;
-      font-size: 1.1em;
+      font-size: 1.25rem;
+      font-family: 'Tahoma', 'Segoe UI', sans-serif !important;
+      font-weight: bold;
       cursor: pointer;
       text-shadow: 1px 1px #fff;
+      color: #0a246a;
+      /* Classic XP calculator blue numbers */
+    }
+
+    .calc-btn.operator,
+    .calc-btn.equals,
+    .calc-btn[onclick*="'C'"] {
+      color: #b32a2a;
+      /* Classic XP calculator red operators */
     }
 
     .calc-btn:active {
       border-style: inset;
     }
-    
+
     /* Minesweeper styles */
     .minesweeper-grid {
-        display: grid;
-        grid-template-columns: repeat(10, 25px);
-        grid-template-rows: repeat(10, 25px);
-        background-color: #c0c0c0;
-        border: 2px inset #505050;
-        margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(10, 25px);
+      grid-template-rows: repeat(10, 25px);
+      background-color: #c0c0c0;
+      border: 2px inset #505050;
+      margin: 0 auto;
     }
 
     .minesweeper-cell {
-        width: 25px;
-        height: 25px;
-        background-color: #d0d0d0;
-        border: 2px outset #f0f0f0;
-        font-family: monospace;
-        font-weight: bold;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        user-select: none;
-        cursor: pointer;
-        position: relative;
+      width: 25px;
+      height: 25px;
+      background-color: #d0d0d0;
+      border: 2px outset #f0f0f0;
+      font-family: monospace;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      user-select: none;
+      cursor: pointer;
+      position: relative;
     }
-    
+
     .minesweeper-cell.revealed {
-        border-style: inset;
-        background-color: #c0c0c0;
-        cursor: default;
+      border-style: inset;
+      background-color: #c0c0c0;
+      cursor: default;
     }
-    
+
     .minesweeper-cell.revealed img,
     .minesweeper-cell img {
-        width: 20px;
-        height: 20px;
+      width: 20px;
+      height: 20px;
     }
-    
+
     .minesweeper-cell[data-mine] {
       background-color: #f00;
     }
 
-    .minesweeper-cell.number-1 { color: #0300f8; }
-    .minesweeper-cell.number-2 { color: #027d01; }
-    .minesweeper-cell.number-3 { color: #fe0000; }
-    .minesweeper-cell.number-4 { color: #000083; }
-    .minesweeper-cell.number-5 { color: #830000; }
-    .minesweeper-cell.number-6 { color: #008481; }
-    .minesweeper-cell.number-7 { color: #830083; }
-    .minesweeper-cell.number-8 { color: #000; }
-    
+    .minesweeper-cell.number-1 {
+      color: #0300f8;
+    }
+
+    .minesweeper-cell.number-2 {
+      color: #027d01;
+    }
+
+    .minesweeper-cell.number-3 {
+      color: #fe0000;
+    }
+
+    .minesweeper-cell.number-4 {
+      color: #000083;
+    }
+
+    .minesweeper-cell.number-5 {
+      color: #830000;
+    }
+
+    .minesweeper-cell.number-6 {
+      color: #008481;
+    }
+
+    .minesweeper-cell.number-7 {
+      color: #830083;
+    }
+
+    .minesweeper-cell.number-8 {
+      color: #000;
+    }
+
     .minesweeper-wrapper {
-        background-color: #bdbdbd;
-        border: 4px outset #f0f0f0;
-        padding: 6px;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        align-items: center;
+      background-color: #bdbdbd;
+      border: 4px outset #f0f0f0;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
     }
 
     .minesweeper-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background-color: #c0c0c0;
-        border: 2px inset #ffffff;
-        padding: 4px;
-        width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #c0c0c0;
+      border: 2px inset #ffffff;
+      padding: 4px;
+      width: 100%;
     }
 
     .minesweeper-counter {
-        background-color: #000;
-        color: #ff2a2a;
-        font-family: var(--xp-font-title);
-        font-size: 22px;
-        line-height: 1;
-        padding: 4px 8px;
-        border: 2px inset #7f7f7f;
-        min-width: 56px;
-        text-align: center;
-        text-shadow: 0 0 2px rgba(255, 42, 42, 0.6);
-        letter-spacing: 0.1em;
+      background-color: #000;
+      color: #ff2a2a;
+      font-family: var(--xp-font-title);
+      font-size: 22px;
+      line-height: 1;
+      padding: 4px 8px;
+      border: 2px inset #7f7f7f;
+      min-width: 56px;
+      text-align: center;
+      text-shadow: 0 0 2px rgba(255, 42, 42, 0.6);
+      letter-spacing: 0.1em;
     }
 
     .minesweeper-reset {
-        width: 36px;
-        height: 36px;
-        border: 2px outset #ffffff;
-        background-color: #c0c0c0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: transform 0.1s ease;
-        font-size: 0;
-        position: relative;
+      width: 36px;
+      height: 36px;
+      border: 2px outset #ffffff;
+      background-color: #c0c0c0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+      font-size: 0;
+      position: relative;
     }
 
     .minesweeper-reset::after {
-        content: attr(data-face-glyph);
-        font-family: var(--xp-font-title);
-        font-size: 18px;
-        line-height: 1;
-        color: #111;
-        text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+      content: attr(data-face-glyph);
+      font-family: var(--xp-font-title);
+      font-size: 18px;
+      line-height: 1;
+      color: #111;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
     }
 
     .minesweeper-reset:active {
-        border-style: inset;
-        transform: translateY(1px);
+      border-style: inset;
+      transform: translateY(1px);
     }
 
     .xp-window.closed {
       animation: window-close 0.3s ease-in forwards;
     }
-    
+
     @keyframes window-open {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
-    
+
     @keyframes window-close {
-      from { transform: scale(1); opacity: 1; }
-      to { transform: scale(0.8); opacity: 0; }
+      from {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      to {
+        transform: scale(0.8);
+        opacity: 0;
+      }
     }
-    
+
     .window-titlebar {
       height: 26px;
       background: linear-gradient(to right, #0a3aa2, #5a8de5);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 8px;
+      padding: 0 2px 0 8px;
+      /* Pushed buttons flush to the absolute right */
       cursor: move;
       color: #fff;
       font-family: var(--xp-font-title);
@@ -1533,14 +1595,14 @@
 
     .xp-window:not(.active-window) .window-titlebar {
       background: linear-gradient(to right, #5671a8, #9bb2d7);
-      color: rgba(255,255,255,0.85);
+      color: rgba(255, 255, 255, 0.85);
       text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
     }
 
     .window-buttons {
       display: flex;
     }
-    
+
     .window-button {
       width: 25px;
       height: 25px;
@@ -1551,12 +1613,12 @@
       justify-content: center;
       align-items: center;
     }
-    
+
     .window-button img {
       width: 16px;
       height: 16px;
     }
-    
+
     .window-button:hover {
       background-color: #d7e0f3;
     }
@@ -1577,9 +1639,11 @@
       font-size: 13px;
       color: #111;
       line-height: 1.4;
+      position: relative;
     }
-    
-    .window-content img, .window-content iframe {
+
+    .window-content img,
+    .window-content iframe {
       display: block;
       margin: 0 auto;
       max-width: 100%;
@@ -1592,8 +1656,8 @@
       z-index: 9999;
       display: none;
     }
-    
-    /* Jukebox Styles */
+
+    /* --- Jukebox Styles: Classic XP Theme (Default) --- */
     #jukebox-content {
       display: flex;
       flex-direction: column;
@@ -1602,6 +1666,21 @@
       font-size: 0.9rem;
       font-weight: bold;
       width: 100%;
+      font-family: 'Tahoma', 'Segoe UI', sans-serif !important;
+      padding: 0;
+      color: #0b2254;
+      position: relative;
+    }
+
+    #lyrics-lines,
+    #lyrics-status,
+    .lyrics-empty,
+    .lyrics-line {
+      font-family: var(--xp-font-main) !important;
+    }
+
+    .lyrics-line[data-section] {
+      font-family: var(--xp-font-title) !important;
     }
 
     .jukebox-song {
@@ -1610,7 +1689,7 @@
       gap: 10px;
     }
 
-    .jukebox-song > *:first-child {
+    .jukebox-song>*:first-child {
       flex-shrink: 0;
     }
 
@@ -1619,6 +1698,13 @@
       height: 84px;
       border-radius: 12px;
       object-fit: cover;
+      border: 1px solid #7f9db9;
+    }
+
+    #song-info {
+      color: #0b2254;
+      font-size: 0.9rem;
+      font-weight: bold;
     }
 
     .jukebox-controls {
@@ -1639,25 +1725,28 @@
       font-size: 13px;
       font-family: var(--xp-font-main);
       cursor: pointer;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
       transition: transform 0.1s ease, background 0.2s ease, box-shadow 0.2s ease;
     }
 
     .jukebox-controls button:hover {
       background: linear-gradient(to bottom, #e6f2ff, #b9d4fa);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.85), 0 0 8px rgba(58,110,165,0.3);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.85), 0 0 8px rgba(58, 110, 165, 0.3);
       transform: translateY(-1px);
     }
-    
+
     .volume-container {
       width: 100%;
       display: flex;
       align-items: center;
       gap: 8px;
+      color: #0b2254;
+      font-size: 12px;
     }
 
     .volume-container input[type="range"] {
       flex: 1;
+      cursor: pointer;
     }
 
     .jukebox-progress {
@@ -1676,7 +1765,7 @@
       font-variant-numeric: tabular-nums;
     }
 
-    #jukebox-seek {
+    .jukebox-seek {
       flex: 1;
       accent-color: #245edb;
       cursor: pointer;
@@ -1700,15 +1789,16 @@
       flex-wrap: wrap;
     }
 
-    .loop-toggle, .jukebox-nav {
+    .loop-toggle,
+    .jukebox-nav {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       padding: 4px 8px;
-      border: 1px solid rgba(58,110,165,0.6);
+      border: 1px solid rgba(58, 110, 165, 0.6);
       border-radius: 6px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(200,220,250,0.8) 100%);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.75);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(200, 220, 250, 0.8) 100%);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.75);
       cursor: pointer;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
@@ -1723,19 +1813,37 @@
       font-family: var(--xp-font-main);
       font-size: 12px;
       cursor: pointer;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.7);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
       transition: transform 0.1s ease, background 0.2s ease, box-shadow 0.2s ease;
     }
 
     .jukebox-action-btn:hover {
       background: linear-gradient(to bottom, #e6f2ff, #b9d4fa);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.85), 0 0 8px rgba(58,110,165,0.3);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.85), 0 0 8px rgba(58, 110, 165, 0.3);
       transform: translateY(-1px);
     }
 
     .loop-toggle.active {
       border-color: #245edb;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.9), 0 0 6px rgba(58,110,165,0.35);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.9), 0 0 6px rgba(58, 110, 165, 0.35);
+    }
+
+    /* --- Jukebox Styles: Easter Egg B&W Symmetrical Mode --- */
+    .window[data-window="Jukebox"].egg-mode .window-content {
+      background: #000000 !important;
+      border: 1px solid #222 !important;
+    }
+
+    .window[data-window="Jukebox"].egg-mode #jukebox-egg-canvas {
+      display: block !important;
+    }
+
+    .window[data-window="Jukebox"].egg-mode .vertical-viz {
+      display: none !important;
+    }
+
+    .window[data-window="Jukebox"].egg-mode #jukebox-horizontal-viz-container {
+      display: none !important;
     }
 
     #lyrics-panel {
@@ -1743,7 +1851,7 @@
       flex-direction: column;
       gap: 6px;
       padding: 10px 12px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(231,236,247,0.95) 100%);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(231, 236, 247, 0.95) 100%);
       border: 2px inset #c5d4ed;
       border-radius: 8px;
       font-family: var(--xp-font-main);
@@ -1775,11 +1883,11 @@
       max-height: 160px;
       overflow-y: auto;
       overflow-x: hidden;
-      background: rgba(255,255,255,0.9);
+      background: rgba(255, 255, 255, 0.9);
       border: 1px solid #9db5e2;
       border-radius: 6px;
       padding: 6px 8px;
-      box-shadow: inset 0 1px 4px rgba(11,34,84,0.15);
+      box-shadow: inset 0 1px 4px rgba(11, 34, 84, 0.15);
     }
 
     #lyrics-lines {
@@ -1809,9 +1917,9 @@
     }
 
     .lyrics-line.active {
-      background: linear-gradient(90deg, rgba(49,106,197,0.35) 0%, rgba(93,142,228,0.55) 100%);
+      background: linear-gradient(90deg, rgba(49, 106, 197, 0.35) 0%, rgba(93, 142, 228, 0.55) 100%);
       color: #fff;
-      text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
     }
 
     .lyrics-line[data-muted="true"] {
@@ -1843,14 +1951,14 @@
     .lyrics-disclaimer {
       margin-top: 6px;
       padding: 10px 12px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(231,236,247,0.95) 100%);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(231, 236, 247, 0.95) 100%);
       border: 1px solid #9db5e2;
       border-radius: 8px;
       font-family: var(--xp-font-small);
       font-size: 12px;
       color: #0b2254;
       line-height: 1.45;
-      box-shadow: inset 0 1px 2px rgba(11,34,84,0.12);
+      box-shadow: inset 0 1px 2px rgba(11, 34, 84, 0.12);
     }
 
     .lyrics-disclaimer strong {
@@ -1867,34 +1975,34 @@
 
     /* UPDATED: Browser styles */
     .browser-toolbar {
-        background-color: #f1f1f1;
-        border-bottom: 2px solid #ccc;
-        padding: 5px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
+      background-color: #f1f1f1;
+      border-bottom: 2px solid #ccc;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
     .browser-toolbar button {
-        width: 24px;
-        height: 24px;
-        background-color: #e0e0e0;
-        border: 1px outset #fff;
-        font-size: 14px;
+      width: 24px;
+      height: 24px;
+      background-color: #e0e0e0;
+      border: 1px outset #fff;
+      font-size: 14px;
     }
 
     .browser-toolbar button:active {
-        border-style: inset;
+      border-style: inset;
     }
 
     .url-bar {
-        flex-grow: 1;
-        padding: 2px 5px;
-        border: 1px inset #ccc;
-        background-color: #fff;
-        font-size: 12px;
+      flex-grow: 1;
+      padding: 2px 5px;
+      border: 1px inset #ccc;
+      background-color: #fff;
+      font-size: 12px;
     }
-    
+
     #browser-content {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -1902,7 +2010,7 @@
       padding: 10px;
       overflow-y: auto;
     }
-    
+
     #browser-content img {
       width: 100%;
       height: auto;
@@ -1922,7 +2030,7 @@
       justify-content: center;
       align-items: center;
       border-radius: 6px;
-      box-shadow: 0 0 16px rgba(0,0,0,0.6);
+      box-shadow: 0 0 16px rgba(0, 0, 0, 0.6);
     }
 
     .idiot-window img {
@@ -1935,10 +2043,10 @@
     .idiot-window:hover {
       cursor: url('No.png'), not-allowed;
     }
-    
   </style>
   <script src="https://iframe.chat/scripts/main.min.js" defer></script>
 </head>
+
 <body>
 
   <div id="login-screen">
@@ -1946,17 +2054,11 @@
       <div class="login-frame">
         <div class="login-shell">
           <div class="welcome-panel">
-            <div class="xp-logo">
-              <span class="red"></span>
-              <span class="green"></span>
-              <span class="blue"></span>
-              <span class="yellow"></span>
-            </div>
-            <h1>welcome</h1>
-            <p class="welcome-message">Click your user name to begin.</p>
+            <img class="xp-logo-full" src="xp/logo.png" alt="Microsoft Windows XP">
+            <p class="welcome-message-xp">To begin, click your user name</p>
           </div>
+          <div class="login-divider"></div>
           <div class="user-panel">
-            <h2>select a user</h2>
             <div class="user-list">
               <button class="user-tile" onclick="attemptLogin(); clickSound.play();">
                 <img src="alex.png" alt="alex">
@@ -1970,19 +2072,22 @@
         </div>
         <div class="login-footer">
           <button class="turn-off-btn" onclick="shutdownSequence(); clickSound.play();">
-            <img src="13.png" alt="Turn Off">
-            Turn Off Computer
+            <img src="13.png" alt="Turn off computer">
+            Turn off computer
           </button>
-          <span class="login-footer-text">To add or change accounts go to Control Panel.</span>
+          <span class="login-footer-text">After you log on, you can add or change accounts. Just go to Control Panel and
+            click User Accounts.</span>
         </div>
       </div>
     </div>
     <div id="login-hint" role="status" aria-live="polite" aria-hidden="true">
-      Hint: Double tap the desktop icons to open them, and press the toolbar windows at the bottom of the screen to easily minimize tabs.
+      Hint: Double tap the desktop icons to open them, and press the toolbar windows at the bottom of the screen to
+      easily minimize tabs.
       Also, tell hoodie he smells like a dingus. :]
     </div>
     <div id="login-warning" role="status" aria-live="polite" aria-hidden="true">
-      Photosensitivity warning: some parts are flashing colors (black and white). Please look away if you are sensitive to strobing visuals.
+      Photosensitivity warning: some parts are flashing colors (black and white). Please look away if you are sensitive
+      to strobing visuals.
     </div>
   </div>
 
@@ -2026,24 +2131,28 @@
       <span>Recycle Bin</span>
     </div>
     <div class="desktop-icon" data-title="Calculator" style="top: 20px; left: 220px;">
-        <img src="calculator.png" alt="Calculator">
-        <span>Calculator</span>
+      <img src="calculator.png" alt="Calculator">
+      <span>Calculator</span>
     </div>
     <div class="desktop-icon" data-title="Minesweeper" style="top: 120px; left: 220px;">
-        <img src="minesweeper.png" alt="Minesweeper">
-        <span>Minesweeper</span>
+      <img src="minesweeper.png" alt="Minesweeper">
+      <span>Minesweeper</span>
     </div>
     <div class="desktop-icon" data-title="Chat" style="top: 220px; left: 220px;">
-        <img src="chat.png" alt="Chat">
-        <span>Chat</span>
+      <img src="chat.png" alt="Chat">
+      <span>Chat</span>
+    </div>
+    <div class="desktop-icon" data-title="Programming" style="top: 320px; left: 220px;">
+      <img src="17.png" alt="Programming">
+      <span>Programming</span>
     </div>
     <div class="desktop-icon" data-title="Browser" style="top: 20px; left: 320px;">
-        <img src="12.png" alt="Browser">
-        <span>Browser</span>
+      <img src="12.png" alt="Browser">
+      <span>Browser</span>
     </div>
     <div class="desktop-icon" data-title="PowerShell" style="top: 120px; left: 320px;">
-        <img src="ps.png" alt="PowerShell">
-        <span>PowerShell</span>
+      <img src="ps.png" alt="PowerShell">
+      <span>PowerShell</span>
     </div>
   </div>
 
@@ -2058,12 +2167,12 @@
   </div>
 
   <div id="calendar-popup">
-      <div class="calendar-header">
-        <button onclick="changeMonth(-1);">&#9664;</button>
-        <span id="calendar-title"></span>
-        <button onclick="changeMonth(1);">&#9654;</button>
-      </div>
-      <div id="calendar-grid"></div>
+    <div class="calendar-header">
+      <button onclick="changeMonth(-1);">&#9664;</button>
+      <span id="calendar-title"></span>
+      <button onclick="changeMonth(1);">&#9654;</button>
+    </div>
+    <div id="calendar-grid"></div>
   </div>
 
   <div id="start-menu" class="hidden">
@@ -2097,6 +2206,10 @@
           <img src="6.png" alt="Games">
           <span>Games</span>
         </div>
+        <div class="start-menu-entry" onclick="openWindow('Programming', 17); toggleStartMenu(); clickSound.play();">
+          <img src="17.png" alt="Programming">
+          <span>Programming</span>
+        </div>
       </div>
     </div>
     <div class="start-menu-right-col">
@@ -2105,7 +2218,8 @@
           <img src="8.png" alt="My Computer">
           <span>My Computer</span>
         </div>
-        <div class="start-menu-entry" onclick="openWindow('Jukebox', 10, Math.max(12, window.innerWidth / 2 - 160), Math.max(32, window.innerHeight / 3 - 120)); toggleStartMenu(); clickSound.play();">
+        <div class="start-menu-entry"
+          onclick="openWindow('Jukebox', 10, Math.max(12, window.innerWidth / 2 - 160), Math.max(32, window.innerHeight / 3 - 120)); toggleStartMenu(); clickSound.play();">
           <img src="10.png" alt="Jukebox">
           <span>Jukebox</span>
         </div>
@@ -2121,13 +2235,15 @@
           <img src="ps.png" alt="PowerShell">
           <span>PowerShell</span>
         </div>
-        <div class="start-menu-entry" onclick="openWindow('Calculator', 'calculator'); toggleStartMenu(); clickSound.play();">
-            <img src="calculator.png" alt="Calculator">
-            <span>Calculator</span>
+        <div class="start-menu-entry"
+          onclick="openWindow('Calculator', 'calculator'); toggleStartMenu(); clickSound.play();">
+          <img src="calculator.png" alt="Calculator">
+          <span>Calculator</span>
         </div>
-        <div class="start-menu-entry" onclick="openWindow('Minesweeper', 'minesweeper'); toggleStartMenu(); clickSound.play();">
-            <img src="minesweeper.png" alt="Minesweeper">
-            <span>Minesweeper</span>
+        <div class="start-menu-entry"
+          onclick="openWindow('Minesweeper', 'minesweeper'); toggleStartMenu(); clickSound.play();">
+          <img src="minesweeper.png" alt="Minesweeper">
+          <span>Minesweeper</span>
         </div>
       </div>
       <div class="start-menu-logoff-shutdown">
@@ -2169,7 +2285,7 @@
     const clock = document.getElementById('clock');
     const dragPreview = document.getElementById('window-drag-preview');
     const crtOverlay = document.querySelector('.crt-effect');
-    
+
     // NEW: Calendar elements
     const calendarPopup = document.getElementById('calendar-popup');
     const calendarTitle = document.getElementById('calendar-title');
@@ -2191,29 +2307,59 @@
     let awaitingAudioUnlock = false;
     let autoplayNoticeShown = false;
 
+    // Make sound effects overlap by patching the play method
+    [clickSound, startupSound, shutdownSound, notificationSound].forEach(sound => {
+      if (!sound) return;
+      const originalPlay = sound.play;
+      sound.play = function () {
+        try {
+          const clone = new Audio(this.src);
+          clone.volume = this.volume;
+          return clone.play();
+        } catch (e) {
+          this.currentTime = 0;
+          return originalPlay.apply(this);
+        }
+      };
+    });
+
+    // Visualizer state variables
+    let visualizerAnimFrame = null;
+    let audioCtx = null;
+    let analyser = null;
+    let source = null;
+    let visualizerEggActive = false; // easter egg: fullscreen visualizer mode
+    let eggModeActive = false; // blocks F1/notifications while egg is open
+    const dvdColors = ['#ff4444','#ff9900','#ffee00','#44ff88','#44ccff','#cc44ff','#ff44cc','#ffffff'];
+    const dvd = { x: 0, y: 0, vx: 1.4, vy: 1.1, w: 0, h: 0, color: '#ffffff', colorIdx: 0 };
+    let loginUsed = false; // prevent login button spam
+
+    // YAAI State
+    let yaaiWindowsClosed = 0;
+
     // --- Easter Egg Messages ---
     const easterEggs = [
-        "wait, hold on, i can edit these?",
-        "windows xp was a kinda fun operating system.",
-        "did you know a single floppy disk could only hold 1.44 MB?",
-        "time to add the 90th dial up sound to make it 9000 millionths more retro!",
-        "if you're reading this, you just found an easter egg! :egg: :retro_egg: :egg:",
-        "'This whole project was made with the help of a very helpful AI.' - gemini & chatgpt, ty for help!",
-        "ooooooooooooooooouuuuuggggghhhhh",
-        "GITHUB developer CAUGHT using .WEBP files?!",
-        "the computer says NO.",
-        "hi nil :smile:",
-        "LOVE-LETTER-FOR-YOU.TXT.vbs received in email!",
-        "don't worry, the BSOD is just a feature.",
-        "Warning: RETRO SLUDGE AHEAD.",
-        "'wow, its barely buggy!' i say, with my large bug shaped belly.",
-        "dial up reference no. 4",
-        "don't forget to defragment your hard drive for optimal performance!",
-        "you've been using your computer for a while. maybe it's time to take a break?",
-        "you see Spawn! by evan fong? that guy is actually vanossgaming Ã°Å¸ËœÂ­",
-        "im probably not putting THIS much effort into the other sites, i love favouritism!",
-        "dont worry, as long as its in the recycle bin, its trashed, right?",
-        "Kindly check the attached love letter from me! ~ LOVE-LETTER-FOR-YOU.TXT.vbs"
+      "wait, hold on, i can edit these?",
+      "windows xp was a kinda fun operating system.",
+      "did you know a single floppy disk could only hold 1.44 MB?",
+      "time to add the 90th dial up sound to make it 9000 millionths more retro!",
+      "if you're reading this, you just found an easter egg! :egg: :retro_egg: :egg:",
+      "'This whole project was made with the help of a very helpful AI.' - gemini & chatgpt, ty for help!",
+      "ooooooooooooooooouuuuuggggghhhhh",
+      "GITHUB developer CAUGHT using .WEBP files?!",
+      "the computer says NO.",
+      "hi nil :smile:",
+      "LOVE-LETTER-FOR-YOU.TXT.vbs received in email!",
+      "don't worry, the BSOD is just a feature.",
+      "Warning: RETRO SLUDGE AHEAD.",
+      "'wow, its barely buggy!' i say, with my large bug shaped belly.",
+      "dial up reference no. 4",
+      "don't forget to defragment your hard drive for optimal performance!",
+      "you've been using your computer for a while. maybe it's time to take a break?",
+      "you see Spawn! by evan fong? that guy is actually vanossgaming Ã°Å¸ËœÂ­",
+      "im probably not putting THIS much effort into the other sites, i love favouritism!",
+      "dont worry, as long as its in the recycle bin, its trashed, right?",
+      "Kindly check the attached love letter from me! ~ LOVE-LETTER-FOR-YOU.TXT.vbs"
     ];
 
     // --- State variables ---
@@ -2350,7 +2496,21 @@
 
     // --- App content data ---
     const windowContent = {
-      'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 17 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid, (BUT I DID DO A BIG MARGIN OF IT OK)</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it ðŸ‘…</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping nil with hers, so eventually they'll be done and temkky, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p><p>abc for bf ahh 😭😭❤️‍🩹</div>`,
+      'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 17 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid, (BUT I DID DO A BIG MARGIN OF IT OK)</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it 🙌</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping nil with hers, so eventually they'll be done and temkky, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p><p>abc for bf ahh 😭😭❤️‍🩹</div>`,
+      'Programming': `
+        <div class="window-entry" style="font-family: var(--xp-font-main); line-height: 1.5; color: #000; font-size: 0.95rem;">
+          <h2 style="font-family: var(--xp-font-title); font-size: 1.25rem; margin-top: 0; color: #0a246a;">My Programming Journey</h2>
+          
+          <h3 style="font-family: var(--xp-font-title); font-size: 1.05rem; margin-bottom: 4px; color: #316ac5;">Web Development</h3>
+          <p style="margin-top: 0;">I built this entire interactive site from scratch utilizing vanilla HTML for structure, CSS for modern XP-faithful styling, and dynamic JavaScript to power the custom window engine, Jukebox media player, Minesweeper, and the YAAI virus simulation.</p>
+          
+          <h3 style="font-family: var(--xp-font-title); font-size: 1.05rem; margin-bottom: 4px; color: #316ac5;">Lua & Python</h3>
+          <p style="margin-top: 0;">I actively practice LUA (specifically LuaU at an intermediate level, standard for advanced game coding environments like Roblox) alongside Python for scripting, automating tasks, and developing custom logic systems.</p>
+          
+          <h3 style="font-family: var(--xp-font-title); font-size: 1.05rem; margin-bottom: 4px; color: #316ac5;">Java</h3>
+          <p style="margin-top: 0;">I am currently beginning my journey in learning Java to expand my understanding of object-oriented programming, system development, and build a strong computational foundation.</p>
+        </div>
+      `,
       'Interests': `<div class="window-entry"><p>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call people or sm</p><p>IM DEVELOPING A GAME COME BACK LATER PLS!!!</div>`,
       'DNI': `<p>lowk refining this sometime soon cause i wanna add different stuff</p></div>`,
       'Journal': `<textarea id="journal-text-area" placeholder="wait i forgot this is a input area not a text area, oopsies"></textarea>`,
@@ -2372,37 +2532,53 @@
       `,
       'Jukebox': `
         <div id="jukebox-content">
-          <div class="jukebox-song">
-            <img id="song-icon" src="Music1.jpg" alt="Song artwork">
-            <div id="song-info" aria-live="polite">Loading...</div>
-          </div>
-          <div class="jukebox-controls">
-            <button class="jukebox-nav" onclick="prevSong(); clickSound.play();">&laquo;</button>
-            <button class="jukebox-nav" onclick="nextSong(); clickSound.play();">&raquo;</button>
-          </div>
-          <div class="volume-container">
-            <label for="volume">Volume</label>
-            <input id="volume" type="range" min="0" max="1" step="0.01" value="0.35">
-          </div>
-          <div class="jukebox-progress">
-            <time id="jukebox-current-time">0:00</time>
-            <input id="jukebox-seek" type="range" min="0" max="0" step="0.1" value="0" disabled>
-            <time id="jukebox-duration">0:00</time>
-          </div>
-          <div class="jukebox-options">
-            <div class="option-group">
-              <label class="loop-toggle" id="jukebox-loop-toggle">
-                <input type="checkbox" id="jukebox-loop">
-                <span>Loop track</span>
-              </label>
+          <!-- Egg-mode full overlay canvas (hidden by default) -->
+          <canvas id="jukebox-egg-canvas" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer;" title="Double-click to exit visualizer mode"></canvas>
+          
+          <!-- Center Main Content -->
+          <div class="jukebox-main-layout" style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
+            <div class="jukebox-song">
+              <img id="song-icon" src="Music1.jpg" alt="Song artwork">
+              <div id="song-info" aria-live="polite">Loading...</div>
             </div>
-            <div class="option-group">
-              <button type="button" class="jukebox-action-btn" id="jukebox-play">Start</button>
-              <button type="button" class="jukebox-action-btn" id="jukebox-stop">Stop</button>
-              <button type="button" class="jukebox-action-btn" id="lyrics-disclaimer-toggle" aria-expanded="false">Copyright notice</button>
+            
+            <!-- Horizontal Canvas (shown by default, hidden in egg-mode) -->
+            <div class="visualizer-container" id="jukebox-horizontal-viz-container" style="margin: 4px 0;">
+              <canvas id="jukebox-visualizer" style="width: 100%; height: 40px; background: #000; border-radius: 4px; border: 1px solid #7f9db9; display: block;"></canvas>
+            </div>
+            
+            <div class="jukebox-controls">
+              <button class="jukebox-nav" onclick="prevSong(); clickSound.play();">&laquo;</button>
+              <button class="jukebox-nav" onclick="nextSong(); clickSound.play();">&raquo;</button>
+            </div>
+            <div class="volume-container">
+              <label for="volume">Volume</label>
+              <input id="volume" type="range" min="0" max="1" step="0.01" value="0.35">
+            </div>
+            <div class="jukebox-progress">
+              <time id="jukebox-current-time">0:00</time>
+              <input id="jukebox-seek" type="range" min="0" max="0" step="0.1" value="0" disabled>
+              <time id="jukebox-duration">0:00</time>
+            </div>
+            <div class="jukebox-options">
+              <div class="option-group">
+                <label class="loop-toggle" id="jukebox-loop-toggle">
+                  <input type="checkbox" id="jukebox-loop">
+                  <span>Loop track</span>
+                </label>
+              </div>
+              <div class="option-group">
+                <button type="button" class="jukebox-action-btn" id="jukebox-play">Start</button>
+                <button type="button" class="jukebox-action-btn" id="jukebox-stop">Stop</button>
+                <button type="button" class="jukebox-action-btn" id="lyrics-disclaimer-toggle" aria-expanded="false">Copyright notice</button>
+                <button type="button" class="jukebox-action-btn" id="jukebox-egg-toggle" title="&#9835;" style="opacity:0.35; min-width:0; padding: 2px 6px; font-size:0.75em;" onclick="event.stopPropagation(); event.preventDefault(); window.toggleJukeboxEgg && window.toggleJukeboxEgg(); return false;">&#9835;</button>
+              </div>
             </div>
           </div>
-          <div id="lyrics-disclaimer-panel" class="lyrics-disclaimer" hidden>
+
+          <!-- (egg canvas above) -->
+
+          <div id="lyrics-disclaimer-panel" class="lyrics-disclaimer" hidden style="background: #0d0d0d; border: 1px solid #333; color: #eee;">
             <strong>Copyright Notice &amp; Disclaimer</strong>
             <p>This project includes references to the song &quot;Spawn!&quot; by Evan Fong (Vanoss), and possibly other copyrighted musical works.</p>
             <p>All lyrics, compositions, and recordings are the intellectual property of their respective copyright holders.</p>
@@ -2485,23 +2661,28 @@
                     <button type="button" class="secret-reset-btn">Reset order</button>
                 </div>
             </div>
-            <button class="calc-btn" onclick="handleCalculatorInput('C');">C</button>
+            <!-- Row 1: C spans 3, / -->
+            <button class="calc-btn" style="grid-column: span 3;" onclick="handleCalculatorInput('C');">C</button>
             <button class="calc-btn operator" onclick="handleCalculatorInput('/');">&#247;</button>
-            <button class="calc-btn operator" onclick="handleCalculatorInput('*');">&#215;</button>
-            <button class="calc-btn operator" onclick="handleCalculatorInput('-');">-</button>
+            <!-- Row 2: 7, 8, 9, * -->
             <button class="calc-btn" onclick="handleCalculatorInput('7');">7</button>
             <button class="calc-btn" onclick="handleCalculatorInput('8');">8</button>
             <button class="calc-btn" onclick="handleCalculatorInput('9');">9</button>
-            <button class="calc-btn operator" onclick="handleCalculatorInput('+');">+</button>
+            <button class="calc-btn operator" onclick="handleCalculatorInput('*');">&#215;</button>
+            <!-- Row 3: 4, 5, 6, - -->
             <button class="calc-btn" onclick="handleCalculatorInput('4');">4</button>
             <button class="calc-btn" onclick="handleCalculatorInput('5');">5</button>
             <button class="calc-btn" onclick="handleCalculatorInput('6');">6</button>
-            <button class="calc-btn equals" onclick="handleCalculatorInput('=');">=</button>
+            <button class="calc-btn operator" onclick="handleCalculatorInput('-');">-</button>
+            <!-- Row 4: 1, 2, 3, + -->
             <button class="calc-btn" onclick="handleCalculatorInput('1');">1</button>
             <button class="calc-btn" onclick="handleCalculatorInput('2');">2</button>
             <button class="calc-btn" onclick="handleCalculatorInput('3');">3</button>
-            <button class="calc-btn" onclick="handleCalculatorInput('0');">0</button>
+            <button class="calc-btn operator" onclick="handleCalculatorInput('+');">+</button>
+            <!-- Row 5: 0 spans 2, ., = -->
+            <button class="calc-btn" style="grid-column: span 2;" onclick="handleCalculatorInput('0');">0</button>
             <button class="calc-btn" onclick="handleCalculatorInput('.');">.</button>
+            <button class="calc-btn equals" onclick="handleCalculatorInput('=');">=</button>
         </div>
       `,
 
@@ -2524,13 +2705,15 @@
       startMenu.classList.add('hidden');
       setupDesktopIcons();
       document.getElementById('clock').addEventListener('click', toggleCalendar);
-      
+
       // Start the random notification loop
       setTimeout(showRandomEasterEgg, 5000);
     });
 
     // --- Login & Shutdown logic ---
     function attemptLogin() {
+      if (loginUsed) return;
+      loginUsed = true;
       loginWelcome.style.opacity = '0';
       if (loginHint) {
         loginHint.classList.add('visible');
@@ -2557,7 +2740,7 @@
         const maxTop = Math.max(32, viewportHeight - estimatedHeight - 16);
         const preferredTop = viewportHeight * 0.22;
         const startY = Math.max(32, Math.min(maxTop, preferredTop));
-        openWindow('Jukebox', 10, startX, startY); 
+        openWindow('Jukebox', 10, startX, startY);
         if (loginHint) {
           loginHint.classList.remove('visible');
           loginHint.setAttribute('aria-hidden', 'true');
@@ -2579,9 +2762,10 @@
     }
 
     function logOff() {
+      loginUsed = false;
       window.location.reload();
     }
-    
+
     // --- Taskbar & Start Menu logic ---
     function updateClock() {
       const now = new Date();
@@ -2592,50 +2776,50 @@
 
     // UPDATED: Calendar logic
     function toggleCalendar() {
-        calendarPopup.classList.toggle('visible');
-        if (calendarPopup.classList.contains('visible')) {
-            renderCalendar();
-        }
+      calendarPopup.classList.toggle('visible');
+      if (calendarPopup.classList.contains('visible')) {
+        renderCalendar();
+      }
     }
 
     function renderCalendar() {
-        calendarGrid.innerHTML = '';
-        const year = currentCalendarDate.getFullYear();
-        const month = currentCalendarDate.getMonth();
-        const monthName = currentCalendarDate.toLocaleString('en-US', { month: 'long' });
+      calendarGrid.innerHTML = '';
+      const year = currentCalendarDate.getFullYear();
+      const month = currentCalendarDate.getMonth();
+      const monthName = currentCalendarDate.toLocaleString('en-US', { month: 'long' });
 
-        calendarTitle.textContent = `${monthName} ${year}`;
-        
-        const firstDayOfMonth = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
+      calendarTitle.textContent = `${monthName} ${year}`;
 
-        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        dayNames.forEach(day => {
-            const dayHeader = document.createElement('div');
-            dayHeader.className = 'calendar-day-header';
-            dayHeader.textContent = day;
-            calendarGrid.appendChild(dayHeader);
-        });
+      const firstDayOfMonth = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        for (let i = 0; i < firstDayOfMonth; i++) {
-            calendarGrid.appendChild(document.createElement('div'));
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      dayNames.forEach(day => {
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'calendar-day-header';
+        dayHeader.textContent = day;
+        calendarGrid.appendChild(dayHeader);
+      });
+
+      for (let i = 0; i < firstDayOfMonth; i++) {
+        calendarGrid.appendChild(document.createElement('div'));
+      }
+
+      for (let i = 1; i <= daysInMonth; i++) {
+        const dayEl = document.createElement('div');
+        dayEl.className = 'calendar-day';
+        dayEl.textContent = i;
+        if (i === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) {
+          dayEl.style.fontWeight = 'bold';
+          dayEl.style.backgroundColor = '#d7e0f3';
         }
-
-        for (let i = 1; i <= daysInMonth; i++) {
-            const dayEl = document.createElement('div');
-            dayEl.className = 'calendar-day';
-            dayEl.textContent = i;
-            if (i === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) {
-                dayEl.style.fontWeight = 'bold';
-                dayEl.style.backgroundColor = '#d7e0f3';
-            }
-            calendarGrid.appendChild(dayEl);
-        }
+        calendarGrid.appendChild(dayEl);
+      }
     }
 
     function changeMonth(delta) {
-        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
-        renderCalendar();
+      currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+      renderCalendar();
     }
 
     function toggleStartMenu() {
@@ -2644,13 +2828,15 @@
 
     // --- Notification Logic ---
     function announceDesktopMessage(message) {
+      if (jukeboxAudio.paused) return;
+      if (eggModeActive) return;
       const notificationArea = document.getElementById('notification-area');
       if (!notificationArea) return;
       const notification = document.createElement('div');
       notification.className = 'notification';
       notification.innerHTML = `<img src="11.png" alt="Notification"><p>${message}</p>`;
       notificationArea.appendChild(notification);
-      
+
       notificationSound.play();
 
       // Remove after 5 seconds with a fade-out
@@ -2661,12 +2847,12 @@
         }, 500);
       }, 5000);
     }
-    
+
     function showEasterEgg() {
       const randomMessage = easterEggs[Math.floor(Math.random() * easterEggs.length)];
       announceDesktopMessage(randomMessage);
     }
-    
+
     function setCRTEnabled(enabled, silent = false) {
       crtEnabled = enabled;
       if (crtOverlay) {
@@ -2682,7 +2868,7 @@
       const targetState = typeof force === 'boolean' ? force : !crtEnabled;
       setCRTEnabled(targetState);
     }
-    
+
     setCRTEnabled(true, true);
 
     function constrainWindowToViewport(win) {
@@ -2704,9 +2890,9 @@
         constrainWindowToViewport(win);
       });
     }
-    
+
     window.addEventListener('resize', handleViewportResize);
-    
+
     function getSongVolumeMultiplier(song) {
       if (!song) return 1;
       return typeof song.volumeMultiplier === 'number' ? song.volumeMultiplier : 1;
@@ -2721,9 +2907,11 @@
         controls.volume.value = jukeboxBaseVolume;
       }
     }
-    
+
     function showRandomEasterEgg() {
-      showEasterEgg();
+      if (!jukeboxAudio.paused) {
+        showEasterEgg();
+      }
       const randomInterval = Math.random() * (120000 - 30000) + 30000;
       setTimeout(showRandomEasterEgg, randomInterval);
     }
@@ -2864,7 +3052,7 @@
         bringToFront(existing);
         return;
       }
-      
+
       zIndexCounter++;
       const win = document.createElement('div');
       win.className = 'xp-window active-window';
@@ -2872,6 +3060,7 @@
       win.style.top = `${initialY}px`;
       win.style.zIndex = zIndexCounter;
       win.id = `window-${title.replace(/\s/g, '-')}`;
+      win.dataset.window = title;
 
       const taskbarIcon = document.createElement('button');
       taskbarIcon.className = 'taskbar-app-icon active';
@@ -2889,7 +3078,7 @@
       };
       taskbarApps.appendChild(taskbarIcon);
       win.taskbarIcon = taskbarIcon;
-      
+
       const windowHtml = `
         <div class="window-titlebar">
           <span>${title}</span>
@@ -2938,17 +3127,21 @@
       win.classList.remove('active-window');
       if (win.taskbarIcon) win.taskbarIcon.remove();
       delete openWindows[title];
-      
+
       if (title === 'Jukebox') {
-          stopCurrentTrack(true);
-          resetLyricsUI();
-          lyricsState.ui = null;
-          jukeboxControls.elements = null;
-          jukeboxControls.isSeeking = false;
+        stopCurrentTrack(true);
+        resetLyricsUI();
+        lyricsState.ui = null;
+        jukeboxControls.elements = null;
+        jukeboxControls.isSeeking = false;
+        if (visualizerAnimFrame) {
+          cancelAnimationFrame(visualizerAnimFrame);
+          visualizerAnimFrame = null;
+        }
       } else if (title === 'Minesweeper') {
-          stopMinesweeperTimer();
+        stopMinesweeperTimer();
       }
-      
+
       setTimeout(() => {
         if (win.parentNode) win.parentNode.removeChild(win);
       }, 300);
@@ -2964,9 +3157,9 @@
       zIndexCounter++;
       win.style.zIndex = zIndexCounter;
       Object.values(openWindows).forEach(w => {
-          if (!w) return;
-          w.classList.remove('active-window');
-          if (w.taskbarIcon) w.taskbarIcon.classList.remove('active');
+        if (!w) return;
+        w.classList.remove('active-window');
+        if (w.taskbarIcon) w.taskbarIcon.classList.remove('active');
       });
       win.classList.add('active-window');
       if (win.taskbarIcon) win.taskbarIcon.classList.add('active');
@@ -2982,7 +3175,7 @@
         bringToFront(activeWindow);
         offsetX = e.clientX - win.offsetLeft;
         offsetY = e.clientY - win.offsetTop;
-        
+
         dragPreview.style.display = 'block';
         dragPreview.style.width = win.offsetWidth + 'px';
         dragPreview.style.height = win.offsetHeight + 'px';
@@ -3008,19 +3201,19 @@
       if (activeWindow) {
         const newX = parseInt(dragPreview.style.left, 10);
         const newY = parseInt(dragPreview.style.top, 10);
-        
+
         activeWindow.style.left = newX + 'px';
         activeWindow.style.top = newY + 'px';
         activeWindow.style.opacity = '1';
         constrainWindowToViewport(activeWindow);
-        
+
         dragPreview.style.display = 'none';
         activeWindow = null;
         document.removeEventListener('mousemove', drag);
         document.removeEventListener('mouseup', dragEnd);
       }
     }
-    
+
     // --- Desktop Icon Drag Logic ---
     let activeIcon = null;
 
@@ -3049,7 +3242,7 @@
       if (activeIcon) {
         let x = e.clientX - offsetX;
         let y = e.clientY - offsetY;
-        
+
         x = Math.max(0, Math.min(x, desktop.clientWidth - activeIcon.clientWidth));
         y = Math.max(0, Math.min(y, desktop.clientHeight - activeIcon.clientHeight - 28));
 
@@ -3057,753 +3250,1155 @@
         activeIcon.style.top = y + 'px';
       }
     }
-    
+
     function stopDragIcon() {
       activeIcon = null;
       document.removeEventListener('mousemove', dragIcon);
       document.removeEventListener('mouseup', stopDragIcon);
     }
-    
+
     // --- Jukebox Logic ---
     jukeboxAudio.addEventListener("ended", nextSong);
     jukeboxAudio.addEventListener("timeupdate", () => {
-        syncLyricsToTime(jukeboxAudio.currentTime);
-        updatePlaybackTimeUI();
+      syncLyricsToTime(jukeboxAudio.currentTime);
+      updatePlaybackTimeUI();
     });
     jukeboxAudio.addEventListener("seeked", () => {
-        syncLyricsToTime(jukeboxAudio.currentTime);
-        updatePlaybackTimeUI(true);
+      syncLyricsToTime(jukeboxAudio.currentTime);
+      updatePlaybackTimeUI(true);
     });
     jukeboxAudio.addEventListener("loadedmetadata", handleAudioMetadata);
     jukeboxAudio.addEventListener("durationchange", () => updatePlaybackTimeUI(true));
     jukeboxAudio.addEventListener("play", () => {
-        awaitingAudioUnlock = false;
-        autoplayNoticeShown = false;
+      awaitingAudioUnlock = false;
+      autoplayNoticeShown = false;
     });
 
     function attemptJukeboxPlayback(options = {}) {
-        const notifyOnBlock = !!options.notifyOnBlock;
-        const playAttempt = jukeboxAudio.play();
-        if (!playAttempt || typeof playAttempt.catch !== 'function') {
-            return;
+      const notifyOnBlock = !!options.notifyOnBlock;
+      const playAttempt = jukeboxAudio.play();
+      if (!playAttempt || typeof playAttempt.catch !== 'function') {
+        return;
+      }
+      playAttempt.then(() => {
+        awaitingAudioUnlock = false;
+      }).catch((error) => {
+        if (notifyOnBlock && isAutoplayBlock(error)) {
+          handleAutoplayBlock();
+        } else {
+          console.error("Audio playback failed:", error);
         }
-        playAttempt.then(() => {
-            awaitingAudioUnlock = false;
-        }).catch((error) => {
-            if (notifyOnBlock && isAutoplayBlock(error)) {
-                handleAutoplayBlock();
-            } else {
-                console.error("Audio playback failed:", error);
-            }
-        });
+      });
     }
 
     function isAutoplayBlock(error) {
-        if (!error) return false;
-        return error.name === 'NotAllowedError' || error.name === 'SecurityError' || error.name === 'NotSupportedError';
+      if (!error) return false;
+      return error.name === 'NotAllowedError' || error.name === 'SecurityError' || error.name === 'NotSupportedError';
     }
 
     function handleAutoplayBlock() {
-        if (!autoplayNoticeShown) {
-            announceDesktopMessage('Browser blocked the jukebox autoplay. Press Start in the jukebox window to enable sound.');
-            autoplayNoticeShown = true;
-        }
-        armAudioUnlock();
+      if (!autoplayNoticeShown) {
+        announceDesktopMessage('Browser blocked the jukebox autoplay. Press Start in the jukebox window to enable sound.');
+        autoplayNoticeShown = true;
+      }
+      armAudioUnlock();
     }
 
     function armAudioUnlock() {
-        if (awaitingAudioUnlock) return;
-        awaitingAudioUnlock = true;
-        const unlock = () => {
-            document.removeEventListener('pointerdown', unlock);
-            document.removeEventListener('keydown', unlock);
-            awaitingAudioUnlock = false;
-            attemptJukeboxPlayback({ notifyOnBlock: false });
-        };
-        document.addEventListener('pointerdown', unlock);
-        document.addEventListener('keydown', unlock);
+      if (awaitingAudioUnlock) return;
+      awaitingAudioUnlock = true;
+      const unlock = () => {
+        document.removeEventListener('pointerdown', unlock);
+        document.removeEventListener('keydown', unlock);
+        awaitingAudioUnlock = false;
+        attemptJukeboxPlayback({ notifyOnBlock: false });
+      };
+      document.addEventListener('pointerdown', unlock);
+      document.addEventListener('keydown', unlock);
     }
 
     function playSong(index, options = {}) {
-        currentSongIndex = index;
-        const song = songs[index];
-        jukeboxAudio.src = song.file;
-        attemptJukeboxPlayback({ notifyOnBlock: !!options.notifyOnBlock });
+      currentSongIndex = index;
+      const song = songs[index];
+      jukeboxAudio.src = song.file;
+      attemptJukeboxPlayback({ notifyOnBlock: !!options.notifyOnBlock });
 
-        const songInfoEl = document.getElementById("song-info");
-        const songIconEl = document.getElementById("song-icon");
+      const songInfoEl = document.getElementById("song-info");
+      const songIconEl = document.getElementById("song-icon");
 
-        if (songInfoEl) songInfoEl.textContent = song.credit;
-        if (songIconEl) {
-            songIconEl.src = song.icon || 'Music1.jpg';
-            songIconEl.alt = `Artwork for ${song.credit}`;
+      if (songInfoEl) songInfoEl.textContent = song.credit;
+      if (songIconEl) {
+        songIconEl.src = song.icon || 'Music1.jpg';
+        songIconEl.alt = `Artwork for ${song.credit}`;
+      }
+
+      currentSongVolumeMultiplier = getSongVolumeMultiplier(song);
+      applySongVolume(true);
+
+      jukeboxControls.isSeeking = false;
+      updatePlaybackTimeUI(true);
+      const controls = getJukeboxControls();
+      if (controls) {
+        if (controls.seek) {
+          controls.seek.disabled = !Number.isFinite(jukeboxAudio.duration);
+          controls.seek.value = 0;
         }
-
-        currentSongVolumeMultiplier = getSongVolumeMultiplier(song);
-        applySongVolume(true);
-
-        jukeboxControls.isSeeking = false;
-        updatePlaybackTimeUI(true);
-        const controls = getJukeboxControls();
-        if (controls) {
-            if (controls.seek) {
-                controls.seek.disabled = !Number.isFinite(jukeboxAudio.duration);
-                controls.seek.value = 0;
-            }
-            if (controls.loopToggle) {
-                controls.loopToggle.checked = jukeboxAudio.loop;
-                setLoopIndicator(jukeboxAudio.loop);
-            }
-            if (controls.volume && document.activeElement !== controls.volume) {
-                controls.volume.value = jukeboxBaseVolume;
-            }
+        if (controls.loopToggle) {
+          controls.loopToggle.checked = jukeboxAudio.loop;
+          setLoopIndicator(jukeboxAudio.loop);
         }
+        if (controls.volume && document.activeElement !== controls.volume) {
+          controls.volume.value = jukeboxBaseVolume;
+        }
+      }
 
-        updateLyricsForSong(song);
+      updateLyricsForSong(song);
     }
 
     function nextSong() {
-        let next = (currentSongIndex + 1) % songs.length;
-        playSong(next);
+      let next = (currentSongIndex + 1) % songs.length;
+      playSong(next);
     }
 
     function prevSong() {
-        let prev = (currentSongIndex - 1 + songs.length) % songs.length;
-        playSong(prev);
+      let prev = (currentSongIndex - 1 + songs.length) % songs.length;
+      playSong(prev);
     }
-    
+
+    function getActiveJukeboxElement(selector) {
+      const win = document.getElementById('window-Jukebox');
+      if (win) {
+        return win.querySelector(selector);
+      }
+      return document.querySelector(selector);
+    }
+
     function getLyricsUI() {
-        if (lyricsState.ui && document.body.contains(lyricsState.ui.panel)) {
-            return lyricsState.ui;
-        }
-        const panel = document.getElementById('lyrics-panel');
-        if (!panel) {
-            lyricsState.ui = null;
-            return null;
-        }
-        lyricsState.ui = {
-            panel,
-            status: document.getElementById('lyrics-status'),
-            list: document.getElementById('lyrics-lines'),
-            scroll: document.getElementById('lyrics-scroll')
-        };
+      if (lyricsState.ui && document.body.contains(lyricsState.ui.panel)) {
         return lyricsState.ui;
+      }
+      const panel = getActiveJukeboxElement('#lyrics-panel');
+      if (!panel) {
+        lyricsState.ui = null;
+        return null;
+      }
+      lyricsState.ui = {
+        panel,
+        status: getActiveJukeboxElement('#lyrics-status'),
+        list: getActiveJukeboxElement('#lyrics-lines'),
+        scroll: getActiveJukeboxElement('#lyrics-scroll')
+      };
+      return lyricsState.ui;
     }
 
     function resetLyricsUI() {
-        lyricsState.cues = [];
-        lyricsState.currentIndex = -1;
-        lyricsState.pending = null;
-        lyricsState.songFile = null;
-        closeDisclaimerPanel();
-        const ui = getLyricsUI();
-        if (!ui) {
-            lyricsState.ui = null;
-            return;
-        }
-        if (ui.list) {
-            ui.list.innerHTML = '';
-        }
-        ui.panel.dataset.state = 'loading';
-        ui.panel.dataset.mode = 'compact';
-        if (ui.status) {
-            ui.status.textContent = 'Lyrics will appear when a compatible song plays.';
-        }
+      lyricsState.cues = [];
+      lyricsState.currentIndex = -1;
+      lyricsState.pending = null;
+      lyricsState.songFile = null;
+      closeDisclaimerPanel();
+      const ui = getLyricsUI();
+      if (!ui) {
+        lyricsState.ui = null;
+        return;
+      }
+      if (ui.list) {
+        ui.list.innerHTML = '';
+      }
+      ui.panel.dataset.state = 'loading';
+      ui.panel.dataset.mode = 'compact';
+      if (ui.status) {
+        ui.status.textContent = 'Lyrics will appear when a compatible song plays.';
+      }
     }
 
     function getJukeboxControls(forceRefresh = false) {
-        if (!forceRefresh && jukeboxControls.elements && jukeboxControls.elements.seek && document.body.contains(jukeboxControls.elements.seek)) {
-            return jukeboxControls.elements;
-        }
-
-        const seek = document.getElementById('jukebox-seek');
-        if (!seek) {
-            jukeboxControls.elements = null;
-            return null;
-        }
-
-        jukeboxControls.elements = {
-            seek,
-            current: document.getElementById('jukebox-current-time'),
-            duration: document.getElementById('jukebox-duration'),
-            loopToggle: document.getElementById('jukebox-loop'),
-            loopLabel: document.getElementById('jukebox-loop-toggle'),
-            volume: document.getElementById('volume')
-        };
+      if (!forceRefresh && jukeboxControls.elements && jukeboxControls.elements.seek && document.body.contains(jukeboxControls.elements.seek)) {
         return jukeboxControls.elements;
+      }
+
+      const seek = getActiveJukeboxElement('#jukebox-seek');
+      if (!seek) {
+        jukeboxControls.elements = null;
+        return null;
+      }
+
+      jukeboxControls.elements = {
+        seek,
+        current: getActiveJukeboxElement('#jukebox-current-time'),
+        duration: getActiveJukeboxElement('#jukebox-duration'),
+        loopToggle: getActiveJukeboxElement('#jukebox-loop'),
+        loopLabel: getActiveJukeboxElement('#jukebox-loop-toggle'),
+        volume: getActiveJukeboxElement('#volume')
+      };
+      return jukeboxControls.elements;
     }
 
     function setLoopIndicator(isOn) {
-        const controls = getJukeboxControls();
-        if (!controls || !controls.loopLabel) return;
-        controls.loopLabel.classList.toggle('active', !!isOn);
+      const controls = getJukeboxControls();
+      if (!controls || !controls.loopLabel) return;
+      controls.loopLabel.classList.toggle('active', !!isOn);
     }
 
     function getDisclaimerElements() {
-        return {
-            panel: document.getElementById('lyrics-disclaimer-panel'),
-            button: document.getElementById('lyrics-disclaimer-toggle')
-        };
+      return {
+        panel: getActiveJukeboxElement('#lyrics-disclaimer-panel'),
+        button: getActiveJukeboxElement('#lyrics-disclaimer-toggle')
+      };
     }
 
     function toggleDisclaimerPanel(forceShow) {
-        const { panel, button } = getDisclaimerElements();
-        if (!panel || !button) return;
-        const currentlyHidden = panel.hasAttribute('hidden');
-        const shouldShow = typeof forceShow === 'boolean' ? forceShow : currentlyHidden;
-        if (typeof forceShow === 'undefined') {
-            clickSound.play();
-        }
-        if (shouldShow) {
-            panel.removeAttribute('hidden');
-        } else {
-            panel.setAttribute('hidden', '');
-        }
-        button.setAttribute('aria-expanded', shouldShow ? 'true' : 'false');
-        button.textContent = shouldShow ? 'Hide notice' : 'Copyright notice';
+      const { panel, button } = getDisclaimerElements();
+      if (!panel || !button) return;
+      const currentlyHidden = panel.hasAttribute('hidden');
+      const shouldShow = typeof forceShow === 'boolean' ? forceShow : currentlyHidden;
+      if (typeof forceShow === 'undefined') {
+        clickSound.play();
+      }
+      if (shouldShow) {
+        panel.removeAttribute('hidden');
+        button.setAttribute('aria-expanded', 'true');
+      } else {
+        panel.setAttribute('hidden', '');
+        button.setAttribute('aria-expanded', 'false');
+      }
+      button.textContent = shouldShow ? 'Hide notice' : 'Copyright notice';
     }
 
     function closeDisclaimerPanel() {
-        const { panel, button } = getDisclaimerElements();
-        if (!panel || !button) return;
-        panel.setAttribute('hidden', '');
-        button.setAttribute('aria-expanded', 'false');
-        button.textContent = 'Copyright notice';
+      toggleDisclaimerPanel(false);
     }
 
     function stopCurrentTrack(resetPosition = false) {
-        jukeboxAudio.pause();
-        jukeboxControls.isSeeking = false;
-        if (resetPosition) {
-            jukeboxAudio.currentTime = 0;
-            syncLyricsToTime(0);
-            updatePlaybackTimeUI(true);
-            closeDisclaimerPanel();
-        } else {
-            syncLyricsToTime(jukeboxAudio.currentTime);
-            updatePlaybackTimeUI();
-        }
-        applySongVolume(true);
+      jukeboxAudio.pause();
+      jukeboxControls.isSeeking = false;
+      if (resetPosition) {
+        jukeboxAudio.currentTime = 0;
+        syncLyricsToTime(0);
+        updatePlaybackTimeUI(true);
+        closeDisclaimerPanel();
+      } else {
+        syncLyricsToTime(jukeboxAudio.currentTime);
+        updatePlaybackTimeUI();
+      }
+      applySongVolume(true);
     }
 
+    function initVisualizer() {
+      const canvasH = getActiveJukeboxElement('#jukebox-visualizer');
+      const canvasEgg = getActiveJukeboxElement('#jukebox-egg-canvas');
+      if (!canvasH || !canvasEgg) return;
+      const ctxH = canvasH.getContext('2d');
+      const ctxEgg = canvasEgg.getContext('2d');
+      if (!ctxH || !ctxEgg) return;
+
+      // High-DPI resize helper
+      function resizeCanvases() {
+        const dpr = window.devicePixelRatio || 1;
+        const jukeboxWin = document.getElementById('window-Jukebox');
+        const isEgg = jukeboxWin && jukeboxWin.classList.contains('egg-mode');
+
+        if (isEgg) {
+          // egg canvas is sized by toggleEggMode; just keep it in sync if window resized
+          const wc = jukeboxWin && jukeboxWin.querySelector('.window-content');
+          if (wc) {
+            const w = wc.clientWidth;
+            const h = wc.clientHeight;
+            if (canvasEgg.width !== Math.round(w * dpr) || canvasEgg.height !== Math.round(h * dpr)) {
+              canvasEgg.style.width = w + 'px';
+              canvasEgg.style.height = h + 'px';
+              canvasEgg.width = Math.round(w * dpr);
+              canvasEgg.height = Math.round(h * dpr);
+            }
+          }
+        } else {
+          const w = canvasH.clientWidth;
+          const h = canvasH.clientHeight;
+          if (canvasH.width !== w * dpr || canvasH.height !== h * dpr) {
+            canvasH.width = w * dpr;
+            canvasH.height = h * dpr;
+          }
+        }
+      }
+      resizeCanvases();
+
+      // Setup AudioContext + high-res analyser once (only on non-file:// protocols to avoid CORS blocking audio)
+      if (!audioCtx && window.location.protocol !== 'file:') {
+        try {
+          window.AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (window.AudioContext) {
+            audioCtx = new window.AudioContext();
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 2048;            // 1024 frequency bins — very precise
+            analyser.smoothingTimeConstant = 0.82; // smooth decay
+            if (!window.jukeboxAudioSource) {
+              window.jukeboxAudioSource = audioCtx.createMediaElementSource(jukeboxAudio);
+            }
+            source = window.jukeboxAudioSource;
+            source.connect(analyser);
+            analyser.connect(audioCtx.destination);
+          }
+        } catch (e) {
+          console.warn('AudioContext setup failed. Falling back to simulation.', e);
+          analyser = null;
+        }
+      }
+
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+
+      const freqBins = analyser ? analyser.frequencyBinCount : 64;  // 1024 when real
+      const freqData = new Uint8Array(freqBins);
+      const timeData = new Uint8Array(analyser ? analyser.fftSize : 128);
+      const smoothed = new Float32Array(freqBins);
+
+      if (visualizerAnimFrame) cancelAnimationFrame(visualizerAnimFrame);
+
+      function draw() {
+        visualizerAnimFrame = requestAnimationFrame(draw);
+        resizeCanvases();
+
+        const jukeboxWin = document.getElementById('window-Jukebox');
+        const isEgg = jukeboxWin && jukeboxWin.classList.contains('egg-mode');
+
+        // -- Data acquisition --
+        if (analyser && !jukeboxAudio.paused) {
+          analyser.getByteFrequencyData(freqData);
+          analyser.getByteTimeDomainData(timeData);
+        } else if (!jukeboxAudio.paused) {
+          // Symmetrical realistic music frequency simulation
+          const now = Date.now();
+          const beat = Math.pow(Math.max(0, Math.sin(now * 0.003 * Math.PI)), 4) * 140;
+
+          for (let i = 0; i < freqBins; i++) {
+            const pct = i / freqBins;
+            let val = 0;
+            if (pct < 0.15) {
+              val = beat + Math.sin(now * 0.009 + i * 0.6) * 35 + Math.random() * 15;
+            } else if (pct < 0.52) {
+              val = Math.sin(now * 0.005 - i * 0.3) * 60 + Math.cos(now * 0.012 + i * 0.45) * 25 + 90 + Math.random() * 20;
+            } else {
+              val = Math.max(0, Math.sin(now * 0.02 + i * 0.9) * 20 + Math.cos(now * 0.035 - i * 1.6) * 15 + 35 + Math.random() * 25);
+            }
+            freqData[i] = Math.max(0, Math.min(255, val * jukeboxBaseVolume));
+          }
+
+          for (let i = 0; i < timeData.length; i++) {
+            const pct = i / timeData.length;
+            const bassWave = Math.sin(now * 0.022 + i * 0.05) * (pct < 0.3 ? 40 : 20);
+            const midWave = Math.sin(now * 0.09 - i * 0.18) * 18;
+            const noiseWave = (Math.random() - 0.5) * 8;
+            timeData[i] = 128 + (bassWave + midWave + noiseWave) * jukeboxBaseVolume;
+          }
+        } else {
+          for (let i = 0; i < freqBins; i++)  freqData[i] = Math.max(0, freqData[i] - 4);
+          for (let i = 0; i < timeData.length; i++) timeData[i] = 128 + (timeData[i] - 128) * 0.92;
+        }
+
+        // -- Smooth bar data --
+        const DECAY = 0.12;
+        for (let i = 0; i < freqBins; i++) {
+          smoothed[i] += (freqData[i] - smoothed[i]) * DECAY;
+        }
+
+        if (isEgg) {
+          const W = canvasEgg.width;
+          const H = canvasEgg.height;
+          const dpr = window.devicePixelRatio || 1;
+
+          // Bass / mid / treble energy
+          const bassBins  = Math.max(1, Math.floor(freqBins * 0.06));
+          const midBins   = Math.max(1, Math.floor(freqBins * 0.25));
+          let bassSum = 0, midSum = 0, trebleSum = 0;
+          for (let i = 0; i < bassBins; i++) bassSum += freqData[i];
+          for (let i = bassBins; i < midBins; i++) midSum += freqData[i];
+          for (let i = midBins; i < freqBins; i++) trebleSum += freqData[i];
+          const bassE   = (bassSum / bassBins) / 255;
+          const midE    = (midSum / Math.max(1, midBins - bassBins)) / 255;
+          const trebleE = (trebleSum / Math.max(1, freqBins - midBins)) / 255;
+
+          // --- Black background ---
+          ctxEgg.fillStyle = '#000';
+          ctxEgg.fillRect(0, 0, W, H);
+
+          // --- BG effect 1: radial bass pulse rings ---
+          const cx = W / 2, cy = H / 2;
+          const maxR = Math.sqrt(cx * cx + cy * cy);
+          for (let ring = 0; ring < 3; ring++) {
+            const r = maxR * (0.25 + ring * 0.28 + bassE * 0.18);
+            const alpha = Math.max(0, bassE * 0.55 - ring * 0.12);
+            ctxEgg.beginPath();
+            ctxEgg.arc(cx, cy, r, 0, Math.PI * 2);
+            ctxEgg.strokeStyle = `rgba(255,255,255,${alpha})`;
+            ctxEgg.lineWidth = Math.max(1, bassE * 6 * dpr - ring * dpr);
+            ctxEgg.stroke();
+          }
+
+          // --- BG effect 2: circular frequency bars radiating outward ---
+          const numBars = Math.min(freqBins, 80);
+          const innerR = Math.min(W, H) * 0.12;
+          const outerMax = Math.min(W, H) * 0.38;
+          for (let i = 0; i < numBars; i++) {
+            const angle = (i / numBars) * Math.PI * 2 - Math.PI / 2;
+            const v = smoothed[i] / 255;
+            const barLen = v * (outerMax - innerR);
+            const x1 = cx + Math.cos(angle) * innerR;
+            const y1 = cy + Math.sin(angle) * innerR;
+            const x2 = cx + Math.cos(angle) * (innerR + barLen);
+            const y2 = cy + Math.sin(angle) * (innerR + barLen);
+            const hue = (i / numBars) * 360;
+            ctxEgg.beginPath();
+            ctxEgg.moveTo(x1, y1);
+            ctxEgg.lineTo(x2, y2);
+            ctxEgg.strokeStyle = `hsla(${hue},100%,65%,${0.4 + v * 0.5})`;
+            ctxEgg.lineWidth = Math.max(1, (W / 400) * dpr);
+            ctxEgg.stroke();
+          }
+
+          // --- BG effect 3: treble sparks ---
+          if (trebleE > 0.25) {
+            const sparkCount = Math.floor(trebleE * 18);
+            for (let s = 0; s < sparkCount; s++) {
+              const sx = Math.random() * W;
+              const sy = Math.random() * H;
+              const sr = (1 + Math.random() * 2) * dpr;
+              ctxEgg.beginPath();
+              ctxEgg.arc(sx, sy, sr, 0, Math.PI * 2);
+              ctxEgg.fillStyle = `rgba(255,255,255,${0.3 + Math.random() * 0.5})`;
+              ctxEgg.fill();
+            }
+          }
+
+          // --- DVD bounce physics ---
+          // Use dvd.w/h in canvas pixels, but velocity was set in canvas pixels too
+          dvd.x += dvd.vx;
+          dvd.y += dvd.vy;
+          let hitEdge = false;
+          if (dvd.x <= 0)          { dvd.x = 0;          dvd.vx =  Math.abs(dvd.vx); hitEdge = true; }
+          if (dvd.y <= 0)          { dvd.y = 0;          dvd.vy =  Math.abs(dvd.vy); hitEdge = true; }
+          if (dvd.x + dvd.w >= W)  { dvd.x = W - dvd.w; dvd.vx = -Math.abs(dvd.vx); hitEdge = true; }
+          if (dvd.y + dvd.h >= H)  { dvd.y = H - dvd.h; dvd.vy = -Math.abs(dvd.vy); hitEdge = true; }
+          if (hitEdge) {
+            dvd.colorIdx = (dvd.colorIdx + 1) % dvdColors.length;
+            dvd.color = dvdColors[dvd.colorIdx];
+          }
+
+          // --- Card contents ---
+          const jukeboxWinEl = document.getElementById('window-Jukebox');
+          const songInfoEl   = jukeboxWinEl && jukeboxWinEl.querySelector('#song-info');
+          const songIconEl   = jukeboxWinEl && jukeboxWinEl.querySelector('#song-icon');
+          const songText     = songInfoEl ? songInfoEl.textContent.trim().split('\n')[0].trim() : '';
+          const mins = Math.floor((jukeboxAudio.currentTime || 0) / 60);
+          const secs = Math.floor((jukeboxAudio.currentTime || 0) % 60);
+          const timeText = mins + ':' + String(secs).padStart(2, '0');
+
+          const px = dvd.x, py = dvd.y, pw = dvd.w, ph = dvd.h;
+          const pad = Math.round(8 * dpr);
+          const imgSize = Math.round(ph * 0.72);
+          const fontSize = Math.round(Math.max(9, Math.min(ph * 0.22, 16)) * dpr);
+          const smallSize = Math.round(Math.max(8, Math.min(ph * 0.16, 13)) * dpr);
+
+          // Card BG
+          ctxEgg.save();
+          ctxEgg.globalAlpha = 0.22;
+          ctxEgg.fillStyle = dvd.color;
+          const rr = Math.round(6 * dpr);
+          ctxEgg.beginPath();
+          if (ctxEgg.roundRect) ctxEgg.roundRect(px, py, pw, ph, rr);
+          else ctxEgg.rect(px, py, pw, ph);
+          ctxEgg.fill();
+          ctxEgg.globalAlpha = 1;
+          ctxEgg.strokeStyle = dvd.color;
+          ctxEgg.lineWidth = Math.round(1.5 * dpr);
+          ctxEgg.beginPath();
+          if (ctxEgg.roundRect) ctxEgg.roundRect(px, py, pw, ph, rr);
+          else ctxEgg.rect(px, py, pw, ph);
+          ctxEgg.stroke();
+
+          // Album art
+          if (songIconEl && songIconEl.complete && songIconEl.naturalWidth > 0) {
+            try { ctxEgg.drawImage(songIconEl, px + pad, py + pad, imgSize, imgSize); }
+            catch(e) {}
+          } else {
+            ctxEgg.globalAlpha = 0.3;
+            ctxEgg.fillStyle = dvd.color;
+            ctxEgg.fillRect(px + pad, py + pad, imgSize, imgSize);
+            ctxEgg.globalAlpha = 1;
+          }
+
+          // Song name + timestamp to right of art
+          const tx = px + pad + imgSize + pad;
+          const availW = pw - imgSize - pad * 3;
+          ctxEgg.fillStyle = dvd.color;
+          ctxEgg.textBaseline = 'top';
+          ctxEgg.textAlign = 'left';
+          ctxEgg.font = `bold ${fontSize}px Tahoma,sans-serif`;
+          // Truncate to fit
+          let displayName = songText;
+          while (displayName.length > 1 && ctxEgg.measureText(displayName).width > availW) {
+            displayName = displayName.slice(0, -2) + '…';
+          }
+          ctxEgg.fillText(displayName, tx, py + pad);
+          ctxEgg.font = `${smallSize}px Tahoma,sans-serif`;
+          ctxEgg.globalAlpha = 0.7;
+          ctxEgg.fillText(timeText, tx, py + pad + fontSize + Math.round(4 * dpr));
+          ctxEgg.globalAlpha = 1;
+          ctxEgg.restore();
+        } else {
+          const WH = canvasH.width;
+          const HH = canvasH.height;
+          ctxH.fillStyle = '#000000';
+          ctxH.fillRect(0, 0, WH, HH);
+          const drawBins = Math.floor(freqBins * 0.45);
+          const barW = WH / drawBins;
+          for (let i = 0; i < drawBins; i++) {
+            const v = smoothed[i] / 255;
+            const barH = v * HH * 0.90;
+            const x = i * barW;
+            const y = HH - barH;
+            ctxH.fillStyle = '#00f3ff';
+            ctxH.fillRect(x, y, barW - 1, barH);
+          }
+        }
+      }
+      draw();
+    }
+
+
     function setupJukeboxWindow(win) {
-        const controls = getJukeboxControls(true);
-        if (!controls) return;
-        jukeboxControls.isSeeking = false;
+      const controls = getJukeboxControls(true);
+      if (!controls) return;
+      jukeboxControls.isSeeking = false;
 
-        if (controls.volume) {
-            controls.volume.value = jukeboxBaseVolume;
-            controls.volume.addEventListener('input', () => {
-                const nextValue = parseFloat(controls.volume.value);
-                if (Number.isFinite(nextValue)) {
-                    jukeboxBaseVolume = Math.max(0, Math.min(1, nextValue));
-                    applySongVolume();
-                }
-            });
-            applySongVolume(true);
+      initVisualizer();
+
+      // Egg mode toggle - exposed as window global so onclick can call it directly
+      const eggCanvas = win.querySelector('#jukebox-egg-canvas');
+      const windowContent = win.querySelector('.window-content');
+
+      window.toggleJukeboxEgg = function() {
+        const jukeboxWin = document.getElementById('window-Jukebox');
+        if (!jukeboxWin || !eggCanvas) return;
+        const entering = !jukeboxWin.classList.contains('egg-mode');
+        jukeboxWin.classList.toggle('egg-mode');
+        eggModeActive = entering;
+
+        if (entering) {
+          // Cover the desktop area (not actual fullscreen — taskbar stays visible)
+          const desktopEl = document.getElementById('desktop');
+          const dpr = window.devicePixelRatio || 1;
+          const w = desktopEl ? desktopEl.clientWidth : window.innerWidth;
+          const h = desktopEl ? desktopEl.clientHeight : window.innerHeight;
+
+          eggCanvas.width = Math.round(w * dpr);
+          eggCanvas.height = Math.round(h * dpr);
+          // Position fixed so it covers the desktop regardless of jukebox scroll/position
+          eggCanvas.style.cssText = 'display:block; position:fixed; top:0; left:0; width:' + w + 'px; height:' + h + 'px; z-index:9998; cursor:pointer; background:#000;';
+
+          // Card is a fixed CSS-pixel size, not DPR-scaled
+          const cardW = Math.round(Math.min(w * 0.28, 240));
+          const cardH = Math.round(Math.min(h * 0.18, 120));
+          dvd.cssW = cardW;
+          dvd.cssH = cardH;
+          dvd.w = Math.round(cardW * dpr);
+          dvd.h = Math.round(cardH * dpr);
+          dvd.x = Math.round((eggCanvas.width - dvd.w) / 2);
+          dvd.y = Math.round((eggCanvas.height - dvd.h) / 2);
+          // Speed in canvas pixels per frame — scale by dpr so it feels the same
+          const speed = 1.8 * dpr;
+          dvd.vx = speed * (Math.random() < 0.5 ? 1 : -1);
+          dvd.vy = speed * 0.7 * (Math.random() < 0.5 ? 1 : -1);
+          dvd.colorIdx = 0;
+          dvd.color = dvdColors[0];
+        } else {
+          eggCanvas.style.display = 'none';
         }
+      };
 
-        const playBtn = document.getElementById('jukebox-play');
-        if (playBtn) {
-            playBtn.onclick = () => {
-                clickSound.play();
-                attemptJukeboxPlayback();
-            };
-        }
+      if (eggCanvas) {
+        eggCanvas.onclick = function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          window.toggleJukeboxEgg();
+        };
+      }
 
-        const stopBtn = document.getElementById('jukebox-stop');
-        if (stopBtn) {
-            stopBtn.onclick = () => {
-                clickSound.play();
-                stopCurrentTrack(false);
-            };
-        }
+      if (controls.volume) {
+        controls.volume.value = jukeboxBaseVolume;
+        controls.volume.addEventListener('input', () => {
+          const nextValue = parseFloat(controls.volume.value);
+          if (Number.isFinite(nextValue)) {
+            jukeboxBaseVolume = Math.max(0, Math.min(1, nextValue));
+            applySongVolume();
+          }
+        });
+        applySongVolume(true);
+      }
 
-        const disclaimerBtn = document.getElementById('lyrics-disclaimer-toggle');
-        if (disclaimerBtn) {
-            disclaimerBtn.onclick = () => toggleDisclaimerPanel();
-        }
-        closeDisclaimerPanel();
+      const playBtn = win.querySelector('#jukebox-play');
+      if (playBtn) {
+        playBtn.onclick = () => {
+          clickSound.play();
+          attemptJukeboxPlayback();
+        };
+      }
 
-        const seek = controls.seek;
-        if (seek) {
-            seek.min = 0;
-            seek.value = jukeboxAudio.currentTime || 0;
-            seek.disabled = !Number.isFinite(jukeboxAudio.duration);
-            seek.addEventListener('input', handleSeekInput);
-            seek.addEventListener('change', commitSeek);
-            ['pointerdown', 'mousedown', 'touchstart'].forEach(evt => {
-                seek.addEventListener(evt, () => { jukeboxControls.isSeeking = true; });
-            });
-            ['pointerup', 'mouseup', 'touchend', 'touchcancel', 'pointercancel'].forEach(evt => {
-                seek.addEventListener(evt, commitSeek);
-            });
-        }
+      const stopBtn = win.querySelector('#jukebox-stop');
+      if (stopBtn) {
+        stopBtn.onclick = () => {
+          clickSound.play();
+          stopCurrentTrack(false);
+        };
+      }
 
-        if (controls.loopToggle) {
-            controls.loopToggle.checked = jukeboxAudio.loop;
-            jukeboxAudio.loop = controls.loopToggle.checked;
-            controls.loopToggle.addEventListener('change', () => {
-                jukeboxAudio.loop = controls.loopToggle.checked;
-                setLoopIndicator(controls.loopToggle.checked);
-            });
-            setLoopIndicator(controls.loopToggle.checked);
-        }
+      const disclaimerBtn = win.querySelector('#lyrics-disclaimer-toggle');
+      if (disclaimerBtn) {
+        disclaimerBtn.onclick = () => toggleDisclaimerPanel();
+      }
+      closeDisclaimerPanel();
 
-        updatePlaybackTimeUI(true);
+      const seek = controls.seek;
+      if (seek) {
+        seek.min = 0;
+        seek.value = jukeboxAudio.currentTime || 0;
+        seek.disabled = !Number.isFinite(jukeboxAudio.duration);
+        seek.addEventListener('input', handleSeekInput);
+        seek.addEventListener('change', commitSeek);
+        ['pointerdown', 'mousedown', 'touchstart'].forEach(evt => {
+          seek.addEventListener(evt, () => { jukeboxControls.isSeeking = true; });
+        });
+        ['pointerup', 'mouseup', 'touchend', 'touchcancel', 'pointercancel'].forEach(evt => {
+          seek.addEventListener(evt, commitSeek);
+        });
+      }
+
+      if (controls.loopToggle) {
+        controls.loopToggle.checked = jukeboxAudio.loop;
+        jukeboxAudio.loop = controls.loopToggle.checked;
+        controls.loopToggle.addEventListener('change', () => {
+          jukeboxAudio.loop = controls.loopToggle.checked;
+          setLoopIndicator(controls.loopToggle.checked);
+        });
+        setLoopIndicator(controls.loopToggle.checked);
+      }
+
+      updatePlaybackTimeUI(true);
     }
 
     function handleSeekInput() {
-        const controls = getJukeboxControls();
-        if (!controls || !controls.seek) return;
-        const value = parseFloat(controls.seek.value);
-        if (!Number.isFinite(value)) return;
-        jukeboxControls.isSeeking = true;
-        if (controls.current) {
-            controls.current.textContent = formatTime(value);
-        }
-        if (Number.isFinite(jukeboxAudio.duration) && jukeboxAudio.duration > 0) {
-            jukeboxAudio.currentTime = Math.min(Math.max(value, 0), jukeboxAudio.duration);
-            syncLyricsToTime(jukeboxAudio.currentTime);
-        }
+      const controls = getJukeboxControls();
+      if (!controls || !controls.seek) return;
+      const value = parseFloat(controls.seek.value);
+      if (!Number.isFinite(value)) return;
+      jukeboxControls.isSeeking = true;
+      if (controls.current) {
+        controls.current.textContent = formatTime(value);
+      }
     }
 
     function commitSeek() {
-        const controls = getJukeboxControls();
-        if (!controls || !controls.seek) {
-            jukeboxControls.isSeeking = false;
-            return;
-        }
-        const value = parseFloat(controls.seek.value);
-        if (Number.isFinite(value)) {
-            const duration = Number.isFinite(jukeboxAudio.duration) && jukeboxAudio.duration > 0 ? jukeboxAudio.duration : value;
-            const clamped = Math.min(Math.max(value, 0), duration);
-            jukeboxAudio.currentTime = clamped;
-            syncLyricsToTime(clamped);
-        }
+      const controls = getJukeboxControls();
+      if (!controls || !controls.seek) {
         jukeboxControls.isSeeking = false;
-        updatePlaybackTimeUI(true);
+        return;
+      }
+      const value = parseFloat(controls.seek.value);
+      if (Number.isFinite(value)) {
+        const duration = Number.isFinite(jukeboxAudio.duration) && jukeboxAudio.duration > 0 ? jukeboxAudio.duration : value;
+        const clamped = Math.min(Math.max(value, 0), duration);
+        jukeboxAudio.currentTime = clamped;
+        syncLyricsToTime(clamped);
+      }
+      jukeboxControls.isSeeking = false;
+      updatePlaybackTimeUI(true);
     }
 
     function formatTime(seconds) {
-        if (!Number.isFinite(seconds) || seconds < 0) seconds = 0;
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
+      if (!Number.isFinite(seconds) || seconds < 0) seconds = 0;
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
     function updatePlaybackTimeUI(force = false) {
-        const controls = getJukeboxControls();
-        if (!controls) return;
-        const duration = Number.isFinite(jukeboxAudio.duration) && jukeboxAudio.duration > 0 ? jukeboxAudio.duration : 0;
-        const current = Number.isFinite(jukeboxAudio.currentTime) && jukeboxAudio.currentTime > 0 ? jukeboxAudio.currentTime : 0;
+      const controls = getJukeboxControls();
+      if (!controls) return;
+      const duration = Number.isFinite(jukeboxAudio.duration) && jukeboxAudio.duration > 0 ? jukeboxAudio.duration : 0;
+      const current = Number.isFinite(jukeboxAudio.currentTime) && jukeboxAudio.currentTime > 0 ? jukeboxAudio.currentTime : 0;
 
-        if (controls.duration) {
-            controls.duration.textContent = duration ? formatTime(duration) : '--:--';
-        }
+      if (controls.duration) {
+        controls.duration.textContent = duration ? formatTime(duration) : '--:--';
+      }
 
-        if (controls.seek) {
-            controls.seek.min = 0;
-            if (duration > 0) {
-                controls.seek.disabled = false;
-                controls.seek.max = duration;
-                controls.seek.step = Math.max(duration / 1200, 0.05);
-                if (!jukeboxControls.isSeeking || force) {
-                    controls.seek.value = current;
-                }
-            } else {
-                controls.seek.disabled = true;
-                controls.seek.value = 0;
-            }
+      if (controls.seek) {
+        controls.seek.min = 0;
+        if (duration > 0) {
+          controls.seek.disabled = false;
+          controls.seek.max = duration;
+          controls.seek.step = Math.max(duration / 1200, 0.05);
+          if (!jukeboxControls.isSeeking || force) {
+            controls.seek.value = current;
+          }
+        } else {
+          controls.seek.disabled = true;
+          controls.seek.value = 0;
         }
+      }
 
-        if (controls.current && (!jukeboxControls.isSeeking || force)) {
-            controls.current.textContent = formatTime(current);
-        }
+      if (controls.current && (!jukeboxControls.isSeeking || force)) {
+        controls.current.textContent = formatTime(current);
+      }
     }
 
     function updateLyricsForSong(song) {
-        const ui = getLyricsUI();
-        lyricsState.songFile = song.file;
-        lyricsState.cues = [];
-        lyricsState.pending = null;
-        setActiveLyricsIndex(-1);
-        if (!ui) {
-            return;
-        }
-        closeDisclaimerPanel();
-        ui.panel.dataset.mode = 'full';
-        if (ui.list) {
-            ui.list.innerHTML = '';
-        }
-        if (!song.lyricsId || !lyricsLibrary[song.lyricsId]) {
-            ui.panel.dataset.state = 'empty';
-            ui.panel.dataset.mode = 'compact';
-            if (ui.status) {
-                ui.status.textContent = 'Lyrics unavailable for this track.';
-            }
-            lyricsState.pending = null;
-            return;
-        }
-        const entry = lyricsLibrary[song.lyricsId];
-        const duration = Number.isFinite(jukeboxAudio.duration) ? jukeboxAudio.duration : 0;
-        const needsDuration = entry.cues.some(cue => typeof cue.fraction === 'number');
-
-        ui.panel.dataset.state = 'loading';
+      const ui = getLyricsUI();
+      lyricsState.songFile = song.file;
+      lyricsState.cues = [];
+      lyricsState.pending = null;
+      setActiveLyricsIndex(-1);
+      if (!ui) {
+        return;
+      }
+      closeDisclaimerPanel();
+      ui.panel.dataset.mode = 'full';
+      if (ui.list) {
+        ui.list.innerHTML = '';
+      }
+      if (!song.lyricsId || !lyricsLibrary[song.lyricsId]) {
+        ui.panel.dataset.state = 'empty';
+        ui.panel.dataset.mode = 'compact';
         if (ui.status) {
-            ui.status.textContent = 'Syncing lyrics...';
+          ui.status.textContent = 'Lyrics unavailable for this track.';
         }
-
-        if (needsDuration && duration <= 0) {
-            lyricsState.pending = { entry, songFile: song.file };
-            ui.panel.dataset.mode = entry.cues.length <= 4 ? 'compact' : 'full';
-            return;
-        }
-
-        renderLyrics(entry, duration);
         lyricsState.pending = null;
+        return;
+      }
+      const entry = lyricsLibrary[song.lyricsId];
+      const duration = Number.isFinite(jukeboxAudio.duration) ? jukeboxAudio.duration : 0;
+      const needsDuration = entry.cues.some(cue => typeof cue.fraction === 'number');
+
+      ui.panel.dataset.state = 'loading';
+      if (ui.status) {
+        ui.status.textContent = 'Syncing lyrics...';
+      }
+
+      if (needsDuration && duration <= 0) {
+        lyricsState.pending = { entry, songFile: song.file };
+        ui.panel.dataset.mode = entry.cues.length <= 4 ? 'compact' : 'full';
+        return;
+      }
+
+      renderLyrics(entry, duration);
+      lyricsState.pending = null;
     }
 
     function renderLyrics(entry, duration) {
-        const ui = getLyricsUI();
-        if (!ui || !ui.list) return;
-        ui.list.innerHTML = '';
-        lyricsState.cues = [];
-        lyricsState.currentIndex = -1;
+      const ui = getLyricsUI();
+      if (!ui || !ui.list) return;
+      ui.list.innerHTML = '';
+      lyricsState.cues = [];
+      lyricsState.currentIndex = -1;
 
-        const safeDuration = Number.isFinite(duration) && duration > 0 ? duration : 0;
-        const upperClamp = safeDuration > 0 ? Math.max(safeDuration - 0.2, safeDuration * 0.95) : 0;
+      const safeDuration = Number.isFinite(duration) && duration > 0 ? duration : 0;
+      const upperClamp = safeDuration > 0 ? Math.max(safeDuration - 0.2, safeDuration * 0.95) : 0;
 
-        entry.cues.forEach(item => {
-            if (item.section) {
-                const sectionEl = document.createElement('li');
-                sectionEl.className = 'lyrics-line';
-                sectionEl.dataset.section = 'true';
-                sectionEl.textContent = item.section;
-                ui.list.appendChild(sectionEl);
-                return;
-            }
+      entry.cues.forEach(item => {
+        if (item.section) {
+          const sectionEl = document.createElement('li');
+          sectionEl.className = 'lyrics-line';
+          sectionEl.dataset.section = 'true';
+          sectionEl.textContent = item.section;
+          ui.list.appendChild(sectionEl);
+          return;
+        }
 
-            const lineEl = document.createElement('li');
-            lineEl.className = 'lyrics-line';
-            if (item.muted) {
-                lineEl.dataset.muted = 'true';
-            }
-            lineEl.textContent = item.text;
+        const lineEl = document.createElement('li');
+        lineEl.className = 'lyrics-line';
+        if (item.muted) {
+          lineEl.dataset.muted = 'true';
+        }
+        lineEl.textContent = item.text;
 
-            let cueTime = 0;
-            if (typeof item.time === 'number') {
-                cueTime = item.time;
-            } else if (typeof item.fraction === 'number' && safeDuration > 0) {
-                cueTime = item.fraction * safeDuration;
-            }
+        let cueTime = 0;
+        if (typeof item.time === 'number') {
+          cueTime = item.time;
+        } else if (typeof item.fraction === 'number' && safeDuration > 0) {
+          cueTime = item.fraction * safeDuration;
+        }
 
-            if (safeDuration > 0) {
-                cueTime = Math.min(Math.max(cueTime, 0), upperClamp);
-            } else {
-                cueTime = Math.max(cueTime, 0);
-            }
-
-            lineEl.dataset.time = cueTime.toFixed(3);
-            lyricsState.cues.push({ time: cueTime, element: lineEl });
-            ui.list.appendChild(lineEl);
-        });
-
-        if (lyricsState.cues.length) {
-            lyricsState.cues.sort((a, b) => a.time - b.time);
-            ui.panel.dataset.state = 'ready';
-            ui.panel.dataset.mode = lyricsState.cues.length <= 4 ? 'compact' : 'full';
+        if (safeDuration > 0) {
+          cueTime = Math.min(Math.max(cueTime, 0), upperClamp);
         } else {
-            ui.panel.dataset.state = 'empty';
-            ui.panel.dataset.mode = 'compact';
+          cueTime = Math.max(cueTime, 0);
         }
 
-        if (ui.status) {
-            ui.status.textContent = entry.note || 'Synced lyrics';
-        }
+        lineEl.dataset.time = cueTime.toFixed(3);
+        lyricsState.cues.push({ time: cueTime, element: lineEl });
+        ui.list.appendChild(lineEl);
+      });
 
-        syncLyricsToTime(jukeboxAudio.currentTime);
+      if (lyricsState.cues.length) {
+        lyricsState.cues.sort((a, b) => a.time - b.time);
+        ui.panel.dataset.state = 'ready';
+        ui.panel.dataset.mode = lyricsState.cues.length <= 4 ? 'compact' : 'full';
+      } else {
+        ui.panel.dataset.state = 'empty';
+        ui.panel.dataset.mode = 'compact';
+      }
+
+      if (ui.status) {
+        ui.status.textContent = entry.note || 'Synced lyrics';
+      }
+
+      syncLyricsToTime(jukeboxAudio.currentTime);
     }
 
     function handleAudioMetadata() {
-        updatePlaybackTimeUI(true);
-        const song = songs[currentSongIndex];
-        if (!song) return;
-        applySongVolume(true);
-        if (lyricsState.pending && song.file === lyricsState.pending.songFile) {
-            renderLyrics(lyricsState.pending.entry, jukeboxAudio.duration);
-            lyricsState.pending = null;
-        }
-        syncLyricsToTime(jukeboxAudio.currentTime);
+      updatePlaybackTimeUI(true);
+      const song = songs[currentSongIndex];
+      if (!song) return;
+      applySongVolume(true);
+      if (lyricsState.pending && song.file === lyricsState.pending.songFile) {
+        renderLyrics(lyricsState.pending.entry, jukeboxAudio.duration);
+        lyricsState.pending = null;
+      }
+      syncLyricsToTime(jukeboxAudio.currentTime);
     }
 
     function syncLyricsToTime(currentTime) {
-        if (!lyricsState.cues.length) {
-            if (lyricsState.currentIndex !== -1) {
-                setActiveLyricsIndex(-1);
-            }
-            return;
+      if (!lyricsState.cues.length) {
+        if (lyricsState.currentIndex !== -1) {
+          setActiveLyricsIndex(-1);
         }
+        return;
+      }
 
-        let nextIndex = -1;
-        for (let i = lyricsState.cues.length - 1; i >= 0; i--) {
-            const cueTime = Number(lyricsState.cues[i].time ?? 0);
-            if (currentTime + LYRICS_SYNC_LEEWAY >= cueTime) {
-                nextIndex = i;
-                break;
-            }
+      let nextIndex = -1;
+      for (let i = lyricsState.cues.length - 1; i >= 0; i--) {
+        const cueTime = Number(lyricsState.cues[i].time ?? 0);
+        if (currentTime + LYRICS_SYNC_LEEWAY >= cueTime) {
+          nextIndex = i;
+          break;
         }
+      }
 
-        if (nextIndex !== lyricsState.currentIndex) {
-            setActiveLyricsIndex(nextIndex);
-        }
+      if (nextIndex !== lyricsState.currentIndex) {
+        setActiveLyricsIndex(nextIndex);
+      }
     }
 
     function setActiveLyricsIndex(index) {
-        const ui = getLyricsUI();
-        if (!ui || !ui.list) return;
+      const ui = getLyricsUI();
+      if (!ui || !ui.list) return;
 
-        if (lyricsState.currentIndex >= 0 && lyricsState.cues[lyricsState.currentIndex]) {
-            lyricsState.cues[lyricsState.currentIndex].element.classList.remove('active');
-        }
+      if (lyricsState.currentIndex >= 0 && lyricsState.cues[lyricsState.currentIndex]) {
+        lyricsState.cues[lyricsState.currentIndex].element.classList.remove('active');
+      }
 
-        lyricsState.currentIndex = index;
+      lyricsState.currentIndex = index;
 
-        if (index >= 0 && lyricsState.cues[index]) {
-            const lineEl = lyricsState.cues[index].element;
-            lineEl.classList.add('active');
-            scrollLyricsIntoView(lineEl, ui.scroll);
-        }
+      if (index >= 0 && lyricsState.cues[index]) {
+        const lineEl = lyricsState.cues[index].element;
+        lineEl.classList.add('active');
+        scrollLyricsIntoView(lineEl, ui.scroll);
+      }
     }
 
     function scrollLyricsIntoView(lineEl, container) {
-        if (!container || !lineEl) return;
-        const lineTop = lineEl.offsetTop;
-        const lineBottom = lineTop + lineEl.offsetHeight;
-        const viewTop = container.scrollTop;
-        const viewBottom = viewTop + container.clientHeight;
+      if (!container || !lineEl) return;
+      const lineTop = lineEl.offsetTop;
+      const lineBottom = lineTop + lineEl.offsetHeight;
+      const viewTop = container.scrollTop;
+      const viewBottom = viewTop + container.clientHeight;
 
-        if (lineTop < viewTop) {
-            const target = Math.max(lineTop - 12, 0);
-            if (typeof container.scrollTo === 'function') {
-                container.scrollTo({ top: target, behavior: 'smooth' });
-            } else {
-                container.scrollTop = target;
-            }
-        } else if (lineBottom > viewBottom) {
-            const target = lineBottom - container.clientHeight + 12;
-            if (typeof container.scrollTo === 'function') {
-                container.scrollTo({ top: target, behavior: 'smooth' });
-            } else {
-                container.scrollTop = target;
-            }
+      if (lineTop < viewTop) {
+        const target = Math.max(lineTop - 12, 0);
+        if (typeof container.scrollTo === 'function') {
+          container.scrollTo({ top: target, behavior: 'smooth' });
+        } else {
+          container.scrollTop = target;
         }
+      } else if (lineBottom > viewBottom) {
+        const target = lineBottom - container.clientHeight + 12;
+        if (typeof container.scrollTo === 'function') {
+          container.scrollTo({ top: target, behavior: 'smooth' });
+        } else {
+          container.scrollTop = target;
+        }
+      }
     }
 
     function handleGlobalHotkeys(event) {
-    const keyLower = event.key && event.key.toLowerCase ? event.key.toLowerCase() : event.key;
-    if (event.ctrlKey && event.altKey && keyLower === 'c') {
-      event.preventDefault();
-      toggleCRT();
-      return;
-    }
-    if (event.key === 'F1') {
-      event.preventDefault();
-      summonAngel();
-      return;
-    }
-    if (event.ctrlKey && event.altKey && keyLower === 'p') {
-            event.preventDefault();
-            clickSound.play();
-            const alreadyOpen = !!openWindows['XP Tips'];
-            openWindow('XP Tips', 'XP', 160, 110);
-            if (!alreadyOpen) {
-                announceDesktopMessage('XP Tips unlocked. Press X -> P -> ! anytime.');
-            }
-            return;
+      const keyLower = event.key && event.key.toLowerCase ? event.key.toLowerCase() : event.key;
+      if (event.ctrlKey && event.altKey && keyLower === 'c') {
+        event.preventDefault();
+        toggleCRT();
+        return;
+      }
+      if (event.key === 'F1') {
+        event.preventDefault();
+        if (!jukeboxAudio.paused) {
+          summonAngel();
         }
-        if (event.ctrlKey || event.altKey || event.metaKey) {
-            secretSequenceProgress = 0;
-            return;
+        return;
+      }
+      if (event.ctrlKey && event.altKey && keyLower === 'p') {
+        event.preventDefault();
+        clickSound.play();
+        const alreadyOpen = !!openWindows['XP Tips'];
+        openWindow('XP Tips', 'XP', 160, 110);
+        if (!alreadyOpen) {
+          announceDesktopMessage('XP Tips unlocked. Press X -> P -> ! anytime.');
         }
-        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
-        const expected = SECRET_SEQUENCE[secretSequenceProgress];
-        const expectedNormalized = expected.length === 1 ? expected.toLowerCase() : expected;
-        if (key === expectedNormalized) {
-            secretSequenceProgress++;
-            if (secretSequenceProgress === SECRET_SEQUENCE.length) {
-                secretSequenceProgress = 0;
-                const alreadyOpen = !!openWindows['XP Tips'];
-                openWindow('XP Tips', 'XP', 160, 110);
-                if (!alreadyOpen) {
-                    announceDesktopMessage('XP Tips unlocked. Press Ctrl+Alt+C to toggle CRT bloom.');
-                }
-            }
-        } else {
-            const firstNormalized = SECRET_SEQUENCE[0].length === 1 ? SECRET_SEQUENCE[0].toLowerCase() : SECRET_SEQUENCE[0];
-            secretSequenceProgress = key === firstNormalized ? 1 : 0;
+        return;
+      }
+      if (event.ctrlKey || event.altKey || event.metaKey) {
+        secretSequenceProgress = 0;
+        return;
+      }
+      const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+      const expected = SECRET_SEQUENCE[secretSequenceProgress];
+      const expectedNormalized = expected.length === 1 ? expected.toLowerCase() : expected;
+      if (key === expectedNormalized) {
+        secretSequenceProgress++;
+        if (secretSequenceProgress === SECRET_SEQUENCE.length) {
+          secretSequenceProgress = 0;
+          const alreadyOpen = !!openWindows['XP Tips'];
+          openWindow('XP Tips', 'XP', 160, 110);
+          if (!alreadyOpen) {
+            announceDesktopMessage('XP Tips unlocked. Press Ctrl+Alt+C to toggle CRT bloom.');
+          }
         }
+      } else {
+        const firstNormalized = SECRET_SEQUENCE[0].length === 1 ? SECRET_SEQUENCE[0].toLowerCase() : SECRET_SEQUENCE[0];
+        secretSequenceProgress = key === firstNormalized ? 1 : 0;
+      }
     }
-    
+
     document.addEventListener('keydown', handleGlobalHotkeys);
-    
+
     // --- "You Are An Idiot" Virus Logic ---
     let idiotWindows = [];
-    
+
     function stopIdiotAudio() {
-        if (idiotAudio) {
-            idiotAudio.pause();
-            idiotAudio.currentTime = 0;
-            idiotAudio = null;
-        }
+      if (idiotAudio) {
+        idiotAudio.pause();
+        idiotAudio.currentTime = 0;
+        idiotAudio = null;
+      }
     }
-    
+
     function summonAngel() {
-        if (angelSummoned) {
-            announceDesktopMessage('Angel already assisting this session.');
-            return;
-        }
-        angelSummoned = true;
+      if (eggModeActive) return;
+      if (angelSummoned) {
+        announceDesktopMessage('Angel already assisting this session.');
+        return;
+      }
+      angelSummoned = true;
 
-        const angel = document.createElement('img');
-        angel.src = 'ANGEL.webp';
-        angel.alt = 'Guardian angel';
-        const angelSize = 44;
-        angel.style.position = 'absolute';
-        angel.style.width = `${angelSize}px`;
-        angel.style.height = `${angelSize}px`;
-        angel.style.pointerEvents = 'none';
-        angel.style.zIndex = 9999;
+      const angel = document.createElement('img');
+      angel.src = 'ANGEL.webp';
+      angel.alt = 'Guardian angel';
+      const angelSize = 44;
+      angel.style.position = 'absolute';
+      angel.style.width = `${angelSize}px`;
+      angel.style.height = `${angelSize}px`;
+      angel.style.pointerEvents = 'none';
+      angel.style.zIndex = 9999;
 
-        desktop.appendChild(angel);
+      desktop.appendChild(angel);
 
-        const laugh = new Audio('laugh.mp3');
-        const heal = new Audio('heal.mp3');
-        const desktopRect = desktop.getBoundingClientRect();
-        const startPoint = {
-            x: Math.max(24, desktopRect.width - angelSize - 24),
-            y: 28
+      const laugh = new Audio('laugh.mp3');
+      const heal = new Audio('heal.mp3');
+      const desktopRect = desktop.getBoundingClientRect();
+      const startPoint = {
+        x: Math.max(24, desktopRect.width - angelSize - 24),
+        y: 28
+      };
+      angel.style.left = `${startPoint.x}px`;
+      angel.style.top = `${startPoint.y}px`;
+
+      const controlPoint = {
+        x: Math.max(angelSize, desktopRect.width * 0.55 - angelSize * 0.5),
+        y: desktopRect.height * 0.18
+      };
+      const endPoint = {
+        x: 20,
+        y: 32
+      };
+
+      const halfDurations = [1700, 1700];
+
+      const getPointOnCurve = (t) => {
+        const u = 1 - t;
+        return {
+          x: u * u * startPoint.x + 2 * u * t * controlPoint.x + t * t * endPoint.x,
+          y: u * u * startPoint.y + 2 * u * t * controlPoint.y + t * t * endPoint.y
         };
-        angel.style.left = `${startPoint.x}px`;
-        angel.style.top = `${startPoint.y}px`;
+      };
 
-        const controlPoint = {
-            x: Math.max(angelSize, desktopRect.width * 0.55 - angelSize * 0.5),
-            y: desktopRect.height * 0.18
-        };
-        const endPoint = {
-            x: 20,
-            y: 32
-        };
-
-        const halfDurations = [1700, 1700];
-
-        const getPointOnCurve = (t) => {
-            const u = 1 - t;
-            return {
-                x: u * u * startPoint.x + 2 * u * t * controlPoint.x + t * t * endPoint.x,
-                y: u * u * startPoint.y + 2 * u * t * controlPoint.y + t * t * endPoint.y
-            };
-        };
-
-        const animateHalf = (segmentIndex) => {
-            let startTime = null;
-            const duration = halfDurations[segmentIndex];
-            const step = (now) => {
-                if (startTime === null) startTime = now;
-                const progress = Math.min((now - startTime) / duration, 1);
-                const eased = 1 - Math.pow(1 - progress, 3);
-                const globalT = segmentIndex === 0 ? eased * 0.5 : 0.5 + eased * 0.5;
-                const point = getPointOnCurve(globalT);
-                angel.style.left = `${point.x}px`;
-                angel.style.top = `${point.y}px`;
-                if (segmentIndex === 0 && progress >= 0.5 && !angel.dataset.midReached) {
-                    angel.dataset.midReached = 'true';
-                    laugh.play().catch(() => {});
-                    setTimeout(() => heal.play().catch(() => {}), 600);
-                }
-                if (progress < 1) {
-                    requestAnimationFrame(step);
-                } else if (segmentIndex === 0) {
-                    animateHalf(1);
-                } else {
-                    setTimeout(() => {
-                        if (angel.parentNode) angel.parentNode.removeChild(angel);
-                    }, 600);
-                }
-            };
+      const animateHalf = (segmentIndex) => {
+        let startTime = null;
+        const duration = halfDurations[segmentIndex];
+        const step = (now) => {
+          if (startTime === null) startTime = now;
+          const progress = Math.min((now - startTime) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const globalT = segmentIndex === 0 ? eased * 0.5 : 0.5 + eased * 0.5;
+          const point = getPointOnCurve(globalT);
+          angel.style.left = `${point.x}px`;
+          angel.style.top = `${point.y}px`;
+          if (segmentIndex === 0 && progress >= 0.5 && !angel.dataset.midReached) {
+            angel.dataset.midReached = 'true';
+            laugh.play().catch(() => { });
+            setTimeout(() => heal.play().catch(() => { }), 600);
+          }
+          if (progress < 1) {
             requestAnimationFrame(step);
+          } else if (segmentIndex === 0) {
+            animateHalf(1);
+          } else {
+            setTimeout(() => {
+              if (angel.parentNode) angel.parentNode.removeChild(angel);
+            }, 600);
+          }
         };
+        requestAnimationFrame(step);
+      };
 
-        animateHalf(0);
+      animateHalf(0);
     }
-    
+
     function triggerIdiotVirus() {
-        if (idiotWindows.length > 0) return;
+      if (idiotWindows.length > 0) return;
 
-        if (!idiotAudio) {
-            idiotAudio = new Audio('YAAI.mp3');
-            idiotAudio.loop = true;
-            idiotAudio.play().catch(err => console.warn('YAAI audio blocked:', err));
-        }
+      if (!idiotAudio) {
+        idiotAudio = new Audio('YAAI.mp3');
+        idiotAudio.loop = true;
+        idiotAudio.play().catch(err => console.warn('YAAI audio blocked:', err));
+      }
 
-        for (let i = 0; i < 9; i++) {
-            createIdiotWindow();
-        }
+      for (let i = 0; i < 9; i++) {
+        createIdiotWindow();
+      }
 
-        setTimeout(() => {
-            idiotWindows.forEach(win => {
-                if (win.parentNode) {
-                    win.parentNode.removeChild(win);
-                }
-            });
-            idiotWindows = [];
-            stopIdiotAudio();
-        }, 15000);
+      setTimeout(() => {
+        idiotWindows.forEach(win => {
+          if (win.parentNode) {
+            win.parentNode.removeChild(win);
+          }
+        });
+        idiotWindows = [];
+        stopIdiotAudio();
+      }, 15000);
     }
 
     function createIdiotWindow() {
-        zIndexCounter++;
-        const win = document.createElement('div');
-        win.className = 'idiot-window';
-        win.style.zIndex = zIndexCounter;
-        win.innerHTML = `<img src="You_Are_An_Idiot.gif" alt="You are an idiot">`;
-        
-        desktop.appendChild(win);
-        
-        const rect = desktop.getBoundingClientRect();
-        
-        let pos = {
-            x: Math.random() * (rect.width - 280),
-            y: Math.random() * (rect.height - 210 - 28)
-        };
-        let vel = {
-            x: (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 + 1),
-            y: (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 + 1)
-        };
-        
+      zIndexCounter++;
+      const win = document.createElement('div');
+      win.className = 'xp-window active-window';
+      win.style.zIndex = zIndexCounter;
+      win.style.position = 'absolute';
+      win.style.width = '350px';
+      win.style.height = '270px';
+      win.style.display = 'flex';
+      win.style.flexDirection = 'column';
+
+      win.innerHTML = `
+        <div class="window-titlebar">
+          <span>youareanidiot.org</span>
+          <div class="window-buttons">
+            <button class="window-button" type="button" onclick="clickSound.play();">
+              <img src="minimize.png">
+            </button>
+            <button class="window-button close" type="button" onclick="closeIdiotWindow(this.parentNode.parentNode.parentNode); clickSound.play();">
+              <img src="close.png">
+            </button>
+          </div>
+        </div>
+        <div class="window-content" style="padding: 0; display: flex; flex-direction: column; flex: 1; overflow: hidden; background: #000;">
+          <div class="browser-toolbar" style="background-color: #f1f1f1; border-bottom: 2px solid #ccc; padding: 5px; display: flex; align-items: center; gap: 5px;">
+              <button type="button" onclick="clickSound.play();" style="cursor: pointer;">&#8592;</button>
+              <button type="button" onclick="clickSound.play();" style="cursor: pointer;">&#8594;</button>
+              <button type="button" style="cursor: pointer;">&#8635;</button>
+              <input type="text" class="url-bar" value="http://youareanidiot.org/" readonly style="flex: 1; padding: 2px 4px; border: 1px solid #7f9db9; font-family: sans-serif; font-size: 11px;">
+          </div>
+          <div style="background:#000; flex:1; display:flex; justify-content:center; align-items:center; overflow:hidden;">
+            <img src="You_Are_An_Idiot.gif" alt="You are an idiot" style="width:100%; height:100%; object-fit:contain;">
+          </div>
+        </div>
+    `;
+
+      desktop.appendChild(win);
+
+      const rect = desktop.getBoundingClientRect();
+      const W = 350;
+      const H = 270;
+
+      let pos = {
+        x: Math.random() * (rect.width - W),
+        y: Math.random() * (rect.height - H - 28)
+      };
+      let vel = {
+        x: (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 + 1),
+        y: (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 + 1)
+      };
+
+      win.style.left = pos.x + 'px';
+      win.style.top = pos.y + 'px';
+
+      const move = () => {
+        if (!win.parentNode) return;
+
+        pos.x += vel.x;
+        pos.y += vel.y;
+
+        if (pos.x <= 0 || pos.x >= rect.width - W) {
+          vel.x *= -1;
+          vel.x = (vel.x > 0 ? 1 : -1) * (Math.random() * 3 + 1);
+        }
+        if (pos.y <= 0 || pos.y >= rect.height - H - 28) {
+          vel.y *= -1;
+          vel.y = (vel.y > 0 ? 1 : -1) * (Math.random() * 3 + 1);
+        }
+
         win.style.left = pos.x + 'px';
         win.style.top = pos.y + 'px';
 
-        const move = () => {
-            if (!win.parentNode) return;
+        requestAnimationFrame(move);
+      };
 
-            pos.x += vel.x;
-            pos.y += vel.y;
+      move();
 
-            if (pos.x <= 0 || pos.x >= rect.width - 280) vel.x *= -1;
-            if (pos.y <= 0 || pos.y >= rect.height - 210 - 28) vel.y *= -1;
+      const changeSpeed = () => {
+        if (!win.parentNode) return;
+        const speedMultiplier = Math.random() * 2 + 0.5;
+        const dirX = vel.x > 0 ? 1 : -1;
+        const dirY = vel.y > 0 ? 1 : -1;
+        vel.x = dirX * (Math.random() * 2 + 1) * speedMultiplier;
+        vel.y = dirY * (Math.random() * 2 + 1) * speedMultiplier;
 
-            win.style.left = pos.x + 'px';
-            win.style.top = pos.y + 'px';
-
-            requestAnimationFrame(move);
-        };
-        
-        move();
-        idiotWindows.push(win);
+        setTimeout(changeSpeed, Math.random() * 2500 + 1500);
+      };
+      setTimeout(changeSpeed, Math.random() * 2500 + 1500);
+      idiotWindows.push(win);
     }
-    
+
+    function closeIdiotWindow(win) {
+      if (!win) return;
+      clickSound.play();
+      if (win.parentNode) {
+        win.parentNode.removeChild(win);
+      }
+      idiotWindows = idiotWindows.filter(w => w !== win);
+      yaaiWindowsClosed++;
+
+      const spawnCount = 1 + yaaiWindowsClosed;
+      for (let i = 0; i < spawnCount; i++) {
+        createIdiotWindow();
+      }
+    }
+    window.closeIdiotWindow = closeIdiotWindow;
+
     // Make window titlebars trigger drag
     document.addEventListener('mousedown', (e) => {
       const titlebar = e.target.closest('.window-titlebar');
@@ -3814,255 +4409,255 @@
 
     // --- Calculator Logic ---
     let calcState = {
-        displayValue: '0',
-        firstOperand: null,
-        operator: null,
-        waitingForSecondOperand: false
+      displayValue: '0',
+      firstOperand: null,
+      operator: null,
+      waitingForSecondOperand: false
     };
     function updateSecretTokenStates(panel) {
-        if (!panel) return;
-        const tokens = panel.querySelectorAll('.secret-token');
-        tokens.forEach(token => {
-            const available = !token.classList.contains('used');
-            token.disabled = !available;
-            token.setAttribute('aria-disabled', available ? 'false' : 'true');
-            token.classList.toggle('disabled', !available);
-            token.tabIndex = available ? 0 : -1;
-        });
+      if (!panel) return;
+      const tokens = panel.querySelectorAll('.secret-token');
+      tokens.forEach(token => {
+        const available = !token.classList.contains('used');
+        token.disabled = !available;
+        token.setAttribute('aria-disabled', available ? 'false' : 'true');
+        token.classList.toggle('disabled', !available);
+        token.tabIndex = available ? 0 : -1;
+      });
     }
 
     function shuffleSecretTokens(panel) {
-        const tray = panel.querySelector('.secret-token-tray');
-        if (!tray) return;
-        const tokens = Array.from(tray.querySelectorAll('.secret-token'));
-        for (let i = tokens.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [tokens[i], tokens[j]] = [tokens[j], tokens[i]];
-        }
-        tokens.forEach(token => tray.appendChild(token));
+      const tray = panel.querySelector('.secret-token-tray');
+      if (!tray) return;
+      const tokens = Array.from(tray.querySelectorAll('.secret-token'));
+      for (let i = tokens.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tokens[i], tokens[j]] = [tokens[j], tokens[i]];
+      }
+      tokens.forEach(token => tray.appendChild(token));
     }
 
     function selectSecretSlot(panel, slot) {
-        const slots = panel.querySelectorAll('.secret-slot');
-        slots.forEach(s => s.classList.remove('selected'));
-        if (slot) {
-            slot.classList.add('selected');
-            panel.dataset.selectedSlot = slot.dataset.index;
-        } else {
-            delete panel.dataset.selectedSlot;
-        }
+      const slots = panel.querySelectorAll('.secret-slot');
+      slots.forEach(s => s.classList.remove('selected'));
+      if (slot) {
+        slot.classList.add('selected');
+        panel.dataset.selectedSlot = slot.dataset.index;
+      } else {
+        delete panel.dataset.selectedSlot;
+      }
     }
 
     function releaseSecretSlot(panel, slot) {
-        if (!slot || !slot.dataset.tokenId) return;
-        const token = panel.querySelector(`.secret-token[data-token-id="${slot.dataset.tokenId}"]`);
-        if (token) {
-            token.classList.remove('used');
-            token.disabled = false;
-            token.setAttribute('aria-disabled', 'false');
-            token.classList.remove('disabled');
-            token.tabIndex = 0;
-        }
+      if (!slot || !slot.dataset.tokenId) return;
+      const token = panel.querySelector(`.secret-token[data-token-id="${slot.dataset.tokenId}"]`);
+      if (token) {
+        token.classList.remove('used');
+        token.disabled = false;
+        token.setAttribute('aria-disabled', 'false');
+        token.classList.remove('disabled');
+        token.tabIndex = 0;
+      }
+      slot.dataset.value = '';
+      slot.dataset.tokenId = '';
+      slot.textContent = '';
+      slot.classList.remove('filled');
+      updateSecretTokenStates(panel);
+    }
+
+    function resetCalculatorSecret(panel) {
+      if (!panel) return;
+      panel.classList.remove('solved');
+      selectSecretSlot(panel, null);
+      const slots = panel.querySelectorAll('.secret-slot');
+      slots.forEach(slot => {
         slot.dataset.value = '';
         slot.dataset.tokenId = '';
         slot.textContent = '';
         slot.classList.remove('filled');
-        updateSecretTokenStates(panel);
-    }
-
-    function resetCalculatorSecret(panel) {
-        if (!panel) return;
-        panel.classList.remove('solved');
-        selectSecretSlot(panel, null);
-        const slots = panel.querySelectorAll('.secret-slot');
-        slots.forEach(slot => {
-            slot.dataset.value = '';
-            slot.dataset.tokenId = '';
-            slot.textContent = '';
-            slot.classList.remove('filled');
-        });
-        const tokens = panel.querySelectorAll('.secret-token');
-        tokens.forEach(token => {
-            token.classList.remove('used', 'disabled');
-            token.disabled = false;
-            token.setAttribute('aria-disabled', 'false');
-            token.tabIndex = 0;
-        });
-        shuffleSecretTokens(panel);
-        updateSecretTokenStates(panel);
+      });
+      const tokens = panel.querySelectorAll('.secret-token');
+      tokens.forEach(token => {
+        token.classList.remove('used', 'disabled');
+        token.disabled = false;
+        token.setAttribute('aria-disabled', 'false');
+        token.tabIndex = 0;
+      });
+      shuffleSecretTokens(panel);
+      updateSecretTokenStates(panel);
     }
 
     function chooseSecretSlot(panel) {
-        const selectedIndex = panel.dataset.selectedSlot;
-        if (selectedIndex) {
-            const slot = panel.querySelector(`.secret-slot[data-index="${selectedIndex}"]`);
-            if (slot) return slot;
-        }
-        return Array.from(panel.querySelectorAll('.secret-slot')).find(slot => !slot.dataset.value) || null;
+      const selectedIndex = panel.dataset.selectedSlot;
+      if (selectedIndex) {
+        const slot = panel.querySelector(`.secret-slot[data-index="${selectedIndex}"]`);
+        if (slot) return slot;
+      }
+      return Array.from(panel.querySelectorAll('.secret-slot')).find(slot => !slot.dataset.value) || null;
     }
 
     function handleSecretTokenClick(panel, token) {
-        if (!panel || !token || token.disabled || token.classList.contains('used')) return;
-        const slot = chooseSecretSlot(panel);
-        if (!slot) return;
-        slot.dataset.value = token.dataset.value;
-        slot.dataset.tokenId = token.dataset.tokenId;
-        slot.textContent = token.textContent;
-        slot.classList.add('filled');
-        token.classList.add('used');
-        token.disabled = true;
-        token.setAttribute('aria-disabled', 'true');
-        updateSecretTokenStates(panel);
-        selectSecretSlot(panel, null);
-        const allFilled = Array.from(panel.querySelectorAll('.secret-slot')).every(s => s.dataset.value);
-        if (allFilled) {
-            checkCalculatorSecret(panel);
-        }
+      if (!panel || !token || token.disabled || token.classList.contains('used')) return;
+      const slot = chooseSecretSlot(panel);
+      if (!slot) return;
+      slot.dataset.value = token.dataset.value;
+      slot.dataset.tokenId = token.dataset.tokenId;
+      slot.textContent = token.textContent;
+      slot.classList.add('filled');
+      token.classList.add('used');
+      token.disabled = true;
+      token.setAttribute('aria-disabled', 'true');
+      updateSecretTokenStates(panel);
+      selectSecretSlot(panel, null);
+      const allFilled = Array.from(panel.querySelectorAll('.secret-slot')).every(s => s.dataset.value);
+      if (allFilled) {
+        checkCalculatorSecret(panel);
+      }
     }
 
     function handleSecretSlotClick(panel, slot) {
-        if (!panel || !slot) return;
-        if (slot.classList.contains('selected')) {
-            if (slot.dataset.tokenId) {
-                releaseSecretSlot(panel, slot);
-            }
-            selectSecretSlot(panel, null);
-        } else {
-            selectSecretSlot(panel, slot);
+      if (!panel || !slot) return;
+      if (slot.classList.contains('selected')) {
+        if (slot.dataset.tokenId) {
+          releaseSecretSlot(panel, slot);
         }
+        selectSecretSlot(panel, null);
+      } else {
+        selectSecretSlot(panel, slot);
+      }
     }
 
     function updateCalculatorDisplay() {
-        const el = document.getElementById('calculator-display');
-        if (el) el.textContent = calcState.displayValue;
+      const el = document.getElementById('calculator-display');
+      if (el) el.textContent = calcState.displayValue;
     }
 
     function handleCalculatorInput(input) {
-        const { displayValue, waitingForSecondOperand } = calcState;
+      const { displayValue, waitingForSecondOperand } = calcState;
 
-        if (input === 'C') {
-            calcState = { displayValue: '0', firstOperand: null, operator: null, waitingForSecondOperand: false };
-        } else if (input === '=') {
-            if (calcState.operator && calcState.firstOperand !== null) {
-                const result = operate(calcState.firstOperand, calcState.operator, parseFloat(displayValue));
-                calcState.displayValue = `${result}`;
-                calcState.firstOperand = null;
-                calcState.operator = null;
-                calcState.waitingForSecondOperand = true;
-            }
-        } else if (['+', '-', '*', '/'].includes(input)) {
-            const inputValue = parseFloat(displayValue);
-
-            if (calcState.operator && waitingForSecondOperand) {
-                calcState.operator = input;
-                return;
-            }
-
-            if (calcState.firstOperand === null) {
-                calcState.firstOperand = inputValue;
-            } else if (calcState.operator) {
-                const result = operate(calcState.firstOperand, calcState.operator, inputValue);
-                calcState.displayValue = `${result}`;
-                calcState.firstOperand = result;
-            }
-            calcState.waitingForSecondOperand = true;
-            calcState.operator = input;
-        } else if (input === '.') {
-            if (waitingForSecondOperand) {
-                calcState.displayValue = '0.';
-                calcState.waitingForSecondOperand = false;
-            } else if (!displayValue.includes('.')) {
-                calcState.displayValue += '.';
-            }
-        } else {
-            if (waitingForSecondOperand) {
-                calcState.displayValue = input;
-                calcState.waitingForSecondOperand = false;
-            } else {
-                calcState.displayValue = displayValue === '0' ? input : displayValue + input;
-            }
+      if (input === 'C') {
+        calcState = { displayValue: '0', firstOperand: null, operator: null, waitingForSecondOperand: false };
+      } else if (input === '=') {
+        if (calcState.operator && calcState.firstOperand !== null) {
+          const result = operate(calcState.firstOperand, calcState.operator, parseFloat(displayValue));
+          calcState.displayValue = `${result}`;
+          calcState.firstOperand = null;
+          calcState.operator = null;
+          calcState.waitingForSecondOperand = true;
         }
-        updateCalculatorDisplay();
+      } else if (['+', '-', '*', '/'].includes(input)) {
+        const inputValue = parseFloat(displayValue);
+
+        if (calcState.operator && waitingForSecondOperand) {
+          calcState.operator = input;
+          return;
+        }
+
+        if (calcState.firstOperand === null) {
+          calcState.firstOperand = inputValue;
+        } else if (calcState.operator) {
+          const result = operate(calcState.firstOperand, calcState.operator, inputValue);
+          calcState.displayValue = `${result}`;
+          calcState.firstOperand = result;
+        }
+        calcState.waitingForSecondOperand = true;
+        calcState.operator = input;
+      } else if (input === '.') {
+        if (waitingForSecondOperand) {
+          calcState.displayValue = '0.';
+          calcState.waitingForSecondOperand = false;
+        } else if (!displayValue.includes('.')) {
+          calcState.displayValue += '.';
+        }
+      } else {
+        if (waitingForSecondOperand) {
+          calcState.displayValue = input;
+          calcState.waitingForSecondOperand = false;
+        } else {
+          calcState.displayValue = displayValue === '0' ? input : displayValue + input;
+        }
+      }
+      updateCalculatorDisplay();
     }
 
     function operate(a, op, b) {
-        if (op === '+') return a + b;
-        if (op === '-') return a - b;
-        if (op === '*') return a * b;
-        if (op === '/') return a / b;
-        return b;
+      if (op === '+') return a + b;
+      if (op === '-') return a - b;
+      if (op === '*') return a * b;
+      if (op === '/') return a / b;
+      return b;
     }
 
     function setupCalculatorWindow(win) {
-        if (!win || win.dataset.calcReady === 'true') return;
-        win.dataset.calcReady = 'true';
-        const wrapper = win.querySelector('.calculator-display-wrapper');
-        const maintenancePanel = win.querySelector('#calculator-secret-panel');
-        const screws = win.querySelectorAll('.calc-screw');
-        if (!wrapper || !maintenancePanel || !screws.length) return;
+      if (!win || win.dataset.calcReady === 'true') return;
+      win.dataset.calcReady = 'true';
+      const wrapper = win.querySelector('.calculator-display-wrapper');
+      const maintenancePanel = win.querySelector('#calculator-secret-panel');
+      const screws = win.querySelectorAll('.calc-screw');
+      if (!wrapper || !maintenancePanel || !screws.length) return;
 
-        const revealMaintenancePanel = () => {
-            if (wrapper.classList.contains('panel-active')) return;
-            wrapper.classList.add('panel-active');
-            maintenancePanel.setAttribute('aria-hidden', 'false');
-            initializeCalculatorSecret(maintenancePanel);
-        };
+      const revealMaintenancePanel = () => {
+        if (wrapper.classList.contains('panel-active')) return;
+        wrapper.classList.add('panel-active');
+        maintenancePanel.setAttribute('aria-hidden', 'false');
+        initializeCalculatorSecret(maintenancePanel);
+      };
 
-        let unscrewed = 0;
-        screws.forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (btn.classList.contains('unscrewed')) return;
-                btn.classList.add('unscrewed');
-                btn.textContent = 'x';
-                btn.setAttribute('aria-disabled', 'true');
-                unscrewed += 1;
-                if (unscrewed === screws.length) {
-                    revealMaintenancePanel();
-                }
-            });
+      let unscrewed = 0;
+      screws.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (btn.classList.contains('unscrewed')) return;
+          btn.classList.add('unscrewed');
+          btn.textContent = 'x';
+          btn.setAttribute('aria-disabled', 'true');
+          unscrewed += 1;
+          if (unscrewed === screws.length) {
+            revealMaintenancePanel();
+          }
         });
+      });
     }
 
     function initializeCalculatorSecret(panel) {
-        if (!panel) return;
-        const tokens = panel.querySelectorAll('.secret-token');
-        const slots = panel.querySelectorAll('.secret-slot');
-        if (panel.dataset.bound !== 'true') {
-            tokens.forEach((token, index) => {
-                if (!token.dataset.tokenId) {
-                    token.dataset.tokenId = `calc-token-${index}`;
-                }
-                token.addEventListener('click', () => handleSecretTokenClick(panel, token));
-            });
-            slots.forEach(slot => {
-                slot.addEventListener('click', () => handleSecretSlotClick(panel, slot));
-            });
-            const resetBtn = panel.querySelector('.secret-reset-btn');
-            if (resetBtn) {
-                resetBtn.addEventListener('click', () => resetCalculatorSecret(panel));
-            }
-            panel.dataset.bound = 'true';
+      if (!panel) return;
+      const tokens = panel.querySelectorAll('.secret-token');
+      const slots = panel.querySelectorAll('.secret-slot');
+      if (panel.dataset.bound !== 'true') {
+        tokens.forEach((token, index) => {
+          if (!token.dataset.tokenId) {
+            token.dataset.tokenId = `calc-token-${index}`;
+          }
+          token.addEventListener('click', () => handleSecretTokenClick(panel, token));
+        });
+        slots.forEach(slot => {
+          slot.addEventListener('click', () => handleSecretSlotClick(panel, slot));
+        });
+        const resetBtn = panel.querySelector('.secret-reset-btn');
+        if (resetBtn) {
+          resetBtn.addEventListener('click', () => resetCalculatorSecret(panel));
         }
-        resetCalculatorSecret(panel);
+        panel.dataset.bound = 'true';
+      }
+      resetCalculatorSecret(panel);
     }
 
     function checkCalculatorSecret(panel) {
-        const slots = panel.querySelectorAll('.secret-slot');
-        const values = Array.from(slots).map(slot => slot.dataset.value || null);
-        if (values.some(v => !v)) return;
-        const equationOk =
-            values[0] === '1' &&
-            values[1] === '8' &&
-            ['*', '/'].includes(values[2]) &&
-            values[3] === '5' &&
-            ['9', ')', '/'].includes(values[4]) &&
-            values[5] === '=';
-        if (equationOk) {
-            panel.classList.add('solved');
-            setTimeout(() => {
-                window.location.href = 'https://boogerboys.github.io/alex/calculator/game.html';
-            }, 900);
-        }
+      const slots = panel.querySelectorAll('.secret-slot');
+      const values = Array.from(slots).map(slot => slot.dataset.value || null);
+      if (values.some(v => !v)) return;
+      const equationOk =
+        values[0] === '1' &&
+        values[1] === '8' &&
+        ['*', '/'].includes(values[2]) &&
+        values[3] === '5' &&
+        ['9', ')', '/'].includes(values[4]) &&
+        values[5] === '=';
+      if (equationOk) {
+        panel.classList.add('solved');
+        setTimeout(() => {
+          window.location.href = 'https://boogerboys.github.io/alex/calculator/game.html';
+        }, 900);
+      }
     }
 
     // --- Minesweeper Logic ---
@@ -4077,285 +4672,286 @@
     let minesweeperTimerInterval = null;
     let minesweeperStarted = false;
     const MINESWEEPER_FACES = {
-        neutral: ':)',
-        dead: 'X(',
-        cool: 'B)'
+      neutral: ':)',
+      dead: 'X(',
+      cool: 'B)'
     };
 
     const MINESWEEPER_FACE_LABELS = {
-        neutral: 'Start a new game',
-        dead: 'Game over',
-        cool: 'Minefield cleared'
+      neutral: 'Start a new game',
+      dead: 'Game over',
+      cool: 'Minefield cleared'
     };
 
 
     function formatCounter(value) {
-        const clamped = Math.max(-99, Math.min(999, value));
-        if (clamped < 0) {
-            const digits = Math.abs(clamped).toString().padStart(2, '0');
-            return `-${digits}`;
-        }
-        return Math.abs(clamped).toString().padStart(3, '0');
+      const clamped = Math.max(-99, Math.min(999, value));
+      if (clamped < 0) {
+        const digits = Math.abs(clamped).toString().padStart(2, '0');
+        return `-${digits}`;
+      }
+      return Math.abs(clamped).toString().padStart(3, '0');
     }
 
     function updateMineCounter() {
-        const el = document.getElementById('minesweeper-mine-counter');
-        if (!el) return;
-        const remaining = MINESWEEPER_MINE_COUNT - minesweeperFlagsPlaced;
-        el.textContent = formatCounter(remaining);
+      const el = document.getElementById('minesweeper-mine-counter');
+      if (!el) return;
+      const remaining = MINESWEEPER_MINE_COUNT - minesweeperFlagsPlaced;
+      el.textContent = formatCounter(remaining);
     }
 
     function updateTimerDisplay() {
-        const el = document.getElementById('minesweeper-timer');
-        if (!el) return;
-        el.textContent = formatCounter(minesweeperTimerSeconds);
+      const el = document.getElementById('minesweeper-timer');
+      if (!el) return;
+      el.textContent = formatCounter(minesweeperTimerSeconds);
     }
 
     function setMinesweeperFace(state) {
-        const btn = document.getElementById('minesweeper-reset-button');
-        if (!btn) return;
-        const glyph = MINESWEEPER_FACES[state] || MINESWEEPER_FACES.neutral;
-        btn.dataset.face = state;
-        btn.dataset.faceGlyph = glyph;
-        const label = MINESWEEPER_FACE_LABELS[state] || MINESWEEPER_FACE_LABELS.neutral;
-        btn.setAttribute('aria-label', label);
-        btn.setAttribute('title', label);
+      const btn = document.getElementById('minesweeper-reset-button');
+      if (!btn) return;
+      const glyph = MINESWEEPER_FACES[state] || MINESWEEPER_FACES.neutral;
+      btn.dataset.face = state;
+      btn.dataset.faceGlyph = glyph;
+      const label = MINESWEEPER_FACE_LABELS[state] || MINESWEEPER_FACE_LABELS.neutral;
+      btn.setAttribute('aria-label', label);
+      btn.setAttribute('title', label);
     }
 
 
     function startMinesweeperTimer() {
-        if (minesweeperStarted) return;
-        minesweeperStarted = true;
-        minesweeperTimerInterval = setInterval(() => {
-            if (minesweeperGameover) return;
-            minesweeperTimerSeconds = Math.min(999, minesweeperTimerSeconds + 1);
-            updateTimerDisplay();
-        }, 1000);
+      if (minesweeperStarted) return;
+      minesweeperStarted = true;
+      minesweeperTimerInterval = setInterval(() => {
+        if (minesweeperGameover) return;
+        minesweeperTimerSeconds = Math.min(999, minesweeperTimerSeconds + 1);
+        updateTimerDisplay();
+      }, 1000);
     }
 
     function stopMinesweeperTimer() {
-        if (minesweeperTimerInterval) {
-            clearInterval(minesweeperTimerInterval);
-            minesweeperTimerInterval = null;
-        }
-        minesweeperStarted = false;
+      if (minesweeperTimerInterval) {
+        clearInterval(minesweeperTimerInterval);
+        minesweeperTimerInterval = null;
+      }
+      minesweeperStarted = false;
     }
 
     function resetMinesweeper() {
-        initializeMinesweeper();
+      initializeMinesweeper();
     }
 
 
     function initializeMinesweeper() {
-        setMinesweeperFace('neutral');
-        const grid = document.getElementById('minesweeper-grid');
-        if (!grid) return;
+      setMinesweeperFace('neutral');
+      const grid = document.getElementById('minesweeper-grid');
+      if (!grid) return;
 
-        if (!grid.dataset.bound) {
-            grid.addEventListener('click', handleMinesweeperClick);
-            grid.addEventListener('contextmenu', handleMinesweeperRightClick);
-            grid.dataset.bound = 'true';
-        }
+      if (!grid.dataset.bound) {
+        grid.addEventListener('click', handleMinesweeperClick);
+        grid.addEventListener('contextmenu', handleMinesweeperRightClick);
+        grid.dataset.bound = 'true';
+      }
 
-        stopMinesweeperTimer();
-        minesweeperBoard = [];
-        minesweeperGameover = false;
-        minesweeperFlagsPlaced = 0;
-        minesweeperTimerSeconds = 0;
-        minesweeperStarted = false;
-        updateMineCounter();
-        updateTimerDisplay();
+      stopMinesweeperTimer();
+      minesweeperBoard = [];
+      minesweeperGameover = false;
+      minesweeperFlagsPlaced = 0;
+      minesweeperTimerSeconds = 0;
+      minesweeperStarted = false;
+      updateMineCounter();
+      updateTimerDisplay();
 
-        grid.innerHTML = '';
+      grid.innerHTML = '';
 
-        for (let i = 0; i < MINESWEEPER_BOARD_SIZE * MINESWEEPER_BOARD_SIZE; i++) {
-            const cell = document.createElement('div');
-            cell.className = 'minesweeper-cell';
-            cell.dataset.index = i;
-            grid.appendChild(cell);
-            minesweeperBoard.push({
-                isMine: false,
-                isRevealed: false,
-                isFlagged: false,
-                neighborMines: 0
-            });
+      for (let i = 0; i < MINESWEEPER_BOARD_SIZE * MINESWEEPER_BOARD_SIZE; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'minesweeper-cell';
+        cell.dataset.index = i;
+        grid.appendChild(cell);
+        minesweeperBoard.push({
+          isMine: false,
+          isRevealed: false,
+          isFlagged: false,
+          neighborMines: 0
+        });
+      }
+
+      let minesPlaced = 0;
+      while (minesPlaced < MINESWEEPER_MINE_COUNT) {
+        const randomIndex = Math.floor(Math.random() * minesweeperBoard.length);
+        if (!minesweeperBoard[randomIndex].isMine) {
+          minesweeperBoard[randomIndex].isMine = true;
+          minesPlaced++;
         }
-        
-        let minesPlaced = 0;
-        while (minesPlaced < MINESWEEPER_MINE_COUNT) {
-            const randomIndex = Math.floor(Math.random() * minesweeperBoard.length);
-            if (!minesweeperBoard[randomIndex].isMine) {
-                minesweeperBoard[randomIndex].isMine = true;
-                minesPlaced++;
-            }
+      }
+
+      for (let i = 0; i < minesweeperBoard.length; i++) {
+        if (!minesweeperBoard[i].isMine) {
+          minesweeperBoard[i].neighborMines = countNeighborMines(i);
         }
-        
-        for (let i = 0; i < minesweeperBoard.length; i++) {
-            if (!minesweeperBoard[i].isMine) {
-                minesweeperBoard[i].neighborMines = countNeighborMines(i);
-            }
-        }
+      }
     }
-    
+
     function handleMinesweeperClick(e) {
-        if (minesweeperGameover) return;
-        const cellEl = e.target.closest('.minesweeper-cell');
-        if (!cellEl) return;
-        
-        const index = parseInt(cellEl.dataset.index);
-        const cellData = minesweeperBoard[index];
+      if (minesweeperGameover) return;
+      const cellEl = e.target.closest('.minesweeper-cell');
+      if (!cellEl) return;
 
-        if (cellData.isFlagged || cellData.isRevealed) {
-            return;
-        }
+      const index = parseInt(cellEl.dataset.index);
+      const cellData = minesweeperBoard[index];
 
-        if (!minesweeperStarted) {
-            startMinesweeperTimer();
-        }
+      if (cellData.isFlagged || cellData.isRevealed) {
+        return;
+      }
 
-        if (cellData.isMine) {
-            cellEl.classList.add('revealed');
-            cellEl.innerHTML = `<img src="mine.png">`;
-            minesweeperGameover = true;
-            setMinesweeperFace('dead');
-            stopMinesweeperTimer();
-            revealAllMines();
-            updateMineCounter();
-        } else {
-            revealCell(index);
-            checkWinCondition();
-        }
-    }
-    
-    function handleMinesweeperRightClick(e) {
-        e.preventDefault();
-        if (minesweeperGameover) return;
-        const cellEl = e.target.closest('.minesweeper-cell');
-        if (!cellEl) return;
-        
-        const index = parseInt(cellEl.dataset.index);
-        const cellData = minesweeperBoard[index];
-        
-        if (cellData.isRevealed) return;
-        
-        if (cellData.isFlagged) {
-            cellData.isFlagged = false;
-            cellEl.innerHTML = '';
-            minesweeperFlagsPlaced -= 1;
-        } else {
-            cellData.isFlagged = true;
-            cellEl.innerHTML = `<img src="flag.png">`;
-            minesweeperFlagsPlaced += 1;
-        }
+      if (!minesweeperStarted) {
+        startMinesweeperTimer();
+      }
+
+      if (cellData.isMine) {
+        cellEl.classList.add('revealed');
+        cellEl.innerHTML = `<img src="mine.png">`;
+        minesweeperGameover = true;
+        setMinesweeperFace('dead');
+        stopMinesweeperTimer();
+        revealAllMines();
         updateMineCounter();
+      } else {
+        revealCell(index);
         checkWinCondition();
+      }
     }
-    
+
+    function handleMinesweeperRightClick(e) {
+      e.preventDefault();
+      if (minesweeperGameover) return;
+      const cellEl = e.target.closest('.minesweeper-cell');
+      if (!cellEl) return;
+
+      const index = parseInt(cellEl.dataset.index);
+      const cellData = minesweeperBoard[index];
+
+      if (cellData.isRevealed) return;
+
+      if (cellData.isFlagged) {
+        cellData.isFlagged = false;
+        cellEl.innerHTML = '';
+        minesweeperFlagsPlaced -= 1;
+      } else {
+        cellData.isFlagged = true;
+        cellEl.innerHTML = `<img src="flag.png">`;
+        minesweeperFlagsPlaced += 1;
+      }
+      updateMineCounter();
+      checkWinCondition();
+    }
+
     function getNeighbors(index) {
-        const neighbors = [];
-        const row = Math.floor(index / MINESWEEPER_BOARD_SIZE);
-        const col = index % MINESWEEPER_BOARD_SIZE;
-        
-        for (let i = -1; i <= 1; i++) {
-            for (let j = -1; j <= 1; j++) {
-                if (i === 0 && j === 0) continue;
-                const newRow = row + i;
-                const newCol = col + j;
-                
-                if (newRow >= 0 && newRow < MINESWEEPER_BOARD_SIZE && newCol >= 0 && newCol < MINESWEEPER_BOARD_SIZE) {
-                    const newIndex = newRow * MINESWEEPER_BOARD_SIZE + newCol;
-                    neighbors.push(newIndex);
-                }
-            }
+      const neighbors = [];
+      const row = Math.floor(index / MINESWEEPER_BOARD_SIZE);
+      const col = index % MINESWEEPER_BOARD_SIZE;
+
+      for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+          if (i === 0 && j === 0) continue;
+          const newRow = row + i;
+          const newCol = col + j;
+
+          if (newRow >= 0 && newRow < MINESWEEPER_BOARD_SIZE && newCol >= 0 && newCol < MINESWEEPER_BOARD_SIZE) {
+            const newIndex = newRow * MINESWEEPER_BOARD_SIZE + newCol;
+            neighbors.push(newIndex);
+          }
         }
-        return neighbors;
+      }
+      return neighbors;
     }
-    
+
     function countNeighborMines(index) {
-        let count = 0;
+      let count = 0;
+      const neighbors = getNeighbors(index);
+      neighbors.forEach(neighborIndex => {
+        if (minesweeperBoard[neighborIndex].isMine) {
+          count++;
+        }
+      });
+      return count;
+    }
+
+    function revealCell(index) {
+      const cellData = minesweeperBoard[index];
+      const cellEl = document.querySelector(`.minesweeper-cell[data-index="${index}"]`);
+
+      if (cellData.isRevealed || cellData.isFlagged) return;
+
+      cellData.isRevealed = true;
+      cellEl.classList.add('revealed');
+
+      if (cellData.neighborMines > 0) {
+        cellEl.textContent = cellData.neighborMines;
+        cellEl.classList.add(`number-${cellData.neighborMines}`);
+      } else {
         const neighbors = getNeighbors(index);
         neighbors.forEach(neighborIndex => {
-            if (minesweeperBoard[neighborIndex].isMine) {
-                count++;
-            }
+          revealCell(neighborIndex);
         });
-        return count;
+      }
     }
-    
-    function revealCell(index) {
-        const cellData = minesweeperBoard[index];
-        const cellEl = document.querySelector(`.minesweeper-cell[data-index="${index}"]`);
-        
-        if (cellData.isRevealed || cellData.isFlagged) return;
-        
-        cellData.isRevealed = true;
-        cellEl.classList.add('revealed');
-        
-        if (cellData.neighborMines > 0) {
-            cellEl.textContent = cellData.neighborMines;
-            cellEl.classList.add(`number-${cellData.neighborMines}`);
-        } else {
-            const neighbors = getNeighbors(index);
-            neighbors.forEach(neighborIndex => {
-                revealCell(neighborIndex);
-            });
-        }
-    }
-    
+
     function revealAllMines() {
-        minesweeperBoard.forEach((cell, index) => {
-            if (cell.isMine) {
-                const cellEl = document.querySelector(`.minesweeper-cell[data-index="${index}"]`);
-                cellEl.classList.add('revealed');
-                if (!cell.isFlagged) {
-                    cellEl.innerHTML = `<img src="mine.png">`;
-                }
-            }
-        });
+      minesweeperBoard.forEach((cell, index) => {
+        if (cell.isMine) {
+          const cellEl = document.querySelector(`.minesweeper-cell[data-index="${index}"]`);
+          cellEl.classList.add('revealed');
+          if (!cell.isFlagged) {
+            cellEl.innerHTML = `<img src="mine.png">`;
+          }
+        }
+      });
     }
 
     function checkWinCondition() {
-        let revealedCount = 0;
-        let correctlyFlagged = 0;
+      let revealedCount = 0;
+      let correctlyFlagged = 0;
+      minesweeperBoard.forEach(cell => {
+        if (cell.isRevealed) {
+          revealedCount++;
+        }
+        if (cell.isFlagged && cell.isMine) {
+          correctlyFlagged++;
+        }
+      });
+
+      let playerWon = false;
+
+      if (revealedCount === (MINESWEEPER_BOARD_SIZE * MINESWEEPER_BOARD_SIZE) - MINESWEEPER_MINE_COUNT) {
+        minesweeperGameover = true;
+        playerWon = true;
+      } else if (correctlyFlagged === MINESWEEPER_MINE_COUNT) {
+        let allMinesFlagged = true;
+        let hasWrongFlags = false;
         minesweeperBoard.forEach(cell => {
-            if (cell.isRevealed) {
-                revealedCount++;
-            }
-            if (cell.isFlagged && cell.isMine) {
-                correctlyFlagged++;
-            }
+          if (cell.isMine && !cell.isFlagged) {
+            allMinesFlagged = false;
+          }
+          if (!cell.isMine && cell.isFlagged) {
+            hasWrongFlags = true;
+          }
         });
-
-        let playerWon = false;
-
-        if (revealedCount === (MINESWEEPER_BOARD_SIZE * MINESWEEPER_BOARD_SIZE) - MINESWEEPER_MINE_COUNT) {
-            minesweeperGameover = true;
-            playerWon = true;
-        } else if (correctlyFlagged === MINESWEEPER_MINE_COUNT) {
-            let allMinesFlagged = true;
-            let hasWrongFlags = false;
-            minesweeperBoard.forEach(cell => {
-                if (cell.isMine && !cell.isFlagged) {
-                    allMinesFlagged = false;
-                }
-                if (!cell.isMine && cell.isFlagged) {
-                    hasWrongFlags = true;
-                }
-            });
-            if (allMinesFlagged && !hasWrongFlags) {
-                minesweeperGameover = true;
-                playerWon = true;
-            }
+        if (allMinesFlagged && !hasWrongFlags) {
+          minesweeperGameover = true;
+          playerWon = true;
         }
+      }
 
-        if (playerWon) {
-            stopMinesweeperTimer();
-            setMinesweeperFace('cool');
-            updateMineCounter();
-        }
+      if (playerWon) {
+        stopMinesweeperTimer();
+        setMinesweeperFace('cool');
+        updateMineCounter();
+      }
     }
 
 
   </script>
 </body>
+
 </html>
