@@ -2330,7 +2330,7 @@
     let source = null;
     let visualizerEggActive = false; // easter egg: fullscreen visualizer mode
     let eggModeActive = false; // blocks F1/notifications while egg is open
-    const dvdColors = ['#ff4444','#ff9900','#ffee00','#44ff88','#44ccff','#cc44ff','#ff44cc','#ffffff'];
+    const dvdColors = ['#ff4444', '#ff9900', '#ffee00', '#44ff88', '#44ccff', '#cc44ff', '#ff44cc', '#ffffff'];
     const dvd = { x: 0, y: 0, vx: 1.4, vy: 1.1, w: 0, h: 0, color: '#ffffff', colorIdx: 0 };
     let loginUsed = false; // prevent login button spam
 
@@ -2499,16 +2499,16 @@
       'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 17 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid, (BUT I DID DO A BIG MARGIN OF IT OK)</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it 🙌</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping nil with hers, so eventually they'll be done and temkky, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p><p>abc for bf ahh 😭😭❤️‍🩹</div>`,
       'Programming': `
         <div class="window-entry" style="font-family: var(--xp-font-main); line-height: 1.5; color: #000; font-size: 0.95rem;">
-          <h2 style="font-family: var(--xp-font-title); font-size: 1.25rem; margin-top: 0; color: #0a246a;">My Programming Journey</h2>
+          <h2 style="font-family: var(--xp-font-title); font-size: 1.25rem; margin-top: 0; color: #0a246a;">program </h2>
           
           <h3 style="font-family: var(--xp-font-title); font-size: 1.05rem; margin-bottom: 4px; color: #316ac5;">Web Development</h3>
-          <p style="margin-top: 0;">I built this entire interactive site from scratch utilizing vanilla HTML for structure, CSS for modern XP-faithful styling, and dynamic JavaScript to power the custom window engine, Jukebox media player, Minesweeper, and the YAAI virus simulation.</p>
+          <p style="margin-top: 0;">I built this entire interactive site from scratch utilizing vanilla HTML for structure, CSS for modern XP-faithful styling, and dynamic JavaScript to power the custom window engine, Jukebox media player, Minesweeper, and the YAAI virus simulation. (so cool)</p>
           
           <h3 style="font-family: var(--xp-font-title); font-size: 1.05rem; margin-bottom: 4px; color: #316ac5;">Lua & Python</h3>
-          <p style="margin-top: 0;">I actively practice LUA (specifically LuaU at an intermediate level, standard for advanced game coding environments like Roblox) alongside Python for scripting, automating tasks, and developing custom logic systems.</p>
+          <p style="margin-top: 0;">I actively practice LUA (specifically LuaU at an intermediate level, standard for advanced game coding environments like Roblox) alongside Python for scripting, automating tasks, and developing custom logic systems. (BAD!!! ROBLOX BAD!!! AHHRRUGGGHH)</p>
           
           <h3 style="font-family: var(--xp-font-title); font-size: 1.05rem; margin-bottom: 4px; color: #316ac5;">Java</h3>
-          <p style="margin-top: 0;">I am currently beginning my journey in learning Java to expand my understanding of object-oriented programming, system development, and build a strong computational foundation.</p>
+          <p style="margin-top: 0;">I am currently beginning my work in learning Java to expand my understanding of object-oriented programming, system development, and build a strong computational foundation.</p>
         </div>
       `,
       'Interests': `<div class="window-entry"><p>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call people or sm</p><p>IM DEVELOPING A GAME COME BACK LATER PLS!!!</div>`,
@@ -3606,14 +3606,14 @@
           const dpr = window.devicePixelRatio || 1;
 
           // Bass / mid / treble energy
-          const bassBins  = Math.max(1, Math.floor(freqBins * 0.06));
-          const midBins   = Math.max(1, Math.floor(freqBins * 0.25));
+          const bassBins = Math.max(1, Math.floor(freqBins * 0.06));
+          const midBins = Math.max(1, Math.floor(freqBins * 0.25));
           let bassSum = 0, midSum = 0, trebleSum = 0;
           for (let i = 0; i < bassBins; i++) bassSum += freqData[i];
           for (let i = bassBins; i < midBins; i++) midSum += freqData[i];
           for (let i = midBins; i < freqBins; i++) trebleSum += freqData[i];
-          const bassE   = (bassSum / bassBins) / 255;
-          const midE    = (midSum / Math.max(1, midBins - bassBins)) / 255;
+          const bassE = (bassSum / bassBins) / 255;
+          const midE = (midSum / Math.max(1, midBins - bassBins)) / 255;
           const trebleE = (trebleSum / Math.max(1, freqBins - midBins)) / 255;
 
           // --- Black background ---
@@ -3673,10 +3673,10 @@
           dvd.x += dvd.vx;
           dvd.y += dvd.vy;
           let hitEdge = false;
-          if (dvd.x <= 0)          { dvd.x = 0;          dvd.vx =  Math.abs(dvd.vx); hitEdge = true; }
-          if (dvd.y <= 0)          { dvd.y = 0;          dvd.vy =  Math.abs(dvd.vy); hitEdge = true; }
-          if (dvd.x + dvd.w >= W)  { dvd.x = W - dvd.w; dvd.vx = -Math.abs(dvd.vx); hitEdge = true; }
-          if (dvd.y + dvd.h >= H)  { dvd.y = H - dvd.h; dvd.vy = -Math.abs(dvd.vy); hitEdge = true; }
+          if (dvd.x <= 0) { dvd.x = 0; dvd.vx = Math.abs(dvd.vx); hitEdge = true; }
+          if (dvd.y <= 0) { dvd.y = 0; dvd.vy = Math.abs(dvd.vy); hitEdge = true; }
+          if (dvd.x + dvd.w >= W) { dvd.x = W - dvd.w; dvd.vx = -Math.abs(dvd.vx); hitEdge = true; }
+          if (dvd.y + dvd.h >= H) { dvd.y = H - dvd.h; dvd.vy = -Math.abs(dvd.vy); hitEdge = true; }
           if (hitEdge) {
             dvd.colorIdx = (dvd.colorIdx + 1) % dvdColors.length;
             dvd.color = dvdColors[dvd.colorIdx];
@@ -3684,9 +3684,9 @@
 
           // --- Card contents ---
           const jukeboxWinEl = document.getElementById('window-Jukebox');
-          const songInfoEl   = jukeboxWinEl && jukeboxWinEl.querySelector('#song-info');
-          const songIconEl   = jukeboxWinEl && jukeboxWinEl.querySelector('#song-icon');
-          const songText     = songInfoEl ? songInfoEl.textContent.trim().split('\n')[0].trim() : '';
+          const songInfoEl = jukeboxWinEl && jukeboxWinEl.querySelector('#song-info');
+          const songIconEl = jukeboxWinEl && jukeboxWinEl.querySelector('#song-icon');
+          const songText = songInfoEl ? songInfoEl.textContent.trim().split('\n')[0].trim() : '';
           const mins = Math.floor((jukeboxAudio.currentTime || 0) / 60);
           const secs = Math.floor((jukeboxAudio.currentTime || 0) % 60);
           const timeText = mins + ':' + String(secs).padStart(2, '0');
@@ -3717,7 +3717,7 @@
           // Album art
           if (songIconEl && songIconEl.complete && songIconEl.naturalWidth > 0) {
             try { ctxEgg.drawImage(songIconEl, px + pad, py + pad, imgSize, imgSize); }
-            catch(e) {}
+            catch (e) { }
           } else {
             ctxEgg.globalAlpha = 0.3;
             ctxEgg.fillStyle = dvd.color;
@@ -3775,7 +3775,7 @@
       const eggCanvas = win.querySelector('#jukebox-egg-canvas');
       const windowContent = win.querySelector('.window-content');
 
-      window.toggleJukeboxEgg = function() {
+      window.toggleJukeboxEgg = function () {
         const jukeboxWin = document.getElementById('window-Jukebox');
         if (!jukeboxWin || !eggCanvas) return;
         const entering = !jukeboxWin.classList.contains('egg-mode');
@@ -3815,7 +3815,7 @@
       };
 
       if (eggCanvas) {
-        eggCanvas.onclick = function(e) {
+        eggCanvas.onclick = function (e) {
           e.stopPropagation();
           e.preventDefault();
           window.toggleJukeboxEgg();
