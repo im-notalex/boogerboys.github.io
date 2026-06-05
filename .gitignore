@@ -1,0 +1,22 @@
+# backups / scratch files
+*.bak
+*.bak.*
+*.orig
+*.tmp
+*.swp
+*~
+
+# os junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# editor folders
+.vscode/
+.idea/
+
+# node (in case anything ever needs it)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
