@@ -16,7 +16,6 @@ const taskbarApps = document.getElementById('taskbar-apps');
 const clock = document.getElementById('clock');
 const dragPreview = document.getElementById('window-drag-preview');
 const crtOverlay = document.querySelector('.crt-effect');
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 // NEW: Calendar elements
 const calendarPopup = document.getElementById('calendar-popup');
@@ -31,17 +30,43 @@ let crtEnabled = true;
 const jukeboxAudio = document.getElementById('bg-music');
 let jukeboxBaseVolume = 0.35;
 let currentSongVolumeMultiplier = 1;
-const startupSound = document.getElementById('startup-sound');
-const shutdownSound = document.getElementById('shutdown-sound');
+jukeboxAudio.volume = jukeboxBaseVolume;
+const startupSound = new Audio('XPstartup.mp3');
+const shutdownSound = new Audio('XPshutdown.mp3');
 const clickSound = new Audio('open.mp3');
 const notificationSound = document.getElementById('notification-sound');
-const dynamicAudio = new Set();
-let masterVolume = 1;
-let sfxBaseVolume = 1;
-let isMuted = false;
 let awaitingAudioUnlock = false;
 let autoplayNoticeShown = false;
-clickSound.preload = 'metadata';
+
+// Make sound effects overlap by patching the play method
+[clickSound, startupSound, shutdownSound, notificationSound].forEach(sound => {
+  if (!sound) return;
+  const originalPlay = sound.play;
+  sound.play = function () {
+    try {
+      const clone = new Audio(this.src);
+      clone.volume = this.volume;
+      return clone.play();
+    } catch (e) {
+      this.currentTime = 0;
+      return originalPlay.apply(this);
+    }
+  };
+});
+
+// Visualizer state variables
+let visualizerAnimFrame = null;
+let audioCtx = null;
+let analyser = null;
+let source = null;
+let visualizerEggActive = false; // easter egg: fullscreen visualizer mode
+let eggModeActive = false; // blocks F1/notifications while egg is open
+const dvdColors = ['#ff4444', '#ff9900', '#ffee00', '#44ff88', '#44ccff', '#cc44ff', '#ff44cc', '#ffffff'];
+const dvd = { x: 0, y: 0, vx: 1.4, vy: 1.1, w: 0, h: 0, color: '#ffffff', colorIdx: 0 };
+let loginUsed = false; // prevent login button spam
+
+// YAAI State
+let yaaiWindowsClosed = 0;
 
 // --- Easter Egg Messages ---
 const easterEggs = [
@@ -62,10 +87,11 @@ const easterEggs = [
   "dial up reference no. 4",
   "don't forget to defragment your hard drive for optimal performance!",
   "you've been using your computer for a while. maybe it's time to take a break?",
-  "you see Spawn! by evan fong? that guy is actually vanossgaming Ã°Å¸ËœÂ­",
+  "you see Spawn! by evan fong? that guy is actually vanossgaming 😭",
   "im probably not putting THIS much effort into the other sites, i love favouritism!",
   "dont worry, as long as its in the recycle bin, its trashed, right?",
-  "Kindly check the attached love letter from me! ~ LOVE-LETTER-FOR-YOU.TXT.vbs"
+  "Kindly check the attached love letter from me! ~ LOVE-LETTER-FOR-YOU.TXT.vbs",
+  "Claude Opus 4.7 was here. hi alex. -anthropic"
 ];
 
 // --- State variables ---
@@ -202,78 +228,95 @@ const lyricsState = {
 
 // --- App content data ---
 const windowContent = {
-  'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 16 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid, (BUT I DID DO A BIG MARGIN OF IT OK)</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it ðŸ‘…</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping nil with hers, so eventually they'll be done and temkky, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p><p>abc for bf ahh 😭😭❤️‍🩹</div>`,
-  'Interests': `<div class="window-entry"><p>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call people or sm</p><p>IM DEVELOPING A GAME COME BACK LATER PLS!!!</div>`,
-  'DNI': `<p>if you are older than me by about ~3-5 ish years dont expect me to be super comfortable around you unless i know you (unless you're my goat retro being 34 years older than me bro!!)</p><p>but i also dont like heavy racist stuff (stupid instagram reels are ok cause I send them ((im just such a nice hypocritical guy)</p><p>also adult people in general make me uncomfortable if i dont know them (cause obviously im not 16 talking to a 25 year old brotato chip)</p><p>and im a huge g(j)ermaphobe and i hate anything like blood, mucus, etc. it just makes me a little uneasy but i wont like scream from it.</p><p>yes, even i have parameters im comfortable with, you FUCKS</p><p>aka the rodents that saw ts and was picking at me for it, you're getting FELT up tonight BUDDY.</p></div>`,
-  'Journal': `<textarea id="journal-text-area" placeholder="wait i forgot this is a input area not a text area, oopsies"></textarea>`,
-  'Drawings': `<p>heres some stuff i draw/drew</p><img src="15.png" alt="Drawing 1" loading="lazy" decoding="async"><img src="16.png" alt="Drawing 2" loading="lazy" decoding="async">`,
-  'Games': `<p>i play these games:</p><ul><li>roblox</li><li>minecraft</li><li>terraria (sometimes)</li><li>stardew valley</li><li>ultrakill</li><li>gow:r</li><li>any multiplayer sandbox game pretty much.</li></ul><p>i don't play these games:</p><ul><li>fortnite</li><li>cod</li><li>overwatch</li><li>valorant</li><li>practically any fps game that is massively multiplayer, i dont play. maybe fort though</li></ul><p>things i frequent:</p><ul><li>roblox</li><li>discord</li></ul>`,
-  'Projects': `
-        <div class="projects-window">
-          <p>my projects:</p>
-          <div class="projects-list">
-            <a class="project-card" href="https://github.com/im-notalex/Botsmyth" target="_blank" rel="noopener">
-              <span class="project-title">Botsmyth</span>
-              <span class="project-meta">github.com/im-notalex/Botsmyth</span>
-            </a>
-            <a class="project-card" href="https://github.com/im-notalex/OCreator" target="_blank" rel="noopener">
-              <span class="project-title">OCreator</span>
-              <span class="project-meta">github.com/im-notalex/OCreator</span>
-            </a>
-            <a class="project-card" href="https://github.com/im-notalex/luau-assistant" target="_blank" rel="noopener">
-              <span class="project-title">luau-assistant</span>
-              <span class="project-meta">github.com/im-notalex/luau-assistant</span>
-            </a>
-          </div>
+  'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 17 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid, (BUT I DID DO A BIG MARGIN OF IT OK)</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it ðŸ™Œ</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping nil with hers, so eventually they'll be done and temkky, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p><p>abc for bf ahh ðŸ˜­ðŸ˜­â¤ï¸â€ðŸ©¹</div>`,
+  'Programming': `
+        <div class="window-entry" style="font-family: var(--xp-font-main); line-height: 1.5; color: #000; font-size: 0.95rem;">
+          <h2 style="font-family: var(--xp-font-title); font-size: 1.25rem; margin-top: 0; color: #0a246a;">program </h2>
+
+          <h3 style="font-family: var(--xp-font-title); font-size: 1.05rem; margin-bottom: 4px; color: #316ac5;">Web Development</h3>
+          <p style="margin-top: 0;">I built this entire interactive site from scratch utilizing vanilla HTML for structure, CSS for modern XP-faithful styling, and dynamic JavaScript to power the custom window engine, Jukebox media player, Minesweeper, and the YAAI virus simulation. (so cool)</p>
+
+          <h3 style="font-family: var(--xp-font-title); font-size: 1.05rem; margin-bottom: 4px; color: #316ac5;">Lua &amp; Python</h3>
+          <p style="margin-top: 0;">I actively practice LUA (specifically LuaU at an intermediate level, standard for advanced game coding environments like Roblox) alongside Python for scripting, automating tasks, and developing custom logic systems. (BAD!!! ROBLOX BAD!!! AHHRRUGGGHH)</p>
+
+          <h3 style="font-family: var(--xp-font-title); font-size: 1.05rem; margin-bottom: 4px; color: #316ac5;">Java</h3>
+          <p style="margin-top: 0;">I am currently beginning my work in learning Java to expand my understanding of object-oriented programming, system development, and build a strong computational foundation.</p>
+
+          <h3 style="font-family: var(--xp-font-title); font-size: 1.05rem; margin-bottom: 4px; color: #316ac5;">Classes</h3>
+          <ul style="margin: 0; padding-left: 18px;">
+            <li><strong>ICD 201</strong> — Sem 1, Period 3 — Python — 2024 / 2025</li>
+            <li><strong>ICS 3U1</strong> — Sem 2, Period 4 — Java — 2025 / 2026</li>
+          </ul>
         </div>
       `,
+  'Interests': `<div class="window-entry"><p>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call people or sm</p><p>IM DEVELOPING A GAME COME BACK LATER PLS!!!</div>`,
+  'DNI': `<p>lowk refining this sometime soon cause i wanna add different stuff</p></div>`,
+  'Journal': `<textarea id="journal-text-area" placeholder="wait i forgot this is a input area not a text area, oopsies"></textarea>`,
+  'Drawings': `<p>heres some stuff i draw/drew</p><img src="15.png" alt="Drawing 1"><img src="16.png" alt="Drawing 2">`,
+  'Games': `<p>i play these games:</p><ul><li>roblox</li><li>minecraft</li><li>terraria (sometimes)</li><li>stardew valley</li><li>ultrakill</li><li>gow:r</li><li>any multiplayer sandbox game pretty much.</li></ul><p>i don't play these games:</p><ul><li>fortnite</li><li>cod</li><li>overwatch</li><li>valorant</li><li>practically any fps game that is massively multiplayer, i dont play. maybe fort though</li></ul><p>things i frequent:</p><ul><li>roblox</li><li>discord</li></ul>`,
   'My Computer': `<p>i forgot to put something here, uh ohhhh.... (what would i put here anyways?)</p>`,
-  'Recycle Bin': `<p>guys, awesome bin here, i cant wait to make a rm -rf /* joke on a windows os!</p>`,
+  'Recycle Bin': `<p>awesome bin here, i cant wait to make a rm -rf /* joke on a windows os!</p>`,
   'Browser': `
         <div class="browser-toolbar">
-            <img src="12.png" style="width: 16px; height: 16px;" loading="lazy" decoding="async" alt="">
+            <img src="12.png" style="width: 16px; height: 16px;">
             <button>&larr;</button>
             <button>&rarr;</button>
             <button>&#8635;</button>
-            <input type="text" class="url-bar" value="https://alanisagooner.chud" readonly>
+            <input type="text" class="url-bar" value="https://myveryinconspicuouslink" readonly>
         </div>
         <div id="browser-content">
-          <img src="skull.gif" alt="skull" class="browser-skull" data-action="idiot-virus" role="button" tabindex="0" loading="lazy" decoding="async">
+          <img src="skull.gif" alt="skull" onclick="triggerIdiotVirus()">
         </div>
       `,
   'Jukebox': `
         <div id="jukebox-content">
-          <div class="jukebox-song">
-            <img id="song-icon" src="Music1.jpg" alt="Song artwork" loading="lazy" decoding="async">
-            <div id="song-info" aria-live="polite">Loading...</div>
-          </div>
-          <div class="jukebox-controls">
-            <button class="jukebox-nav" type="button" data-action="jukebox-prev">&laquo;</button>
-            <button class="jukebox-nav" type="button" data-action="jukebox-next">&raquo;</button>
-          </div>
-          <div class="volume-container">
-            <label for="volume">Volume</label>
-            <input id="volume" type="range" min="0" max="1" step="0.01" value="0.35">
-          </div>
-          <div class="jukebox-progress">
-            <time id="jukebox-current-time">0:00</time>
-            <input id="jukebox-seek" type="range" min="0" max="0" step="0.1" value="0" disabled>
-            <time id="jukebox-duration">0:00</time>
-          </div>
-          <div class="jukebox-options">
-            <div class="option-group">
-              <label class="loop-toggle" id="jukebox-loop-toggle">
-                <input type="checkbox" id="jukebox-loop">
-                <span>Loop track</span>
-              </label>
+          <!-- Egg-mode full overlay canvas (hidden by default) -->
+          <canvas id="jukebox-egg-canvas" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer;" title="Double-click to exit visualizer mode"></canvas>
+          
+          <!-- Center Main Content -->
+          <div class="jukebox-main-layout" style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
+            <div class="jukebox-song">
+              <img id="song-icon" src="Music1.jpg" alt="Song artwork">
+              <div id="song-info" aria-live="polite">Loading...</div>
             </div>
-            <div class="option-group">
-              <button type="button" class="jukebox-action-btn" id="jukebox-play">Start</button>
-              <button type="button" class="jukebox-action-btn" id="jukebox-stop">Stop</button>
-              <button type="button" class="jukebox-action-btn" id="lyrics-disclaimer-toggle" aria-expanded="false">Copyright notice</button>
+            
+            <!-- Horizontal Canvas (shown by default, hidden in egg-mode) -->
+            <div class="visualizer-container" id="jukebox-horizontal-viz-container" style="margin: 4px 0;">
+              <canvas id="jukebox-visualizer" style="width: 100%; height: 40px; background: #000; border-radius: 4px; border: 1px solid #7f9db9; display: block;"></canvas>
+            </div>
+            
+            <div class="jukebox-controls">
+              <button class="jukebox-nav" onclick="prevSong(); clickSound.play();">&laquo;</button>
+              <button class="jukebox-nav" onclick="nextSong(); clickSound.play();">&raquo;</button>
+            </div>
+            <div class="volume-container">
+              <label for="volume">Volume</label>
+              <input id="volume" type="range" min="0" max="1" step="0.01" value="0.35">
+            </div>
+            <div class="jukebox-progress">
+              <time id="jukebox-current-time">0:00</time>
+              <input id="jukebox-seek" type="range" min="0" max="0" step="0.1" value="0" disabled>
+              <time id="jukebox-duration">0:00</time>
+            </div>
+            <div class="jukebox-options">
+              <div class="option-group">
+                <label class="loop-toggle" id="jukebox-loop-toggle">
+                  <input type="checkbox" id="jukebox-loop">
+                  <span>Loop track</span>
+                </label>
+              </div>
+              <div class="option-group">
+                <button type="button" class="jukebox-action-btn" id="jukebox-play">Start</button>
+                <button type="button" class="jukebox-action-btn" id="jukebox-stop">Stop</button>
+                <button type="button" class="jukebox-action-btn" id="lyrics-disclaimer-toggle" aria-expanded="false">Copyright notice</button>
+                <button type="button" class="jukebox-action-btn" id="jukebox-egg-toggle" title="&#9835;" style="opacity:0.35; min-width:0; padding: 2px 6px; font-size:0.75em;" onclick="event.stopPropagation(); event.preventDefault(); window.toggleJukeboxEgg && window.toggleJukeboxEgg(); return false;">&#9835;</button>
+              </div>
             </div>
           </div>
-          <div id="lyrics-disclaimer-panel" class="lyrics-disclaimer" hidden>
+
+          <!-- (egg canvas above) -->
+
+          <div id="lyrics-disclaimer-panel" class="lyrics-disclaimer" hidden style="background: #0d0d0d; border: 1px solid #333; color: #eee;">
             <strong>Copyright Notice &amp; Disclaimer</strong>
             <p>This project includes references to the song &quot;Spawn!&quot; by Evan Fong (Vanoss), and possibly other copyrighted musical works.</p>
             <p>All lyrics, compositions, and recordings are the intellectual property of their respective copyright holders.</p>
@@ -303,39 +346,6 @@ const windowContent = {
             <li>Use the jukebox <em>Start</em>/<em>Stop</em> buttons to quickly audition a track without leaving the window.</li>
           </ul>
           <p>Now shoo.</p>
-        </div>
-      `,
-  'Settings': `
-        <div class="settings-window">
-          <section class="settings-section">
-            <h3>Sound</h3>
-            <label class="settings-toggle">
-              <input type="checkbox" id="settings-mute">
-              <span>Mute all audio</span>
-            </label>
-            <label class="settings-range">
-              <span>Master volume</span>
-              <input id="settings-master-volume" type="range" min="0" max="1" step="0.01" value="1">
-            </label>
-          </section>
-          <section class="settings-section">
-            <h3>Display</h3>
-            <label class="settings-toggle">
-              <input type="checkbox" id="settings-crt">
-              <span>CRT bloom overlay</span>
-            </label>
-            <p class="settings-note">Turn it off if the flicker is too much.</p>
-          </section>
-          <section class="settings-section">
-            <h3>Shortcuts</h3>
-            <ul class="settings-shortcuts">
-              <li><strong>Ctrl + Alt + C</strong><span>Toggle CRT bloom</span></li>
-              <li><strong>Ctrl + Alt + P</strong><span>Open XP Tips</span></li>
-              <li><strong>F1</strong><span>Summon helper</span></li>
-              <li><strong>?</strong><span>Open Settings</span></li>
-              <li><strong>X -> P -> !</strong><span>Unlock XP Tips</span></li>
-            </ul>
-          </section>
         </div>
       `,
   'Chat': `
@@ -389,23 +399,28 @@ const windowContent = {
                     <button type="button" class="secret-reset-btn">Reset order</button>
                 </div>
             </div>
-            <button class="calc-btn" type="button" data-value="C">C</button>
-            <button class="calc-btn operator" type="button" data-value="/">&#247;</button>
-            <button class="calc-btn operator" type="button" data-value="*">&#215;</button>
-            <button class="calc-btn operator" type="button" data-value="-">-</button>
-            <button class="calc-btn" type="button" data-value="7">7</button>
-            <button class="calc-btn" type="button" data-value="8">8</button>
-            <button class="calc-btn" type="button" data-value="9">9</button>
-            <button class="calc-btn operator" type="button" data-value="+">+</button>
-            <button class="calc-btn" type="button" data-value="4">4</button>
-            <button class="calc-btn" type="button" data-value="5">5</button>
-            <button class="calc-btn" type="button" data-value="6">6</button>
-            <button class="calc-btn equals" type="button" data-value="=">=</button>
-            <button class="calc-btn" type="button" data-value="1">1</button>
-            <button class="calc-btn" type="button" data-value="2">2</button>
-            <button class="calc-btn" type="button" data-value="3">3</button>
-            <button class="calc-btn" type="button" data-value="0">0</button>
-            <button class="calc-btn" type="button" data-value=".">.</button>
+            <!-- Row 1: C spans 3, / -->
+            <button class="calc-btn" style="grid-column: span 3;" onclick="handleCalculatorInput('C');">C</button>
+            <button class="calc-btn operator" onclick="handleCalculatorInput('/');">&#247;</button>
+            <!-- Row 2: 7, 8, 9, * -->
+            <button class="calc-btn" onclick="handleCalculatorInput('7');">7</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('8');">8</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('9');">9</button>
+            <button class="calc-btn operator" onclick="handleCalculatorInput('*');">&#215;</button>
+            <!-- Row 3: 4, 5, 6, - -->
+            <button class="calc-btn" onclick="handleCalculatorInput('4');">4</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('5');">5</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('6');">6</button>
+            <button class="calc-btn operator" onclick="handleCalculatorInput('-');">-</button>
+            <!-- Row 4: 1, 2, 3, + -->
+            <button class="calc-btn" onclick="handleCalculatorInput('1');">1</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('2');">2</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('3');">3</button>
+            <button class="calc-btn operator" onclick="handleCalculatorInput('+');">+</button>
+            <!-- Row 5: 0 spans 2, ., = -->
+            <button class="calc-btn" style="grid-column: span 2;" onclick="handleCalculatorInput('0');">0</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('.');">.</button>
+            <button class="calc-btn equals" onclick="handleCalculatorInput('=');">=</button>
         </div>
       `,
 
@@ -413,7 +428,7 @@ const windowContent = {
         <div class="minesweeper-wrapper">
           <div class="minesweeper-top">
             <div class="minesweeper-counter" id="minesweeper-mine-counter">000</div>
-            <button class="minesweeper-reset" id="minesweeper-reset-button" type="button" data-action="minesweeper-reset" data-face="neutral" data-face-glyph=":)" title="Reset game" aria-label="Reset game">:)</button>
+            <button class="minesweeper-reset" id="minesweeper-reset-button" data-face="neutral" data-face-glyph=":)" title="Reset game" aria-label="Reset game" onclick="resetMinesweeper(); clickSound.play();">:)</button>
             <div class="minesweeper-counter" id="minesweeper-timer">000</div>
           </div>
           <div class="minesweeper-grid" id="minesweeper-grid"></div>
@@ -422,25 +437,28 @@ const windowContent = {
 };
 
 // --- Initialization ---
-document.addEventListener('DOMContentLoaded', () => {
+function bootAlexSite() {
   updateClock();
   setInterval(updateClock, 1000);
   startMenu.classList.add('hidden');
-  setCompactMode();
-  applySfxVolume();
-  applySongVolume(true);
   setupDesktopIcons();
-  setupStartMenuEntries();
-  setupTaskbarControls();
-  setupClockControls();
-  setupGlobalActionHandlers();
+  document.getElementById('clock').addEventListener('click', toggleCalendar);
 
-  // Start the random notification loop
+  // start the random notification loop
   setTimeout(showRandomEasterEgg, 5000);
-});
+}
+
+// run immediately if DOM is already parsed, otherwise wait for it
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootAlexSite);
+} else {
+  bootAlexSite();
+}
 
 // --- Login & Shutdown logic ---
 function attemptLogin() {
+  if (loginUsed) return;
+  loginUsed = true;
   loginWelcome.style.opacity = '0';
   if (loginHint) {
     loginHint.classList.add('visible');
@@ -450,14 +468,24 @@ function attemptLogin() {
     loginWarning.classList.add('visible');
     loginWarning.setAttribute('aria-hidden', 'false');
   }
-  if (startupSound) {
-    startupSound.play().catch(e => console.error("Startup sound failed:", e));
-  }
+  startupSound.play().catch(e => console.error("Startup sound failed:", e));;
   setTimeout(() => {
     loginScreen.classList.add('hidden');
     desktop.classList.add('visible');
-    const { x, y } = getJukeboxOpenPosition();
-    openWindow('Jukebox', 10, x, y);
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 360;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 640;
+    const isCompactViewport = window.matchMedia
+      ? window.matchMedia('(max-width: 600px)').matches
+      : viewportWidth <= 600;
+    const jukeboxWidth = isCompactViewport
+      ? Math.max(240, viewportWidth - 12)
+      : Math.max(240, Math.min(360, viewportWidth - 24));
+    const startX = Math.max(12, Math.round((viewportWidth - jukeboxWidth) / 2));
+    const estimatedHeight = isCompactViewport ? 460 : 340;
+    const maxTop = Math.max(32, viewportHeight - estimatedHeight - 16);
+    const preferredTop = viewportHeight * 0.22;
+    const startY = Math.max(32, Math.min(maxTop, preferredTop));
+    openWindow('Jukebox', 10, startX, startY);
     if (loginHint) {
       loginHint.classList.remove('visible');
       loginHint.setAttribute('aria-hidden', 'true');
@@ -472,15 +500,14 @@ function attemptLogin() {
 function shutdownSequence() {
   loginScreen.style.opacity = '0';
   shutdownScreen.style.display = 'flex';
-  if (shutdownSound) {
-    shutdownSound.play().catch(e => console.error("Shutdown sound failed:", e));
-  }
+  shutdownSound.play().catch(e => console.error("Shutdown sound failed:", e));
   setTimeout(() => {
     window.location.href = 'https://im-notalex.github.io/boogerboys.github.io/';
   }, 5000);
 }
 
 function logOff() {
+  loginUsed = false;
   window.location.reload();
 }
 
@@ -544,187 +571,10 @@ function toggleStartMenu() {
   startMenu.classList.toggle('hidden');
 }
 
-function playClickSound() {
-  if (!clickSound) return;
-  clickSound.play().catch(() => { });
-}
-
-function isCompactViewport() {
-  if (window.matchMedia) {
-    return window.matchMedia('(max-width: 720px)').matches || window.matchMedia('(max-height: 560px)').matches;
-  }
-  return (window.innerWidth || 0) <= 720 || (window.innerHeight || 0) <= 560;
-}
-
-function setCompactMode() {
-  const compact = isCompactViewport();
-  document.body.classList.toggle('compact', compact);
-  return compact;
-}
-
-function getJukeboxOpenPosition() {
-  const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 360;
-  const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 640;
-  const compactViewport = isCompactViewport();
-  const jukeboxWidth = compactViewport
-    ? Math.max(240, viewportWidth - 12)
-    : Math.max(240, Math.min(360, viewportWidth - 24));
-  const startX = Math.max(12, Math.round((viewportWidth - jukeboxWidth) / 2));
-  const estimatedHeight = compactViewport ? 460 : 340;
-  const maxTop = Math.max(32, viewportHeight - estimatedHeight - 16);
-  const preferredTop = viewportHeight * 0.22;
-  const startY = Math.max(32, Math.min(maxTop, preferredTop));
-  return { x: startX, y: startY };
-}
-
-function openWindowFromStartMenu(entry) {
-  if (!entry) return;
-  const title = entry.dataset.window;
-  const icon = entry.dataset.icon;
-  if (!title || !icon) return;
-  if (entry.dataset.position === 'jukebox') {
-    const { x, y } = getJukeboxOpenPosition();
-    openWindow(title, icon, x, y);
-  } else {
-    openWindow(title, icon);
-  }
-  toggleStartMenu();
-  playClickSound();
-}
-
-function setupStartMenuEntries() {
-  const entries = document.querySelectorAll('.start-menu-entry');
-  entries.forEach(entry => {
-    entry.setAttribute('role', 'button');
-    entry.tabIndex = 0;
-    entry.addEventListener('click', () => openWindowFromStartMenu(entry));
-    entry.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        openWindowFromStartMenu(entry);
-      }
-    });
-  });
-}
-
-function setupTaskbarControls() {
-  const startBtn = document.getElementById('start-btn');
-  if (startBtn) {
-    startBtn.addEventListener('click', () => {
-      toggleStartMenu();
-      playClickSound();
-    });
-  }
-
-  const logoffBtn = document.getElementById('logoff-btn');
-  if (logoffBtn) {
-    logoffBtn.addEventListener('click', () => {
-      logOff();
-      playClickSound();
-    });
-  }
-
-  const shutdownBtn = document.getElementById('shutdown-btn');
-  if (shutdownBtn) {
-    shutdownBtn.addEventListener('click', () => {
-      shutdownSequence();
-      playClickSound();
-    });
-  }
-}
-
-function setupClockControls() {
-  if (!clock) return;
-  clock.setAttribute('role', 'button');
-  clock.setAttribute('aria-label', 'Toggle calendar');
-  clock.tabIndex = 0;
-  clock.addEventListener('click', toggleCalendar);
-  clock.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      toggleCalendar();
-    }
-  });
-}
-
-function setupGlobalActionHandlers() {
-  document.addEventListener('click', handleActionClick);
-  document.addEventListener('keydown', handleActionKeydown);
-}
-
-function handleActionClick(event) {
-  const target = event.target.closest('[data-action]');
-  if (!target) return;
-  const action = target.dataset.action;
-
-  if (action === 'login') {
-    attemptLogin();
-    playClickSound();
-    return;
-  }
-  if (action === 'shutdown') {
-    shutdownSequence();
-    playClickSound();
-    return;
-  }
-  if (action === 'calendar-prev') {
-    changeMonth(-1);
-    playClickSound();
-    return;
-  }
-  if (action === 'calendar-next') {
-    changeMonth(1);
-    playClickSound();
-    return;
-  }
-  if (action === 'window-minimize') {
-    const win = target.closest('.xp-window');
-    if (win) {
-      minimizeWindow(win);
-      playClickSound();
-    }
-    return;
-  }
-  if (action === 'window-close') {
-    const win = target.closest('.xp-window');
-    if (win) {
-      closeWindow(win);
-      playClickSound();
-    }
-    return;
-  }
-  if (action === 'jukebox-prev') {
-    prevSong();
-    playClickSound();
-    return;
-  }
-  if (action === 'jukebox-next') {
-    nextSong();
-    playClickSound();
-    return;
-  }
-  if (action === 'minesweeper-reset') {
-    resetMinesweeper();
-    playClickSound();
-    return;
-  }
-  if (action === 'idiot-virus') {
-    triggerIdiotVirus();
-    return;
-  }
-}
-
-function handleActionKeydown(event) {
-  if (event.key !== 'Enter' && event.key !== ' ') return;
-  const target = event.target.closest('[data-action]');
-  if (!target) return;
-  if (target.tagName === 'BUTTON') return;
-  event.preventDefault();
-  target.click();
-}
-
 // --- Notification Logic ---
 function announceDesktopMessage(message) {
+  if (jukeboxAudio.paused) return;
+  if (eggModeActive) return;
   const notificationArea = document.getElementById('notification-area');
   if (!notificationArea) return;
   const notification = document.createElement('div');
@@ -732,9 +582,7 @@ function announceDesktopMessage(message) {
   notification.innerHTML = `<img src="11.png" alt="Notification"><p>${message}</p>`;
   notificationArea.appendChild(notification);
 
-  if (notificationSound) {
-    notificationSound.play().catch(() => { });
-  }
+  notificationSound.play();
 
   // Remove after 5 seconds with a fade-out
   setTimeout(() => {
@@ -759,7 +607,6 @@ function setCRTEnabled(enabled, silent = false) {
   if (!silent) {
     announceDesktopMessage(enabled ? 'CRT bloom enabled.' : 'CRT bloom disabled.');
   }
-  syncSettingsUI();
 }
 
 function toggleCRT(force) {
@@ -767,12 +614,7 @@ function toggleCRT(force) {
   setCRTEnabled(targetState);
 }
 
-setCRTEnabled(!prefersReducedMotion.matches, true);
-prefersReducedMotion.addEventListener('change', (event) => {
-  if (event.matches) {
-    setCRTEnabled(false);
-  }
-});
+setCRTEnabled(true, true);
 
 function constrainWindowToViewport(win) {
   if (!win) return;
@@ -788,8 +630,6 @@ function constrainWindowToViewport(win) {
 }
 
 function handleViewportResize() {
-  const compact = setCompactMode();
-  if (compact) return;
   Object.values(openWindows).forEach(win => {
     if (!win) return;
     constrainWindowToViewport(win);
@@ -804,9 +644,8 @@ function getSongVolumeMultiplier(song) {
 }
 
 function applySongVolume(updateSlider = false) {
-  const actualVolume = Math.max(0, Math.min(1, jukeboxBaseVolume * currentSongVolumeMultiplier * masterVolume));
+  const actualVolume = Math.max(0, Math.min(1, jukeboxBaseVolume * currentSongVolumeMultiplier));
   jukeboxAudio.volume = actualVolume;
-  jukeboxAudio.muted = isMuted;
   if (!updateSlider) return;
   const controls = getJukeboxControls();
   if (controls && controls.volume && document.activeElement !== controls.volume) {
@@ -814,48 +653,10 @@ function applySongVolume(updateSlider = false) {
   }
 }
 
-function applyAudioToElement(audio, baseVolume) {
-  if (!audio) return;
-  const volume = Math.max(0, Math.min(1, baseVolume * masterVolume));
-  audio.volume = volume;
-  audio.muted = isMuted;
-}
-
-function applySfxVolume() {
-  applyAudioToElement(startupSound, sfxBaseVolume);
-  applyAudioToElement(shutdownSound, sfxBaseVolume);
-  applyAudioToElement(clickSound, sfxBaseVolume);
-  applyAudioToElement(notificationSound, sfxBaseVolume);
-  dynamicAudio.forEach((audio) => {
-    const base = typeof audio._baseVolume === 'number' ? audio._baseVolume : sfxBaseVolume;
-    applyAudioToElement(audio, base);
-  });
-}
-
-function registerDynamicAudio(audio, baseVolume = sfxBaseVolume) {
-  if (!audio) return;
-  audio._baseVolume = baseVolume;
-  dynamicAudio.add(audio);
-  applyAudioToElement(audio, baseVolume);
-}
-
-function setMasterVolume(value) {
-  if (!Number.isFinite(value)) return;
-  masterVolume = Math.max(0, Math.min(1, value));
-  applySfxVolume();
-  applySongVolume(true);
-  syncSettingsUI();
-}
-
-function setMuted(muted) {
-  isMuted = !!muted;
-  applySfxVolume();
-  applySongVolume(true);
-  syncSettingsUI();
-}
-
 function showRandomEasterEgg() {
-  showEasterEgg();
+  if (!jukeboxAudio.paused) {
+    showEasterEgg();
+  }
   const randomInterval = Math.random() * (120000 - 30000) + 30000;
   setTimeout(showRandomEasterEgg, randomInterval);
 }
@@ -988,55 +789,6 @@ function setupPowerShellWindow(win) {
   setTimeout(() => input.focus(), 50);
 }
 
-function syncSettingsUI() {
-  const settingsWin = openWindows['Settings'];
-  if (!settingsWin) return;
-  const muteToggle = settingsWin.querySelector('#settings-mute');
-  const masterSlider = settingsWin.querySelector('#settings-master-volume');
-  const crtToggle = settingsWin.querySelector('#settings-crt');
-  if (muteToggle) muteToggle.checked = isMuted;
-  if (masterSlider && document.activeElement !== masterSlider) {
-    masterSlider.value = masterVolume;
-  }
-  if (crtToggle) crtToggle.checked = crtEnabled;
-}
-
-function setupSettingsWindow(win) {
-  if (!win || win.dataset.settingsReady === 'true') return;
-  const muteToggle = win.querySelector('#settings-mute');
-  const masterSlider = win.querySelector('#settings-master-volume');
-  const crtToggle = win.querySelector('#settings-crt');
-
-  if (muteToggle) {
-    muteToggle.addEventListener('change', () => setMuted(muteToggle.checked));
-  }
-  if (masterSlider) {
-    masterSlider.addEventListener('input', () => {
-      const nextValue = parseFloat(masterSlider.value);
-      setMasterVolume(nextValue);
-    });
-  }
-  if (crtToggle) {
-    crtToggle.addEventListener('change', () => toggleCRT(crtToggle.checked));
-  }
-
-  win.dataset.settingsReady = 'true';
-  syncSettingsUI();
-}
-
-function applyWindowMediaHints(win) {
-  if (!win) return;
-  const images = win.querySelectorAll('img');
-  images.forEach(img => {
-    if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
-    if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
-  });
-  const frames = win.querySelectorAll('iframe');
-  frames.forEach(frame => {
-    if (!frame.hasAttribute('loading')) frame.setAttribute('loading', 'lazy');
-  });
-}
-
 // --- Window logic ---
 function openWindow(title, iconNumber, initialX = 50, initialY = 50) {
   if (openWindows[title]) {
@@ -1049,18 +801,16 @@ function openWindow(title, iconNumber, initialX = 50, initialY = 50) {
   zIndexCounter++;
   const win = document.createElement('div');
   win.className = 'xp-window active-window';
-  if (!document.body.classList.contains('compact')) {
-    win.style.left = `${initialX}px`;
-    win.style.top = `${initialY}px`;
-  }
+  win.style.left = `${initialX}px`;
+  win.style.top = `${initialY}px`;
   win.style.zIndex = zIndexCounter;
   win.id = `window-${title.replace(/\s/g, '-')}`;
+  win.dataset.window = title;
 
   const taskbarIcon = document.createElement('button');
   taskbarIcon.className = 'taskbar-app-icon active';
-  taskbarIcon.type = 'button';
   taskbarIcon.innerHTML = `<img src="${iconNumber}.png" style="width: 16px; height: 16px;"><span>${title}</span>`;
-  taskbarIcon.addEventListener('click', () => {
+  taskbarIcon.onclick = () => {
     if (win.style.display === 'none') {
       win.style.display = 'block';
       bringToFront(win);
@@ -1070,7 +820,7 @@ function openWindow(title, iconNumber, initialX = 50, initialY = 50) {
       win.style.display = 'none';
       taskbarIcon.classList.remove('active');
     }
-  });
+  };
   taskbarApps.appendChild(taskbarIcon);
   win.taskbarIcon = taskbarIcon;
 
@@ -1078,10 +828,10 @@ function openWindow(title, iconNumber, initialX = 50, initialY = 50) {
         <div class="window-titlebar">
           <span>${title}</span>
           <div class="window-buttons">
-            <button class="window-button" type="button" data-action="window-minimize">
+            <button class="window-button" onclick="minimizeWindow(this.parentNode.parentNode.parentNode); clickSound.play();">
               <img src="minimize.png">
             </button>
-            <button class="window-button close" type="button" data-action="window-close">
+            <button class="window-button close" onclick="closeWindow(this.parentNode.parentNode.parentNode); clickSound.play();">
               <img src="close.png">
             </button>
           </div>
@@ -1091,13 +841,10 @@ function openWindow(title, iconNumber, initialX = 50, initialY = 50) {
         </div>
       `;
   win.innerHTML = windowHtml;
-  applyWindowMediaHints(win);
   desktop.appendChild(win);
   openWindows[title] = win;
   bringToFront(win);
-  if (!document.body.classList.contains('compact')) {
-    constrainWindowToViewport(win);
-  }
+  constrainWindowToViewport(win);
 
   win.addEventListener('mousedown', (e) => {
     if (!e.target.closest('.window-content') || e.target.closest('.window-titlebar')) {
@@ -1116,8 +863,6 @@ function openWindow(title, iconNumber, initialX = 50, initialY = 50) {
     setupPowerShellWindow(win);
   } else if (title === 'Calculator') {
     setupCalculatorWindow(win);
-  } else if (title === 'Settings') {
-    setupSettingsWindow(win);
   }
 }
 
@@ -1134,6 +879,10 @@ function closeWindow(win) {
     lyricsState.ui = null;
     jukeboxControls.elements = null;
     jukeboxControls.isSeeking = false;
+    if (visualizerAnimFrame) {
+      cancelAnimationFrame(visualizerAnimFrame);
+      visualizerAnimFrame = null;
+    }
   } else if (title === 'Minesweeper') {
     stopMinesweeperTimer();
   }
@@ -1166,7 +915,6 @@ let activeWindow = null;
 let offsetX, offsetY;
 
 function dragStart(e, win) {
-  if (document.body.classList.contains('compact')) return;
   if (e.target.closest('.window-titlebar')) {
     activeWindow = win;
     bringToFront(activeWindow);
@@ -1214,26 +962,10 @@ function dragEnd() {
 // --- Desktop Icon Drag Logic ---
 let activeIcon = null;
 
-function openWindowFromIcon(icon) {
-  if (!icon) return;
-  const title = icon.dataset.title;
-  const explicitIcon = icon.dataset.icon;
-  const iconImage = icon.querySelector('img');
-  const iconSrc = iconImage ? iconImage.getAttribute('src') : null;
-  const iconNumber = explicitIcon || (iconSrc ? iconSrc.split('/').pop().replace('.png', '') : null);
-  if (!title || !iconNumber) return;
-  openWindow(title, iconNumber);
-  playClickSound();
-}
-
 function setupDesktopIcons() {
   const icons = document.querySelectorAll('.desktop-icon');
   icons.forEach(icon => {
-    icon.setAttribute('role', 'button');
-    icon.setAttribute('aria-label', icon.dataset.title || 'Desktop icon');
-    icon.tabIndex = 0;
     icon.addEventListener('mousedown', (e) => {
-      if (document.body.classList.contains('compact')) return;
       activeIcon = icon;
       offsetX = e.clientX - icon.offsetLeft;
       offsetY = e.clientY - icon.offsetTop;
@@ -1242,13 +974,11 @@ function setupDesktopIcons() {
       e.preventDefault();
     });
     icon.addEventListener('dblclick', () => {
-      openWindowFromIcon(icon);
-    });
-    icon.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        openWindowFromIcon(icon);
-      }
+      const title = icon.dataset.title;
+      let iconSrc = icon.querySelector('img').src;
+      let iconNumber = iconSrc.split('/').pop().replace('.png', '');
+      openWindow(title, iconNumber);
+      clickSound.play();
     });
   });
 }
@@ -1380,20 +1110,28 @@ function prevSong() {
   playSong(prev);
 }
 
+function getActiveJukeboxElement(selector) {
+  const win = document.getElementById('window-Jukebox');
+  if (win) {
+    return win.querySelector(selector);
+  }
+  return document.querySelector(selector);
+}
+
 function getLyricsUI() {
   if (lyricsState.ui && document.body.contains(lyricsState.ui.panel)) {
     return lyricsState.ui;
   }
-  const panel = document.getElementById('lyrics-panel');
+  const panel = getActiveJukeboxElement('#lyrics-panel');
   if (!panel) {
     lyricsState.ui = null;
     return null;
   }
   lyricsState.ui = {
     panel,
-    status: document.getElementById('lyrics-status'),
-    list: document.getElementById('lyrics-lines'),
-    scroll: document.getElementById('lyrics-scroll')
+    status: getActiveJukeboxElement('#lyrics-status'),
+    list: getActiveJukeboxElement('#lyrics-lines'),
+    scroll: getActiveJukeboxElement('#lyrics-scroll')
   };
   return lyricsState.ui;
 }
@@ -1424,7 +1162,7 @@ function getJukeboxControls(forceRefresh = false) {
     return jukeboxControls.elements;
   }
 
-  const seek = document.getElementById('jukebox-seek');
+  const seek = getActiveJukeboxElement('#jukebox-seek');
   if (!seek) {
     jukeboxControls.elements = null;
     return null;
@@ -1432,11 +1170,11 @@ function getJukeboxControls(forceRefresh = false) {
 
   jukeboxControls.elements = {
     seek,
-    current: document.getElementById('jukebox-current-time'),
-    duration: document.getElementById('jukebox-duration'),
-    loopToggle: document.getElementById('jukebox-loop'),
-    loopLabel: document.getElementById('jukebox-loop-toggle'),
-    volume: document.getElementById('volume')
+    current: getActiveJukeboxElement('#jukebox-current-time'),
+    duration: getActiveJukeboxElement('#jukebox-duration'),
+    loopToggle: getActiveJukeboxElement('#jukebox-loop'),
+    loopLabel: getActiveJukeboxElement('#jukebox-loop-toggle'),
+    volume: getActiveJukeboxElement('#volume')
   };
   return jukeboxControls.elements;
 }
@@ -1449,8 +1187,8 @@ function setLoopIndicator(isOn) {
 
 function getDisclaimerElements() {
   return {
-    panel: document.getElementById('lyrics-disclaimer-panel'),
-    button: document.getElementById('lyrics-disclaimer-toggle')
+    panel: getActiveJukeboxElement('#lyrics-disclaimer-panel'),
+    button: getActiveJukeboxElement('#lyrics-disclaimer-toggle')
   };
 }
 
@@ -1460,23 +1198,20 @@ function toggleDisclaimerPanel(forceShow) {
   const currentlyHidden = panel.hasAttribute('hidden');
   const shouldShow = typeof forceShow === 'boolean' ? forceShow : currentlyHidden;
   if (typeof forceShow === 'undefined') {
-    playClickSound();
+    clickSound.play();
   }
   if (shouldShow) {
     panel.removeAttribute('hidden');
+    button.setAttribute('aria-expanded', 'true');
   } else {
     panel.setAttribute('hidden', '');
+    button.setAttribute('aria-expanded', 'false');
   }
-  button.setAttribute('aria-expanded', shouldShow ? 'true' : 'false');
   button.textContent = shouldShow ? 'Hide notice' : 'Copyright notice';
 }
 
 function closeDisclaimerPanel() {
-  const { panel, button } = getDisclaimerElements();
-  if (!panel || !button) return;
-  panel.setAttribute('hidden', '');
-  button.setAttribute('aria-expanded', 'false');
-  button.textContent = 'Copyright notice';
+  toggleDisclaimerPanel(false);
 }
 
 function stopCurrentTrack(resetPosition = false) {
@@ -1494,10 +1229,348 @@ function stopCurrentTrack(resetPosition = false) {
   applySongVolume(true);
 }
 
+function initVisualizer() {
+  const canvasH = getActiveJukeboxElement('#jukebox-visualizer');
+  const canvasEgg = getActiveJukeboxElement('#jukebox-egg-canvas');
+  if (!canvasH || !canvasEgg) return;
+  const ctxH = canvasH.getContext('2d');
+  const ctxEgg = canvasEgg.getContext('2d');
+  if (!ctxH || !ctxEgg) return;
+
+  // canvas resize helper
+  function resizeCanvases() {
+    const dpr = window.devicePixelRatio || 1;
+    const jukeboxWin = document.getElementById('window-Jukebox');
+    const isEgg = jukeboxWin && jukeboxWin.classList.contains('egg-mode');
+
+    if (isEgg) {
+      // egg canvas is fullscreen, css-pixel (1:1) to avoid retina freeze
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      if (canvasEgg.width !== w || canvasEgg.height !== h) {
+        canvasEgg.style.width = w + 'px';
+        canvasEgg.style.height = h + 'px';
+        canvasEgg.width = w;
+        canvasEgg.height = h;
+      }
+    } else {
+      const w = canvasH.clientWidth;
+      const h = canvasH.clientHeight;
+      if (canvasH.width !== w * dpr || canvasH.height !== h * dpr) {
+        canvasH.width = w * dpr;
+        canvasH.height = h * dpr;
+      }
+    }
+  }
+  resizeCanvases();
+
+  // Setup AudioContext + high-res analyser once (only on non-file:// protocols to avoid CORS blocking audio)
+  if (!audioCtx && window.location.protocol !== 'file:') {
+    try {
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (window.AudioContext) {
+        audioCtx = new window.AudioContext();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 2048;            // 1024 frequency bins — very precise
+        analyser.smoothingTimeConstant = 0.82; // smooth decay
+        if (!window.jukeboxAudioSource) {
+          window.jukeboxAudioSource = audioCtx.createMediaElementSource(jukeboxAudio);
+        }
+        source = window.jukeboxAudioSource;
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+      }
+    } catch (e) {
+      console.warn('AudioContext setup failed. Falling back to simulation.', e);
+      analyser = null;
+    }
+  }
+
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+
+  const freqBins = analyser ? analyser.frequencyBinCount : 64;  // 1024 when real
+  const freqData = new Uint8Array(freqBins);
+  const timeData = new Uint8Array(analyser ? analyser.fftSize : 128);
+  const smoothed = new Float32Array(freqBins);
+
+  if (visualizerAnimFrame) cancelAnimationFrame(visualizerAnimFrame);
+
+  function draw() {
+    visualizerAnimFrame = requestAnimationFrame(draw);
+    resizeCanvases();
+
+    const jukeboxWin = document.getElementById('window-Jukebox');
+    const isEgg = jukeboxWin && jukeboxWin.classList.contains('egg-mode');
+
+    // -- Data acquisition --
+    if (analyser && !jukeboxAudio.paused) {
+      analyser.getByteFrequencyData(freqData);
+      analyser.getByteTimeDomainData(timeData);
+    } else if (!jukeboxAudio.paused) {
+      // Symmetrical realistic music frequency simulation
+      const now = Date.now();
+      const beat = Math.pow(Math.max(0, Math.sin(now * 0.003 * Math.PI)), 4) * 140;
+
+      for (let i = 0; i < freqBins; i++) {
+        const pct = i / freqBins;
+        let val = 0;
+        if (pct < 0.15) {
+          val = beat + Math.sin(now * 0.009 + i * 0.6) * 35 + Math.random() * 15;
+        } else if (pct < 0.52) {
+          val = Math.sin(now * 0.005 - i * 0.3) * 60 + Math.cos(now * 0.012 + i * 0.45) * 25 + 90 + Math.random() * 20;
+        } else {
+          val = Math.max(0, Math.sin(now * 0.02 + i * 0.9) * 20 + Math.cos(now * 0.035 - i * 1.6) * 15 + 35 + Math.random() * 25);
+        }
+        freqData[i] = Math.max(0, Math.min(255, val * jukeboxBaseVolume));
+      }
+
+      for (let i = 0; i < timeData.length; i++) {
+        const pct = i / timeData.length;
+        const bassWave = Math.sin(now * 0.022 + i * 0.05) * (pct < 0.3 ? 40 : 20);
+        const midWave = Math.sin(now * 0.09 - i * 0.18) * 18;
+        const noiseWave = (Math.random() - 0.5) * 8;
+        timeData[i] = 128 + (bassWave + midWave + noiseWave) * jukeboxBaseVolume;
+      }
+    } else {
+      for (let i = 0; i < freqBins; i++)  freqData[i] = Math.max(0, freqData[i] - 4);
+      for (let i = 0; i < timeData.length; i++) timeData[i] = 128 + (timeData[i] - 128) * 0.92;
+    }
+
+    // -- Smooth bar data --
+    const DECAY = 0.12;
+    for (let i = 0; i < freqBins; i++) {
+      smoothed[i] += (freqData[i] - smoothed[i]) * DECAY;
+    }
+
+    if (isEgg) {
+      // fullscreen "dvd logo" easter egg. lightweight on purpose - no
+      // dpr-scaled mega canvas, no roundrect, no text measureText loops.
+      const W = canvasEgg.width;
+      const H = canvasEgg.height;
+
+      // bass / treble energy (cheap to compute)
+      const bassBins = Math.max(1, Math.floor(freqBins * 0.08));
+      let bassSum = 0, trebleSum = 0;
+      for (let i = 0; i < bassBins; i++) bassSum += freqData[i];
+      for (let i = freqBins - bassBins; i < freqBins; i++) trebleSum += freqData[i];
+      const bassE = (bassSum / bassBins) / 255;
+      const trebleE = (trebleSum / bassBins) / 255;
+
+      // soft trail wash instead of hard black - leaves gentle motion fade
+      ctxEgg.fillStyle = 'rgba(0,0,0,0.18)';
+      ctxEgg.fillRect(0, 0, W, H);
+      if (bassE > 0.15) {
+        ctxEgg.fillStyle = `rgba(${parseInt(dvd.color.slice(1, 3), 16)},${parseInt(dvd.color.slice(3, 5), 16)},${parseInt(dvd.color.slice(5, 7), 16)},${bassE * 0.08})`;
+        ctxEgg.fillRect(0, 0, W, H);
+      }
+
+      // drifting starfield - calm, low density, no flashing.
+      // stars are deterministic from a seed so they stay consistent.
+      if (!dvd._stars) {
+        dvd._stars = [];
+        for (let s = 0; s < 80; s++) {
+          dvd._stars.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: 0.5 + Math.random() * 1.4,
+            sp: 0.15 + Math.random() * 0.45,
+            tw: Math.random() * Math.PI * 2
+          });
+        }
+      }
+      ctxEgg.fillStyle = '#ffffff';
+      const now = Date.now() / 1000;
+      for (let s = 0; s < dvd._stars.length; s++) {
+        const st = dvd._stars[s];
+        st.y += st.sp;
+        if (st.y > H) { st.y = 0; st.x = Math.random() * W; }
+        const tw = 0.45 + 0.35 * Math.sin(now * 1.2 + st.tw);
+        ctxEgg.globalAlpha = tw * (0.6 + bassE * 0.4);
+        ctxEgg.fillRect(st.x | 0, st.y | 0, st.r | 0 || 1, st.r | 0 || 1);
+      }
+      ctxEgg.globalAlpha = 1;
+
+      // gentle pulse ring around the card centre (audio-reactive but smooth)
+      if (!dvd._ringPhase) dvd._ringPhase = 0;
+      dvd._ringPhase += 0.6 + bassE * 1.4;
+      const cx = dvd.x + dvd.w / 2;
+      const cy = dvd.y + dvd.h / 2;
+      for (let k = 0; k < 3; k++) {
+        const phase = (dvd._ringPhase + k * 60) % 180;
+        const rad = phase * 2.2;
+        const alpha = Math.max(0, 0.22 - phase / 900);
+        if (alpha <= 0) continue;
+        ctxEgg.strokeStyle = `rgba(${parseInt(dvd.color.slice(1, 3), 16)},${parseInt(dvd.color.slice(3, 5), 16)},${parseInt(dvd.color.slice(5, 7), 16)},${alpha})`;
+        ctxEgg.lineWidth = 2;
+        ctxEgg.beginPath();
+        ctxEgg.arc(cx, cy, rad, 0, Math.PI * 2);
+        ctxEgg.stroke();
+      }
+
+      // dvd bounce physics with audio-reactive speed
+      const audioSpeed = 1 + bassE * 1.8;
+      dvd.x += dvd.vx * audioSpeed;
+      dvd.y += dvd.vy * audioSpeed;
+      let hitEdge = false;
+      if (dvd.x <= 0) { dvd.x = 0; dvd.vx = Math.abs(dvd.vx); hitEdge = true; }
+      if (dvd.y <= 0) { dvd.y = 0; dvd.vy = Math.abs(dvd.vy); hitEdge = true; }
+      if (dvd.x + dvd.w >= W) { dvd.x = W - dvd.w; dvd.vx = -Math.abs(dvd.vx); hitEdge = true; }
+      if (dvd.y + dvd.h >= H) { dvd.y = H - dvd.h; dvd.vy = -Math.abs(dvd.vy); hitEdge = true; }
+      if (hitEdge) {
+        dvd.colorIdx = (dvd.colorIdx + 1) % dvdColors.length;
+        dvd.color = dvdColors[dvd.colorIdx];
+      }
+
+      // bouncing "now playing" card with cover, song name, and timestamp
+      const px = dvd.x, py = dvd.y, pw = dvd.w, ph = dvd.h;
+
+      // card background (translucent tint of the dvd color)
+      const r = parseInt(dvd.color.slice(1, 3), 16);
+      const g = parseInt(dvd.color.slice(3, 5), 16);
+      const b = parseInt(dvd.color.slice(5, 7), 16);
+      ctxEgg.fillStyle = `rgba(${r},${g},${b},0.22)`;
+      ctxEgg.fillRect(px, py, pw, ph);
+      // card border
+      ctxEgg.strokeStyle = dvd.color;
+      ctxEgg.lineWidth = 2;
+      ctxEgg.strokeRect(px + 1, py + 1, pw - 2, ph - 2);
+
+      // album cover on the left
+      const pad = 8;
+      const imgSize = Math.round(ph - pad * 2);
+      const jukeboxWinEl = document.getElementById('window-Jukebox');
+      const songIconEl = jukeboxWinEl && jukeboxWinEl.querySelector('#song-icon');
+      const songInfoEl = jukeboxWinEl && jukeboxWinEl.querySelector('#song-info');
+      if (songIconEl && songIconEl.complete && songIconEl.naturalWidth > 0) {
+        try { ctxEgg.drawImage(songIconEl, px + pad, py + pad, imgSize, imgSize); }
+        catch (e) { /* ignore */ }
+      } else {
+        ctxEgg.fillStyle = `rgba(${r},${g},${b},0.45)`;
+        ctxEgg.fillRect(px + pad, py + pad, imgSize, imgSize);
+      }
+
+      // song name + timestamp to the right of the cover
+      const tx = px + pad + imgSize + pad;
+      const songText = (songInfoEl && songInfoEl.textContent.trim().split('\n')[0].trim()) || 'Nothing Playing';
+      const ct = (jukeboxAudio && jukeboxAudio.currentTime) || 0;
+      const mins = Math.floor(ct / 60);
+      const secs = Math.floor(ct % 60);
+      const timeText = mins + ':' + String(secs).padStart(2, '0');
+
+      ctxEgg.fillStyle = dvd.color;
+      ctxEgg.textBaseline = 'top';
+      ctxEgg.textAlign = 'left';
+      const titleSize = Math.max(11, Math.floor(ph * 0.22));
+      const timeSize = Math.max(9, Math.floor(ph * 0.16));
+      ctxEgg.font = `bold ${titleSize}px Tahoma,sans-serif`;
+      // simple character-count truncation to avoid measureText loops
+      const availChars = Math.max(4, Math.floor((pw - imgSize - pad * 3) / (titleSize * 0.55)));
+      const displayName = songText.length > availChars
+        ? songText.slice(0, availChars - 1) + '…'
+        : songText;
+      ctxEgg.fillText(displayName, tx, py + pad);
+      ctxEgg.globalAlpha = 0.75;
+      ctxEgg.font = `${timeSize}px Tahoma,sans-serif`;
+      ctxEgg.fillText(timeText, tx, py + pad + titleSize + 4);
+      ctxEgg.globalAlpha = 1;
+    } else {
+      // thin, precise equalizer bars - 3px wide for high-detail readout
+      const WH = canvasH.width;
+      const HH = canvasH.height;
+      ctxH.imageSmoothingEnabled = false;
+      ctxH.fillStyle = '#000000';
+      ctxH.fillRect(0, 0, WH, HH);
+      const barW = 3;
+      const gap = 1;
+      const slotW = barW + gap;
+      const drawBins = Math.floor(WH / slotW);
+      const blockH = Math.max(2, Math.floor(HH / 24)); // smaller blocks for more granularity
+      const sampleStride = Math.max(1, Math.floor((freqBins * 0.55) / drawBins));
+      for (let i = 0; i < drawBins; i++) {
+        let sum = 0, n = 0;
+        for (let s = 0; s < sampleStride; s++) {
+          sum += freqData[i * sampleStride + s] || 0;
+          n++;
+        }
+        const v = (sum / Math.max(1, n)) / 255;
+        const blocks = Math.floor(v * (HH * 0.9 / blockH));
+        const x = i * slotW;
+        for (let b = 0; b < blocks; b++) {
+          const y = HH - (b + 1) * blockH;
+          ctxH.fillStyle = '#00f3ff';
+          ctxH.fillRect(x, y, barW, blockH - 1);
+        }
+      }
+    }
+  }
+  draw();
+}
+
+
 function setupJukeboxWindow(win) {
   const controls = getJukeboxControls(true);
   if (!controls) return;
   jukeboxControls.isSeeking = false;
+
+  initVisualizer();
+
+  // Egg mode toggle - exposed as window global so onclick can call it directly
+  const eggCanvas = win.querySelector('#jukebox-egg-canvas');
+  const windowContent = win.querySelector('.window-content');
+
+  window.toggleJukeboxEgg = function () {
+    const jukeboxWin = document.getElementById('window-Jukebox');
+    if (!jukeboxWin || !eggCanvas) return;
+    const entering = !jukeboxWin.classList.contains('egg-mode');
+    jukeboxWin.classList.toggle('egg-mode');
+    eggModeActive = entering;
+
+    if (entering) {
+      // truly fullscreen: cover viewport including taskbar.
+      // .xp-window has overflow:hidden and applies filter, which traps
+      // position:fixed children. so we re-parent the canvas onto <body>
+      // for the duration of egg mode, then put it back when exiting.
+      if (!eggCanvas._originalParent) eggCanvas._originalParent = eggCanvas.parentNode;
+      document.body.appendChild(eggCanvas);
+
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      eggCanvas.width = w;
+      eggCanvas.height = h;
+      eggCanvas.style.cssText = 'display:block; position:fixed; top:0; left:0; width:' + w + 'px; height:' + h + 'px; z-index:99999; cursor:pointer; background:#000;';
+
+      // bouncing now-playing card - bigger so cover + text + timestamp all fit
+      const cardW = Math.round(Math.min(w * 0.34, 420));
+      const cardH = Math.round(cardW * 0.42);
+      dvd.w = cardW;
+      dvd.h = cardH;
+      dvd.x = Math.round((w - cardW) / 2);
+      dvd.y = Math.round((h - cardH) / 2);
+      const speed = 2.2;
+      dvd.vx = speed * (Math.random() < 0.5 ? 1 : -1);
+      dvd.vy = speed * 0.7 * (Math.random() < 0.5 ? 1 : -1);
+      dvd.colorIdx = 0;
+      dvd.color = dvdColors[0];
+      dvd._stars = null;       // regenerate starfield for new viewport
+      dvd._ringPhase = 0;
+    } else {
+      eggCanvas.style.display = 'none';
+      // put the canvas back inside the jukebox window so the existing
+      // selectors keep working next time the egg is opened.
+      if (eggCanvas._originalParent && eggCanvas.parentNode !== eggCanvas._originalParent) {
+        eggCanvas._originalParent.appendChild(eggCanvas);
+      }
+    }
+  };
+
+  if (eggCanvas) {
+    eggCanvas.onclick = function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      window.toggleJukeboxEgg();
+    };
+  }
 
   if (controls.volume) {
     controls.volume.value = jukeboxBaseVolume;
@@ -1511,25 +1584,25 @@ function setupJukeboxWindow(win) {
     applySongVolume(true);
   }
 
-  const playBtn = document.getElementById('jukebox-play');
+  const playBtn = win.querySelector('#jukebox-play');
   if (playBtn) {
-    playBtn.addEventListener('click', () => {
-      playClickSound();
+    playBtn.onclick = () => {
+      clickSound.play();
       attemptJukeboxPlayback();
-    });
+    };
   }
 
-  const stopBtn = document.getElementById('jukebox-stop');
+  const stopBtn = win.querySelector('#jukebox-stop');
   if (stopBtn) {
-    stopBtn.addEventListener('click', () => {
-      playClickSound();
+    stopBtn.onclick = () => {
+      clickSound.play();
       stopCurrentTrack(false);
-    });
+    };
   }
 
-  const disclaimerBtn = document.getElementById('lyrics-disclaimer-toggle');
+  const disclaimerBtn = win.querySelector('#lyrics-disclaimer-toggle');
   if (disclaimerBtn) {
-    disclaimerBtn.addEventListener('click', () => toggleDisclaimerPanel());
+    disclaimerBtn.onclick = () => toggleDisclaimerPanel();
   }
   closeDisclaimerPanel();
 
@@ -1569,10 +1642,6 @@ function handleSeekInput() {
   jukeboxControls.isSeeking = true;
   if (controls.current) {
     controls.current.textContent = formatTime(value);
-  }
-  if (Number.isFinite(jukeboxAudio.duration) && jukeboxAudio.duration > 0) {
-    jukeboxAudio.currentTime = Math.min(Math.max(value, 0), jukeboxAudio.duration);
-    syncLyricsToTime(jukeboxAudio.currentTime);
   }
 }
 
@@ -1810,8 +1879,6 @@ function scrollLyricsIntoView(lineEl, container) {
 
 function handleGlobalHotkeys(event) {
   const keyLower = event.key && event.key.toLowerCase ? event.key.toLowerCase() : event.key;
-  const targetTag = event.target && event.target.tagName ? event.target.tagName.toLowerCase() : '';
-  const isTypingField = targetTag === 'input' || targetTag === 'textarea' || event.target?.isContentEditable;
   if (event.ctrlKey && event.altKey && keyLower === 'c') {
     event.preventDefault();
     toggleCRT();
@@ -1819,18 +1886,14 @@ function handleGlobalHotkeys(event) {
   }
   if (event.key === 'F1') {
     event.preventDefault();
-    summonAngel();
-    return;
-  }
-  const isQuestion = event.key === '?' || (event.key === '/' && event.shiftKey);
-  if (!event.ctrlKey && !event.altKey && !event.metaKey && isQuestion && !isTypingField) {
-    event.preventDefault();
-    openWindow('Settings', 11, 160, 120);
+    if (!jukeboxAudio.paused) {
+      summonAngel();
+    }
     return;
   }
   if (event.ctrlKey && event.altKey && keyLower === 'p') {
     event.preventDefault();
-    playClickSound();
+    clickSound.play();
     const alreadyOpen = !!openWindows['XP Tips'];
     openWindow('XP Tips', 'XP', 160, 110);
     if (!alreadyOpen) {
@@ -1870,12 +1933,12 @@ function stopIdiotAudio() {
   if (idiotAudio) {
     idiotAudio.pause();
     idiotAudio.currentTime = 0;
-    dynamicAudio.delete(idiotAudio);
     idiotAudio = null;
   }
 }
 
 function summonAngel() {
+  if (eggModeActive) return;
   if (angelSummoned) {
     announceDesktopMessage('Angel already assisting this session.');
     return;
@@ -1896,8 +1959,6 @@ function summonAngel() {
 
   const laugh = new Audio('laugh.mp3');
   const heal = new Audio('heal.mp3');
-  registerDynamicAudio(laugh, 0.9);
-  registerDynamicAudio(heal, 0.9);
   const desktopRect = desktop.getBoundingClientRect();
   const startPoint = {
     x: Math.max(24, desktopRect.width - angelSize - 24),
@@ -1957,14 +2018,71 @@ function summonAngel() {
   animateHalf(0);
 }
 
+// "you are an idiot" virus - classic win9x style.
+// flow: skull click -> warning popup -> ok -> storm of bouncing windows.
+// each window leaves up to 8 fading afterimage trails (oldest deleted first).
+// dragging a window's titlebar speeds it up (the window keeps its identity).
+
+const YAAI_TRAIL_MAX = 8;
+
+function showIdiotWarning() {
+  if (document.getElementById('idiot-warning-popup')) return;
+
+  zIndexCounter++;
+  const popup = document.createElement('div');
+  popup.id = 'idiot-warning-popup';
+  popup.className = 'xp-window active-window idiot-warning';
+  popup.style.zIndex = zIndexCounter;
+  popup.style.position = 'absolute';
+  popup.style.width = '320px';
+
+  const rect = desktop.getBoundingClientRect();
+  popup.style.left = Math.round((rect.width - 320) / 2) + 'px';
+  popup.style.top = Math.round((rect.height - 140) / 2) + 'px';
+
+  popup.innerHTML = `
+    <div class="window-titlebar">
+      <span>Microsoft Internet Explorer</span>
+      <div class="window-buttons">
+        <button class="window-button close" type="button" data-idiot-dismiss="1">
+          <img src="close.png" alt="close">
+        </button>
+      </div>
+    </div>
+    <div class="window-content idiot-warning-body">
+      <img class="idiot-warning-icon" src="error.png" alt="warning">
+      <div class="idiot-warning-text">You are an idiot!</div>
+      <div class="idiot-warning-buttons">
+        <button type="button" class="idiot-warning-ok">OK</button>
+      </div>
+    </div>
+  `;
+
+  desktop.appendChild(popup);
+  clickSound.play();
+
+  const dismiss = (launch) => {
+    if (!popup.parentNode) return;
+    popup.parentNode.removeChild(popup);
+    if (launch) startIdiotStorm();
+  };
+
+  popup.querySelector('.idiot-warning-ok').addEventListener('click', () => dismiss(true));
+  popup.querySelector('[data-idiot-dismiss]').addEventListener('click', () => dismiss(false));
+}
+
 function triggerIdiotVirus() {
   if (idiotWindows.length > 0) return;
+  // skip the gating warning - go straight into the storm.
+  // the first random error popup will pop up almost immediately on its own.
+  spawnRandomIdiotError();
+  startIdiotStorm();
+}
 
+function startIdiotStorm() {
   if (!idiotAudio) {
     idiotAudio = new Audio('YAAI.mp3');
     idiotAudio.loop = true;
-    idiotAudio.preload = 'metadata';
-    registerDynamicAudio(idiotAudio, 0.8);
     idiotAudio.play().catch(err => console.warn('YAAI audio blocked:', err));
   }
 
@@ -1972,58 +2090,220 @@ function triggerIdiotVirus() {
     createIdiotWindow();
   }
 
+  // random error popups spawn alongside the bouncing windows
+  let stormOver = false;
+  const spawnRandomError = () => {
+    if (stormOver) return;
+    spawnRandomIdiotError();
+    setTimeout(spawnRandomError, 800 + Math.random() * 1800);
+  };
+  setTimeout(spawnRandomError, 600);
+
   setTimeout(() => {
-    idiotWindows.forEach(win => {
-      if (win.parentNode) {
-        win.parentNode.removeChild(win);
-      }
+    stormOver = true;
+    idiotWindows.slice().forEach(win => {
+      if (win._trail) win._trail.slice().forEach(t => t.parentNode && t.remove());
+      if (win.parentNode) win.parentNode.removeChild(win);
     });
     idiotWindows = [];
+    document.querySelectorAll('.idiot-warning.random-error').forEach(el => el.remove());
     stopIdiotAudio();
   }, 15000);
+}
+
+// random error popup that pops up at a random screen position during the storm.
+// clicking ok dismisses it, but more keep coming until the storm ends.
+function spawnRandomIdiotError() {
+  zIndexCounter++;
+  const popup = document.createElement('div');
+  popup.className = 'xp-window active-window idiot-warning random-error';
+  popup.style.zIndex = zIndexCounter;
+  popup.style.position = 'absolute';
+  popup.style.width = '300px';
+
+  const rect = desktop.getBoundingClientRect();
+  popup.style.left = Math.round(Math.random() * Math.max(1, rect.width - 300)) + 'px';
+  popup.style.top = Math.round(Math.random() * Math.max(1, rect.height - 160)) + 'px';
+
+  popup.innerHTML = `
+    <div class="window-titlebar">
+      <span>Microsoft Internet Explorer</span>
+      <div class="window-buttons">
+        <button class="window-button close" type="button" data-idiot-err-close="1">
+          <img src="close.png" alt="close">
+        </button>
+      </div>
+    </div>
+    <div class="window-content idiot-warning-body">
+      <img class="idiot-warning-icon" src="error.png" alt="warning">
+      <div class="idiot-warning-text">You are an idiot!</div>
+      <div class="idiot-warning-buttons">
+        <button type="button" class="idiot-warning-ok">OK</button>
+      </div>
+    </div>
+  `;
+
+  const close = () => { if (popup.parentNode) popup.remove(); };
+  popup.querySelectorAll('.idiot-warning-ok, [data-idiot-err-close]').forEach(b => {
+    b.addEventListener('click', (e) => { e.stopPropagation(); close(); });
+  });
+
+  desktop.appendChild(popup);
 }
 
 function createIdiotWindow() {
   zIndexCounter++;
   const win = document.createElement('div');
-  win.className = 'idiot-window';
+  win.className = 'xp-window active-window idiot-window';
   win.style.zIndex = zIndexCounter;
-  win.innerHTML = `<img src="You_Are_An_Idiot.gif" alt="You are an idiot" loading="lazy" decoding="async">`;
+  win.style.position = 'absolute';
+  win.style.width = '350px';
+  win.style.height = '270px';
+  win.style.display = 'flex';
+  win.style.flexDirection = 'column';
+
+  win.innerHTML = `
+    <div class="window-titlebar idiot-titlebar">
+      <span>You are an idiot!...</span>
+      <div class="window-buttons">
+        <button class="window-button" type="button" data-idiot-noop="1">
+          <img src="minimize.png">
+        </button>
+        <button class="window-button close" type="button" data-idiot-close="1">
+          <img src="close.png">
+        </button>
+      </div>
+    </div>
+    <div class="window-content idiot-content">
+      <div class="browser-toolbar idiot-toolbar">
+        <button type="button" data-idiot-noop="1">&#8592;</button>
+        <button type="button" data-idiot-noop="1">&#8594;</button>
+        <button type="button" data-idiot-noop="1">&#8635;</button>
+        <input type="text" class="url-bar" value="http://youareanidiot.org/" readonly>
+      </div>
+      <div class="idiot-gif-wrap">
+        <img src="You_Are_An_Idiot.gif" alt="You are an idiot">
+      </div>
+    </div>
+  `;
+
+  win.querySelectorAll('[data-idiot-close]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeIdiotWindow(win);
+    });
+  });
+  win.querySelectorAll('[data-idiot-noop]').forEach(btn => {
+    btn.addEventListener('click', (e) => { e.stopPropagation(); clickSound.play(); });
+  });
 
   desktop.appendChild(win);
 
   const rect = desktop.getBoundingClientRect();
+  const W = 350;
+  const H = 270;
 
-  let pos = {
-    x: Math.random() * (rect.width - 280),
-    y: Math.random() * (rect.height - 210 - 28)
+  const pos = {
+    x: Math.random() * Math.max(1, rect.width - W),
+    y: Math.random() * Math.max(1, rect.height - H - 28)
   };
-  let vel = {
-    x: (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 + 1),
-    y: (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 + 1)
+  const baseSpeed = 1.6;
+  const dir = {
+    x: Math.random() > 0.5 ? 1 : -1,
+    y: Math.random() > 0.5 ? 1 : -1
   };
+  let speedBoost = 1;       // grows while user holds the titlebar
+  let holding = false;
+
+  win._trail = [];
 
   win.style.left = pos.x + 'px';
   win.style.top = pos.y + 'px';
 
+  // afterimage trail (FIFO, max YAAI_TRAIL_MAX)
+  const dropAfterimage = () => {
+    const ghost = document.createElement('div');
+    ghost.className = 'idiot-afterimage';
+    ghost.style.left = pos.x + 'px';
+    ghost.style.top = pos.y + 'px';
+    ghost.style.width = W + 'px';
+    ghost.style.height = H + 'px';
+    ghost.style.zIndex = (parseInt(win.style.zIndex, 10) || 100) - 1;
+    ghost.innerHTML = `
+      <div class="window-titlebar idiot-titlebar"><span>You are an idiot!...</span></div>
+      <div class="window-content idiot-content">
+        <div class="browser-toolbar idiot-toolbar"></div>
+        <div class="idiot-gif-wrap"><img src="You_Are_An_Idiot.gif" alt=""></div>
+      </div>
+    `;
+    desktop.appendChild(ghost);
+    win._trail.push(ghost);
+    while (win._trail.length > YAAI_TRAIL_MAX) {
+      const old = win._trail.shift();
+      if (old && old.parentNode) old.parentNode.removeChild(old);
+    }
+  };
+
+  let frame = 0;
   const move = () => {
     if (!win.parentNode) return;
 
-    pos.x += vel.x;
-    pos.y += vel.y;
+    const speed = baseSpeed * speedBoost;
+    pos.x += dir.x * speed;
+    pos.y += dir.y * speed;
 
-    if (pos.x <= 0 || pos.x >= rect.width - 280) vel.x *= -1;
-    if (pos.y <= 0 || pos.y >= rect.height - 210 - 28) vel.y *= -1;
+    if (pos.x <= 0) { pos.x = 0; dir.x = 1; }
+    if (pos.y <= 0) { pos.y = 0; dir.y = 1; }
+    if (pos.x + W >= rect.width) { pos.x = rect.width - W; dir.x = -1; }
+    if (pos.y + H >= rect.height - 28) { pos.y = rect.height - H - 28; dir.y = -1; }
 
     win.style.left = pos.x + 'px';
     win.style.top = pos.y + 'px';
 
+    // drop an afterimage every ~6 frames so trails are visible but not spammy
+    frame++;
+    if (frame % 6 === 0) dropAfterimage();
+
+    // speed boost decays back to 1 over time when not holding
+    if (!holding && speedBoost > 1) speedBoost = Math.max(1, speedBoost - 0.04);
+
     requestAnimationFrame(move);
   };
+  requestAnimationFrame(move);
 
-  move();
+  // clicking anywhere on the window speeds it up; titlebar gives a bigger boost
+  const onHoldStart = (e) => {
+    if (e.target.closest('.window-buttons')) return;
+    holding = true;
+    const isTitlebar = !!e.target.closest('.window-titlebar');
+    const bump = isTitlebar ? 1.2 : 0.6;
+    speedBoost = Math.min(speedBoost + bump, 6);
+    e.preventDefault();
+  };
+  const onHoldEnd = () => { holding = false; };
+  win.addEventListener('mousedown', onHoldStart);
+  win.addEventListener('touchstart', onHoldStart, { passive: false });
+  document.addEventListener('mouseup', onHoldEnd);
+  document.addEventListener('touchend', onHoldEnd);
+
   idiotWindows.push(win);
 }
+
+function closeIdiotWindow(win) {
+  if (!win) return;
+  clickSound.play();
+  if (win._trail) {
+    win._trail.slice().forEach(t => t.parentNode && t.remove());
+    win._trail = [];
+  }
+  if (win.parentNode) win.parentNode.removeChild(win);
+  idiotWindows = idiotWindows.filter(w => w !== win);
+  yaaiWindowsClosed++;
+
+  const spawnCount = 1 + yaaiWindowsClosed;
+  for (let i = 0; i < spawnCount; i++) createIdiotWindow();
+}
+window.closeIdiotWindow = closeIdiotWindow;
 
 // Make window titlebars trigger drag
 document.addEventListener('mousedown', (e) => {
@@ -2220,10 +2500,6 @@ function setupCalculatorWindow(win) {
   const wrapper = win.querySelector('.calculator-display-wrapper');
   const maintenancePanel = win.querySelector('#calculator-secret-panel');
   const screws = win.querySelectorAll('.calc-screw');
-  const calcButtons = win.querySelectorAll('.calc-btn[data-value]');
-  calcButtons.forEach(btn => {
-    btn.addEventListener('click', () => handleCalculatorInput(btn.dataset.value));
-  });
   if (!wrapper || !maintenancePanel || !screws.length) return;
 
   const revealMaintenancePanel = () => {
@@ -2285,7 +2561,7 @@ function checkCalculatorSecret(panel) {
   if (equationOk) {
     panel.classList.add('solved');
     setTimeout(() => {
-      window.location.href = 'https://im-notalex.github.io/boogerboys.github.io/alex/calculator/game.html';
+      window.location.href = 'calculator/game.html';
     }, 900);
   }
 }
@@ -2579,6 +2855,4 @@ function checkWinCondition() {
     updateMineCounter();
   }
 }
-
-
 
