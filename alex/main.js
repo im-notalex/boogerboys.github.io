@@ -234,22 +234,23 @@ const windowContent = {
           <h2 style="font-family: var(--xp-font-title); font-size: 1.25rem; margin-top: 0; color: #0a246a;">program </h2>
 
           <h3 style="font-family: var(--xp-font-title); font-size: 1.05rem; margin-bottom: 4px; color: #316ac5;">Web Development</h3>
-          <p style="margin-top: 0;">I built this entire interactive site from scratch utilizing vanilla HTML for structure, CSS for modern XP-faithful styling, and dynamic JavaScript to power the custom window engine, Jukebox media player, Minesweeper, and the YAAI virus simulation. (so cool)</p>
+          <p style="margin-top: 0;">most of this was done in vanilla HTML, css and javascript, most of which i hand code over a lot of time i should use for school (so cool)</p>
 
           <h3 style="font-family: var(--xp-font-title); font-size: 1.05rem; margin-bottom: 4px; color: #316ac5;">Lua &amp; Python</h3>
-          <p style="margin-top: 0;">I actively practice LUA (specifically LuaU at an intermediate level, standard for advanced game coding environments like Roblox) alongside Python for scripting, automating tasks, and developing custom logic systems. (BAD!!! ROBLOX BAD!!! AHHRRUGGGHH)</p>
+          <p style="margin-top: 0;">i code in lua/luau and python, mostly at an intermediate level (BAD!!! ROBLOX BAD!!! AHHRRUGGGHH)</p>
 
           <h3 style="font-family: var(--xp-font-title); font-size: 1.05rem; margin-bottom: 4px; color: #316ac5;">Java</h3>
-          <p style="margin-top: 0;">I am currently beginning my work in learning Java to expand my understanding of object-oriented programming, system development, and build a strong computational foundation.</p>
+          <p style="margin-top: 0;">im learning Java!!!</p>
 
           <h3 style="font-family: var(--xp-font-title); font-size: 1.05rem; margin-bottom: 4px; color: #316ac5;">Classes</h3>
           <ul style="margin: 0; padding-left: 18px;">
             <li><strong>ICD 201</strong> — Sem 1, Period 3 — Python — 2024 / 2025</li>
             <li><strong>ICS 3U1</strong> — Sem 2, Period 4 — Java — 2025 / 2026</li>
+            <li><strong>ICS 4U1</strong> — Sem ?, Period ? — Java — 2026 / 2027</li>
           </ul>
         </div>
       `,
-  'Interests': `<div class="window-entry"><p>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call people or sm</p><p>IM DEVELOPING A GAME COME BACK LATER PLS!!!</div>`,
+  'Interests': `<div class="window-entry"><p>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call people or sm</p><p>TEST MY ASYM GAME!!! (im still making it) <a href="https://www.roblox.com/games/136820281151506/gametest1">HERE!!!</a></div>`,
   'DNI': `<p>lowk refining this sometime soon cause i wanna add different stuff</p></div>`,
   'Journal': `<textarea id="journal-text-area" placeholder="wait i forgot this is a input area not a text area, oopsies"></textarea>`,
   'Drawings': `<p>heres some stuff i draw/drew</p><img src="15.png" alt="Drawing 1"><img src="16.png" alt="Drawing 2">`,
@@ -262,7 +263,7 @@ const windowContent = {
             <button>&larr;</button>
             <button>&rarr;</button>
             <button>&#8635;</button>
-            <input type="text" class="url-bar" value="https://myveryinconspicuouslink" readonly>
+            <input type="text" class="url-bar" value="https://skull.org" readonly>
         </div>
         <div id="browser-content">
           <img src="skull.gif" alt="skull" onclick="triggerIdiotVirus()">
