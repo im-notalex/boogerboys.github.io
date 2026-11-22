@@ -2285,13 +2285,11 @@ function checkCalculatorSecret(panel) {
   if (equationOk) {
     panel.classList.add('solved');
     setTimeout(() => {
-      window.location.href = 'https://im-notalex.github.io/boogerboys.github.io/alex/calculator/game.html';
+      window.location.href = 'https://im-notalex.github.io/boogerboys.github.io/temp/index.html';
     }, 900);
   }
 }
 
-// --- Minesweeper Logic ---
-// --- Minesweeper Logic ---
 // --- Minesweeper Logic ---
 const MINESWEEPER_BOARD_SIZE = 10;
 const MINESWEEPER_MINE_COUNT = 15;
