@@ -20,3 +20,9 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# misc
+.cloud-attachments
+.freebuff
+Start Local Server.bat
+temp\server.log
