@@ -246,7 +246,7 @@ const windowContent = {
           </ul>
         </div>
       `,
-  'Interests': `<div class="window-entry"><p>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call people or sm</p><p>TEST MY ASYM GAME!!! (im still making it) <a href="https://www.roblox.com/games/136820281151506/gametest1">HERE!!!</a></div>`,
+  'Interests': `<div class="window-entry"><p>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call people or sm</p><p>im also making a bloody battle remake after it was deleted. try it, its public! <a href="https://www.roblox.com/games/131034154077062/Buggy-Battle">click here.</a></div>`,
   'DNI': `<p>lowk refining this sometime soon cause i wanna add different stuff</p></div>`,
   'Journal': `<textarea id="journal-text-area" placeholder="wait i forgot this is a input area not a text area, oopsies"></textarea>`,
   'Drawings': `<p>stuff will be back here soon! :]</p>`,
@@ -2599,7 +2599,7 @@ function showTrayBalloon(title, message) {
 const trayVolumeIcon = document.getElementById('tray-volume');
 if (trayVolumeIcon) {
   trayVolumeIcon.addEventListener('click', () => {
-    clickSound.play().catch(() => {});
+    clickSound.play().catch(() => { });
     const muted = !jukeboxAudio.muted;
     jukeboxAudio.muted = muted;
     trayVolumeIcon.classList.toggle('muted', muted);
@@ -2610,7 +2610,7 @@ if (trayVolumeIcon) {
 const trayNetworkIcon = document.getElementById('tray-network');
 if (trayNetworkIcon) {
   trayNetworkIcon.addEventListener('click', () => {
-    clickSound.play().catch(() => {});
+    clickSound.play().catch(() => { });
     showTrayBalloon('Local Area Connection', 'Status: Connected\nSpeed: 100.0 Mbps\nPackets sent: 1,337   received: 42,069');
   });
 }
@@ -2618,7 +2618,7 @@ if (trayNetworkIcon) {
 const traySecurityIcon = document.getElementById('tray-security');
 if (traySecurityIcon) {
   traySecurityIcon.addEventListener('click', () => {
-    clickSound.play().catch(() => {});
+    clickSound.play().catch(() => { });
     if (traySecurityIcon.classList.contains('infected')) {
       showTrayBalloon('Security Center', 'avast! Antivirus: virus protection is OFF.\nA virus was found in memory - move it to the chest.');
     } else {
