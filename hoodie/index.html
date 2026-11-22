@@ -60,7 +60,7 @@
             background: var(--bg);
         }
 
-        /* chunky ascii block banner — shading lives in the characters */
+        /* chunky ascii block banner // shading lives in the characters */
         pre.banner {
             margin: 0;
             font-family: "Consolas", "Courier New", monospace;
@@ -458,14 +458,9 @@
     </div>
 
     <script>
-        // hoobeangpt - fake cli ai
-        // all response text is literal placeholders. no generated content.
-        // slow old-school algorithm feel: thinking pauses, progress bars, word-by-word output.
-
+        // hoobeangpt
         // toggle: when false, image-related commands are silently ignored
-        const imageGenEnabled = true;
-
-        // keyword -> folder + filenames inside /hoodie/images/<folder>/
+        const imageGenEnabled = false;
         const imageSets = {
             commissions: {
                 folder: "images/commissions",
@@ -480,8 +475,6 @@
                 files: ["1.svg", "2.svg", "3.svg", "4.svg"]
             }
         };
-
-        // text responses (placeholders only)
         const responses = [
             {
                 keywords: ["bio", "about", "who"],
@@ -527,15 +520,15 @@
                 keywords: ["help", "commands", "command", "?"],
                 lines: [
                     "available topics:",
-                    "  bio       — who hoodie is",
-                    "  hobbies   — what hoodie does for fun",
-                    "  contact   — socials & links",
-                    "  music     — favorite tunes",
-                    "  games     — favorite games",
-                    "  galleries — commissions, art, photos",
-                    "  lorem     — placeholder line",
-                    "  clear     — wipe the screen",
-                    "  exit      — back to the main site"
+                    "  bio // who i am",
+                    "  hobbies // what i do",
+                    "  contact // socials & links",
+                    "  music // favorite 𝓶𝓾𝓼𝓲𝓬𝓪𝓵 𝓪𝓻𝓻𝓪𝓷𝓰𝓮𝓶𝓮𝓷𝓽𝓼",
+                    "  games // favorite games",
+                    "  galleries // commissions, art, photos",
+                    "  lorem // placeholder line (:shrug:)",
+                    "  clear // wipe the screen",
+                    "  exit // back to the main site"
                 ]
             },
             {
@@ -613,7 +606,7 @@
         let isTyping = false;
         let activeCursor = null;
 
-        // menu definition (claude-code style options)
+        // menu definition
         // type "response" -> respond with the given lines
         // type "image"    -> trigger image generation for imageSets[key]
         // type "ask"      -> drop into free-form chat with the ai
