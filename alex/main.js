@@ -59,10 +59,6 @@ let visualizerAnimFrame = null;
 let audioCtx = null;
 let analyser = null;
 let source = null;
-let visualizerEggActive = false; // easter egg: fullscreen visualizer mode
-let eggModeActive = false; // blocks F1/notifications while egg is open
-const dvdColors = ['#ff4444', '#ff9900', '#ffee00', '#44ff88', '#44ccff', '#cc44ff', '#ff44cc', '#ffffff'];
-const dvd = { x: 0, y: 0, vx: 1.4, vy: 1.1, w: 0, h: 0, color: '#ffffff', colorIdx: 0 };
 let loginUsed = false; // prevent login button spam
 
 // YAAI State
@@ -228,7 +224,7 @@ const lyricsState = {
 
 // --- App content data ---
 const windowContent = {
-  'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 17 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid, (BUT I DID DO A BIG MARGIN OF IT OK)</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it ðŸ™Œ</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping nil with hers, so eventually they'll be done and temkky, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p><p>abc for bf ahh ðŸ˜­ðŸ˜­â¤ï¸â€ðŸ©¹</div>`,
+  'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 17 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid, (BUT I DID DO A BIG MARGIN OF IT OK)</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it ðŸ™Œ</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping nil with hers, so eventually they'll be done, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p><p>abc for bf ahh 🙏🙏</div>`,
   'Programming': `
         <div class="window-entry" style="font-family: var(--xp-font-main); line-height: 1.5; color: #000; font-size: 0.95rem;">
           <h2 style="font-family: var(--xp-font-title); font-size: 1.25rem; margin-top: 0; color: #0a246a;">program </h2>
@@ -246,14 +242,14 @@ const windowContent = {
           <ul style="margin: 0; padding-left: 18px;">
             <li><strong>ICD 201</strong> — Sem 1, Period 3 — Python — 2024 / 2025</li>
             <li><strong>ICS 3U1</strong> — Sem 2, Period 4 — Java — 2025 / 2026</li>
-            <li><strong>ICS 4U1</strong> — Sem ?, Period ? — Java — 2026 / 2027</li>
+            <li><strong>ICS 4U1</strong> — Sem 1, Period 4 — Java — 2026 / 2027</li>
           </ul>
         </div>
       `,
   'Interests': `<div class="window-entry"><p>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call people or sm</p><p>TEST MY ASYM GAME!!! (im still making it) <a href="https://www.roblox.com/games/136820281151506/gametest1">HERE!!!</a></div>`,
   'DNI': `<p>lowk refining this sometime soon cause i wanna add different stuff</p></div>`,
   'Journal': `<textarea id="journal-text-area" placeholder="wait i forgot this is a input area not a text area, oopsies"></textarea>`,
-  'Drawings': `<p>heres some stuff i draw/drew</p><img src="15.png" alt="Drawing 1"><img src="16.png" alt="Drawing 2">`,
+  'Drawings': `<p>stuff will be back here soon! :]</p>`,
   'Games': `<p>i play these games:</p><ul><li>roblox</li><li>minecraft</li><li>terraria (sometimes)</li><li>stardew valley</li><li>ultrakill</li><li>gow:r</li><li>any multiplayer sandbox game pretty much.</li></ul><p>i don't play these games:</p><ul><li>fortnite</li><li>cod</li><li>overwatch</li><li>valorant</li><li>practically any fps game that is massively multiplayer, i dont play. maybe fort though</li></ul><p>things i frequent:</p><ul><li>roblox</li><li>discord</li></ul>`,
   'My Computer': `<p>i forgot to put something here, uh ohhhh.... (what would i put here anyways?)</p>`,
   'Recycle Bin': `<p>awesome bin here, i cant wait to make a rm -rf /* joke on a windows os!</p>`,
@@ -271,19 +267,20 @@ const windowContent = {
       `,
   'Jukebox': `
         <div id="jukebox-content">
-          <!-- Egg-mode full overlay canvas (hidden by default) -->
-          <canvas id="jukebox-egg-canvas" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer;" title="Double-click to exit visualizer mode"></canvas>
-          
           <!-- Center Main Content -->
           <div class="jukebox-main-layout" style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
             <div class="jukebox-song">
               <img id="song-icon" src="Music1.jpg" alt="Song artwork">
-              <div id="song-info" aria-live="polite">Loading...</div>
+              <div class="jukebox-now-playing">
+                <span class="jukebox-np-label">Now playing</span>
+                <div id="song-info" aria-live="polite">Loading...</div>
+                <span class="jukebox-track-counter" id="jukebox-track-counter">1 / 12</span>
+              </div>
             </div>
             
-            <!-- Horizontal Canvas (shown by default, hidden in egg-mode) -->
+            <!-- Horizontal audio visualizer canvas -->
             <div class="visualizer-container" id="jukebox-horizontal-viz-container" style="margin: 4px 0;">
-              <canvas id="jukebox-visualizer" style="width: 100%; height: 40px; background: #000; border-radius: 4px; border: 1px solid #7f9db9; display: block;"></canvas>
+              <canvas id="jukebox-visualizer" style="width: 100%; height: 40px; background: #000; border: 2px inset #d4d0c8; display: block;"></canvas>
             </div>
             
             <div class="jukebox-controls">
@@ -303,6 +300,7 @@ const windowContent = {
               <div class="option-group">
                 <label class="loop-toggle" id="jukebox-loop-toggle">
                   <input type="checkbox" id="jukebox-loop">
+                  <span class="xp-checkbox" aria-hidden="true"></span>
                   <span>Loop track</span>
                 </label>
               </div>
@@ -310,12 +308,9 @@ const windowContent = {
                 <button type="button" class="jukebox-action-btn" id="jukebox-play">Start</button>
                 <button type="button" class="jukebox-action-btn" id="jukebox-stop">Stop</button>
                 <button type="button" class="jukebox-action-btn" id="lyrics-disclaimer-toggle" aria-expanded="false">Copyright notice</button>
-                <button type="button" class="jukebox-action-btn" id="jukebox-egg-toggle" title="&#9835;" style="opacity:0.35; min-width:0; padding: 2px 6px; font-size:0.75em;" onclick="event.stopPropagation(); event.preventDefault(); window.toggleJukeboxEgg && window.toggleJukeboxEgg(); return false;">&#9835;</button>
               </div>
             </div>
           </div>
-
-          <!-- (egg canvas above) -->
 
           <div id="lyrics-disclaimer-panel" class="lyrics-disclaimer" hidden style="background: #0d0d0d; border: 1px solid #333; color: #eee;">
             <strong>Copyright Notice &amp; Disclaimer</strong>
@@ -370,34 +365,8 @@ const windowContent = {
   'Calculator': `
         <div class="calculator-grid" id="calculator-grid">
             <div class="calculator-display-wrapper">
-                <button type="button" class="calc-screw top-left" aria-label="Unscrew top left" aria-disabled="false">&#8226;</button>
-                <button type="button" class="calc-screw top-right" aria-label="Unscrew top right" aria-disabled="false">&#8226;</button>
-                <button type="button" class="calc-screw bottom-left" aria-label="Unscrew bottom left" aria-disabled="false">&#8226;</button>
-                <button type="button" class="calc-screw bottom-right" aria-label="Unscrew bottom right" aria-disabled="false">&#8226;</button>
                 <div class="calculator-display-glass">
                     <div id="calculator-display">0</div>
-                </div>
-                <div class="calculator-maintenance-panel" id="calculator-secret-panel" aria-hidden="true">
-                    <div class="secret-slot-row">
-                        <div class="secret-slot" data-index="0"></div>
-                        <div class="secret-slot" data-index="1"></div>
-                        <div class="secret-slot" data-index="2"></div>
-                        <div class="secret-slot" data-index="3"></div>
-                        <div class="secret-slot" data-index="4"></div>
-                        <div class="secret-slot" data-index="5"></div>
-                    </div>
-                    <div class="secret-token-tray">
-                        <button type="button" class="secret-token" data-value="1">1</button>
-                        <button type="button" class="secret-token" data-value="8">8</button>
-                        <button type="button" class="secret-token" data-value="*">&#215;</button>
-                        <button type="button" class="secret-token" data-value="/">&#247;</button>
-                        <button type="button" class="secret-token" data-value="5">5</button>
-                        <button type="button" class="secret-token" data-value="9">9</button>
-                        <button type="button" class="secret-token" data-value=")">)</button>
-                        <button type="button" class="secret-token" data-value="/">/</button>
-                        <button type="button" class="secret-token" data-value="=">=</button>
-                    </div>
-                    <button type="button" class="secret-reset-btn">Reset order</button>
                 </div>
             </div>
             <!-- Row 1: C spans 3, / -->
@@ -514,10 +483,9 @@ function logOff() {
 
 // --- Taskbar & Start Menu logic ---
 function updateClock() {
+  // tray clock shows the time only, like the real thing
   const now = new Date();
-  const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-  const date = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-  clock.textContent = `${time} ${date}`;
+  clock.textContent = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 }
 
 // UPDATED: Calendar logic
@@ -575,7 +543,6 @@ function toggleStartMenu() {
 // --- Notification Logic ---
 function announceDesktopMessage(message) {
   if (jukeboxAudio.paused) return;
-  if (eggModeActive) return;
   const notificationArea = document.getElementById('notification-area');
   if (!notificationArea) return;
   const notification = document.createElement('div');
@@ -827,7 +794,10 @@ function openWindow(title, iconNumber, initialX = 50, initialY = 50) {
 
   const windowHtml = `
         <div class="window-titlebar">
-          <span>${title}</span>
+          <div class="window-titlebar-title">
+            <img class="window-titlebar-icon" src="${iconNumber}.png" alt="" onerror="this.style.display='none';">
+            <span>${title}</span>
+          </div>
           <div class="window-buttons">
             <button class="window-button" onclick="minimizeWindow(this.parentNode.parentNode.parentNode); clickSound.play();">
               <img src="minimize.png">
@@ -862,8 +832,6 @@ function openWindow(title, iconNumber, initialX = 50, initialY = 50) {
     setupChatWindow(win);
   } else if (title === 'PowerShell') {
     setupPowerShellWindow(win);
-  } else if (title === 'Calculator') {
-    setupCalculatorWindow(win);
   }
 }
 
@@ -1073,6 +1041,8 @@ function playSong(index, options = {}) {
   const songIconEl = document.getElementById("song-icon");
 
   if (songInfoEl) songInfoEl.textContent = song.credit;
+  const trackCounterEl = document.getElementById('jukebox-track-counter');
+  if (trackCounterEl) trackCounterEl.textContent = `${index + 1} / ${songs.length}`;
   if (songIconEl) {
     songIconEl.src = song.icon || 'Music1.jpg';
     songIconEl.alt = `Artwork for ${song.credit}`;
@@ -1232,38 +1202,21 @@ function stopCurrentTrack(resetPosition = false) {
 
 function initVisualizer() {
   const canvasH = getActiveJukeboxElement('#jukebox-visualizer');
-  const canvasEgg = getActiveJukeboxElement('#jukebox-egg-canvas');
-  if (!canvasH || !canvasEgg) return;
+  if (!canvasH) return;
   const ctxH = canvasH.getContext('2d');
-  const ctxEgg = canvasEgg.getContext('2d');
-  if (!ctxH || !ctxEgg) return;
+  if (!ctxH) return;
 
   // canvas resize helper
-  function resizeCanvases() {
+  function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
-    const jukeboxWin = document.getElementById('window-Jukebox');
-    const isEgg = jukeboxWin && jukeboxWin.classList.contains('egg-mode');
-
-    if (isEgg) {
-      // egg canvas is fullscreen, css-pixel (1:1) to avoid retina freeze
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      if (canvasEgg.width !== w || canvasEgg.height !== h) {
-        canvasEgg.style.width = w + 'px';
-        canvasEgg.style.height = h + 'px';
-        canvasEgg.width = w;
-        canvasEgg.height = h;
-      }
-    } else {
-      const w = canvasH.clientWidth;
-      const h = canvasH.clientHeight;
-      if (canvasH.width !== w * dpr || canvasH.height !== h * dpr) {
-        canvasH.width = w * dpr;
-        canvasH.height = h * dpr;
-      }
+    const w = canvasH.clientWidth;
+    const h = canvasH.clientHeight;
+    if (canvasH.width !== w * dpr || canvasH.height !== h * dpr) {
+      canvasH.width = w * dpr;
+      canvasH.height = h * dpr;
     }
   }
-  resizeCanvases();
+  resizeCanvas();
 
   // Setup AudioContext + high-res analyser once (only on non-file:// protocols to avoid CORS blocking audio)
   if (!audioCtx && window.location.protocol !== 'file:') {
@@ -1298,10 +1251,7 @@ function initVisualizer() {
 
   function draw() {
     visualizerAnimFrame = requestAnimationFrame(draw);
-    resizeCanvases();
-
-    const jukeboxWin = document.getElementById('window-Jukebox');
-    const isEgg = jukeboxWin && jukeboxWin.classList.contains('egg-mode');
+    resizeCanvas();
 
     // -- Data acquisition --
     if (analyser && !jukeboxAudio.paused) {
@@ -1343,170 +1293,36 @@ function initVisualizer() {
       smoothed[i] += (freqData[i] - smoothed[i]) * DECAY;
     }
 
-    if (isEgg) {
-      // fullscreen "dvd logo" easter egg. lightweight on purpose - no
-      // dpr-scaled mega canvas, no roundrect, no text measureText loops.
-      const W = canvasEgg.width;
-      const H = canvasEgg.height;
-
-      // bass / treble energy (cheap to compute)
-      const bassBins = Math.max(1, Math.floor(freqBins * 0.08));
-      let bassSum = 0, trebleSum = 0;
-      for (let i = 0; i < bassBins; i++) bassSum += freqData[i];
-      for (let i = freqBins - bassBins; i < freqBins; i++) trebleSum += freqData[i];
-      const bassE = (bassSum / bassBins) / 255;
-      const trebleE = (trebleSum / bassBins) / 255;
-
-      // soft trail wash instead of hard black - leaves gentle motion fade
-      ctxEgg.fillStyle = 'rgba(0,0,0,0.18)';
-      ctxEgg.fillRect(0, 0, W, H);
-      if (bassE > 0.15) {
-        ctxEgg.fillStyle = `rgba(${parseInt(dvd.color.slice(1, 3), 16)},${parseInt(dvd.color.slice(3, 5), 16)},${parseInt(dvd.color.slice(5, 7), 16)},${bassE * 0.08})`;
-        ctxEgg.fillRect(0, 0, W, H);
+    // thin, precise equalizer bars - 3px wide for high-detail readout
+    const WH = canvasH.width;
+    const HH = canvasH.height;
+    ctxH.imageSmoothingEnabled = false;
+    ctxH.fillStyle = '#000000';
+    ctxH.fillRect(0, 0, WH, HH);
+    const barW = 3;
+    const gap = 1;
+    const slotW = barW + gap;
+    const drawBins = Math.floor(WH / slotW);
+    const blockH = Math.max(2, Math.floor(HH / 24)); // smaller blocks for more granularity
+    const sampleStride = Math.max(1, Math.floor((freqBins * 0.55) / drawBins));
+    for (let i = 0; i < drawBins; i++) {
+      let sum = 0, n = 0;
+      for (let s = 0; s < sampleStride; s++) {
+        sum += freqData[i * sampleStride + s] || 0;
+        n++;
       }
-
-      // drifting starfield - calm, low density, no flashing.
-      // stars are deterministic from a seed so they stay consistent.
-      if (!dvd._stars) {
-        dvd._stars = [];
-        for (let s = 0; s < 80; s++) {
-          dvd._stars.push({
-            x: Math.random() * W,
-            y: Math.random() * H,
-            r: 0.5 + Math.random() * 1.4,
-            sp: 0.15 + Math.random() * 0.45,
-            tw: Math.random() * Math.PI * 2
-          });
-        }
-      }
-      ctxEgg.fillStyle = '#ffffff';
-      const now = Date.now() / 1000;
-      for (let s = 0; s < dvd._stars.length; s++) {
-        const st = dvd._stars[s];
-        st.y += st.sp;
-        if (st.y > H) { st.y = 0; st.x = Math.random() * W; }
-        const tw = 0.45 + 0.35 * Math.sin(now * 1.2 + st.tw);
-        ctxEgg.globalAlpha = tw * (0.6 + bassE * 0.4);
-        ctxEgg.fillRect(st.x | 0, st.y | 0, st.r | 0 || 1, st.r | 0 || 1);
-      }
-      ctxEgg.globalAlpha = 1;
-
-      // gentle pulse ring around the card centre (audio-reactive but smooth)
-      if (!dvd._ringPhase) dvd._ringPhase = 0;
-      dvd._ringPhase += 0.6 + bassE * 1.4;
-      const cx = dvd.x + dvd.w / 2;
-      const cy = dvd.y + dvd.h / 2;
-      for (let k = 0; k < 3; k++) {
-        const phase = (dvd._ringPhase + k * 60) % 180;
-        const rad = phase * 2.2;
-        const alpha = Math.max(0, 0.22 - phase / 900);
-        if (alpha <= 0) continue;
-        ctxEgg.strokeStyle = `rgba(${parseInt(dvd.color.slice(1, 3), 16)},${parseInt(dvd.color.slice(3, 5), 16)},${parseInt(dvd.color.slice(5, 7), 16)},${alpha})`;
-        ctxEgg.lineWidth = 2;
-        ctxEgg.beginPath();
-        ctxEgg.arc(cx, cy, rad, 0, Math.PI * 2);
-        ctxEgg.stroke();
-      }
-
-      // dvd bounce physics with audio-reactive speed
-      const audioSpeed = 1 + bassE * 1.8;
-      dvd.x += dvd.vx * audioSpeed;
-      dvd.y += dvd.vy * audioSpeed;
-      let hitEdge = false;
-      if (dvd.x <= 0) { dvd.x = 0; dvd.vx = Math.abs(dvd.vx); hitEdge = true; }
-      if (dvd.y <= 0) { dvd.y = 0; dvd.vy = Math.abs(dvd.vy); hitEdge = true; }
-      if (dvd.x + dvd.w >= W) { dvd.x = W - dvd.w; dvd.vx = -Math.abs(dvd.vx); hitEdge = true; }
-      if (dvd.y + dvd.h >= H) { dvd.y = H - dvd.h; dvd.vy = -Math.abs(dvd.vy); hitEdge = true; }
-      if (hitEdge) {
-        dvd.colorIdx = (dvd.colorIdx + 1) % dvdColors.length;
-        dvd.color = dvdColors[dvd.colorIdx];
-      }
-
-      // bouncing "now playing" card with cover, song name, and timestamp
-      const px = dvd.x, py = dvd.y, pw = dvd.w, ph = dvd.h;
-
-      // card background (translucent tint of the dvd color)
-      const r = parseInt(dvd.color.slice(1, 3), 16);
-      const g = parseInt(dvd.color.slice(3, 5), 16);
-      const b = parseInt(dvd.color.slice(5, 7), 16);
-      ctxEgg.fillStyle = `rgba(${r},${g},${b},0.22)`;
-      ctxEgg.fillRect(px, py, pw, ph);
-      // card border
-      ctxEgg.strokeStyle = dvd.color;
-      ctxEgg.lineWidth = 2;
-      ctxEgg.strokeRect(px + 1, py + 1, pw - 2, ph - 2);
-
-      // album cover on the left
-      const pad = 8;
-      const imgSize = Math.round(ph - pad * 2);
-      const jukeboxWinEl = document.getElementById('window-Jukebox');
-      const songIconEl = jukeboxWinEl && jukeboxWinEl.querySelector('#song-icon');
-      const songInfoEl = jukeboxWinEl && jukeboxWinEl.querySelector('#song-info');
-      if (songIconEl && songIconEl.complete && songIconEl.naturalWidth > 0) {
-        try { ctxEgg.drawImage(songIconEl, px + pad, py + pad, imgSize, imgSize); }
-        catch (e) { /* ignore */ }
-      } else {
-        ctxEgg.fillStyle = `rgba(${r},${g},${b},0.45)`;
-        ctxEgg.fillRect(px + pad, py + pad, imgSize, imgSize);
-      }
-
-      // song name + timestamp to the right of the cover
-      const tx = px + pad + imgSize + pad;
-      const songText = (songInfoEl && songInfoEl.textContent.trim().split('\n')[0].trim()) || 'Nothing Playing';
-      const ct = (jukeboxAudio && jukeboxAudio.currentTime) || 0;
-      const mins = Math.floor(ct / 60);
-      const secs = Math.floor(ct % 60);
-      const timeText = mins + ':' + String(secs).padStart(2, '0');
-
-      ctxEgg.fillStyle = dvd.color;
-      ctxEgg.textBaseline = 'top';
-      ctxEgg.textAlign = 'left';
-      const titleSize = Math.max(11, Math.floor(ph * 0.22));
-      const timeSize = Math.max(9, Math.floor(ph * 0.16));
-      ctxEgg.font = `bold ${titleSize}px Tahoma,sans-serif`;
-      // simple character-count truncation to avoid measureText loops
-      const availChars = Math.max(4, Math.floor((pw - imgSize - pad * 3) / (titleSize * 0.55)));
-      const displayName = songText.length > availChars
-        ? songText.slice(0, availChars - 1) + '…'
-        : songText;
-      ctxEgg.fillText(displayName, tx, py + pad);
-      ctxEgg.globalAlpha = 0.75;
-      ctxEgg.font = `${timeSize}px Tahoma,sans-serif`;
-      ctxEgg.fillText(timeText, tx, py + pad + titleSize + 4);
-      ctxEgg.globalAlpha = 1;
-    } else {
-      // thin, precise equalizer bars - 3px wide for high-detail readout
-      const WH = canvasH.width;
-      const HH = canvasH.height;
-      ctxH.imageSmoothingEnabled = false;
-      ctxH.fillStyle = '#000000';
-      ctxH.fillRect(0, 0, WH, HH);
-      const barW = 3;
-      const gap = 1;
-      const slotW = barW + gap;
-      const drawBins = Math.floor(WH / slotW);
-      const blockH = Math.max(2, Math.floor(HH / 24)); // smaller blocks for more granularity
-      const sampleStride = Math.max(1, Math.floor((freqBins * 0.55) / drawBins));
-      for (let i = 0; i < drawBins; i++) {
-        let sum = 0, n = 0;
-        for (let s = 0; s < sampleStride; s++) {
-          sum += freqData[i * sampleStride + s] || 0;
-          n++;
-        }
-        const v = (sum / Math.max(1, n)) / 255;
-        const blocks = Math.floor(v * (HH * 0.9 / blockH));
-        const x = i * slotW;
-        for (let b = 0; b < blocks; b++) {
-          const y = HH - (b + 1) * blockH;
-          ctxH.fillStyle = '#00f3ff';
-          ctxH.fillRect(x, y, barW, blockH - 1);
-        }
+      const v = (sum / Math.max(1, n)) / 255;
+      const blocks = Math.floor(v * (HH * 0.9 / blockH));
+      const x = i * slotW;
+      for (let b = 0; b < blocks; b++) {
+        const y = HH - (b + 1) * blockH;
+        ctxH.fillStyle = '#00f3ff';
+        ctxH.fillRect(x, y, barW, blockH - 1);
       }
     }
   }
   draw();
 }
-
 
 function setupJukeboxWindow(win) {
   const controls = getJukeboxControls(true);
@@ -1515,63 +1331,34 @@ function setupJukeboxWindow(win) {
 
   initVisualizer();
 
-  // Egg mode toggle - exposed as window global so onclick can call it directly
-  const eggCanvas = win.querySelector('#jukebox-egg-canvas');
-  const windowContent = win.querySelector('.window-content');
+  const resizeGrip = document.createElement('div');
+  resizeGrip.className = 'jukebox-resize-grip';
+  resizeGrip.title = 'Resize';
+  win.appendChild(resizeGrip);
 
-  window.toggleJukeboxEgg = function () {
-    const jukeboxWin = document.getElementById('window-Jukebox');
-    if (!jukeboxWin || !eggCanvas) return;
-    const entering = !jukeboxWin.classList.contains('egg-mode');
-    jukeboxWin.classList.toggle('egg-mode');
-    eggModeActive = entering;
+  resizeGrip.addEventListener('mousedown', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const startRect = win.getBoundingClientRect();
 
-    if (entering) {
-      // truly fullscreen: cover viewport including taskbar.
-      // .xp-window has overflow:hidden and applies filter, which traps
-      // position:fixed children. so we re-parent the canvas onto <body>
-      // for the duration of egg mode, then put it back when exiting.
-      if (!eggCanvas._originalParent) eggCanvas._originalParent = eggCanvas.parentNode;
-      document.body.appendChild(eggCanvas);
-
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-
-      eggCanvas.width = w;
-      eggCanvas.height = h;
-      eggCanvas.style.cssText = 'display:block; position:fixed; top:0; left:0; width:' + w + 'px; height:' + h + 'px; z-index:99999; cursor:pointer; background:#000;';
-
-      // bouncing now-playing card - bigger so cover + text + timestamp all fit
-      const cardW = Math.round(Math.min(w * 0.34, 420));
-      const cardH = Math.round(cardW * 0.42);
-      dvd.w = cardW;
-      dvd.h = cardH;
-      dvd.x = Math.round((w - cardW) / 2);
-      dvd.y = Math.round((h - cardH) / 2);
-      const speed = 2.2;
-      dvd.vx = speed * (Math.random() < 0.5 ? 1 : -1);
-      dvd.vy = speed * 0.7 * (Math.random() < 0.5 ? 1 : -1);
-      dvd.colorIdx = 0;
-      dvd.color = dvdColors[0];
-      dvd._stars = null;       // regenerate starfield for new viewport
-      dvd._ringPhase = 0;
-    } else {
-      eggCanvas.style.display = 'none';
-      // put the canvas back inside the jukebox window so the existing
-      // selectors keep working next time the egg is opened.
-      if (eggCanvas._originalParent && eggCanvas.parentNode !== eggCanvas._originalParent) {
-        eggCanvas._originalParent.appendChild(eggCanvas);
-      }
-    }
-  };
-
-  if (eggCanvas) {
-    eggCanvas.onclick = function (e) {
-      e.stopPropagation();
-      e.preventDefault();
-      window.toggleJukeboxEgg();
+    const onResizeMove = (moveEvent) => {
+      const nextWidth = Math.max(300, startRect.width + moveEvent.clientX - startX);
+      const nextHeight = Math.max(320, startRect.height + moveEvent.clientY - startY);
+      win.style.width = `${nextWidth}px`;
+      win.style.height = `${nextHeight}px`;
     };
-  }
+
+    const onResizeEnd = () => {
+      document.removeEventListener('mousemove', onResizeMove);
+      document.removeEventListener('mouseup', onResizeEnd);
+      constrainWindowToViewport(win);
+    };
+
+    document.addEventListener('mousemove', onResizeMove);
+    document.addEventListener('mouseup', onResizeEnd);
+  });
 
   if (controls.volume) {
     controls.volume.value = jukeboxBaseVolume;
@@ -1936,10 +1723,11 @@ function stopIdiotAudio() {
     idiotAudio.currentTime = 0;
     idiotAudio = null;
   }
+  const trayAvast = document.getElementById('tray-security');
+  if (trayAvast) trayAvast.classList.remove('infected');
 }
 
 function summonAngel() {
-  if (eggModeActive) return;
   if (angelSummoned) {
     announceDesktopMessage('Angel already assisting this session.');
     return;
@@ -2074,9 +1862,7 @@ function showIdiotWarning() {
 
 function triggerIdiotVirus() {
   if (idiotWindows.length > 0) return;
-  // skip the gating warning - go straight into the storm.
-  // the first random error popup will pop up almost immediately on its own.
-  spawnRandomIdiotError();
+  // straight into the storm - only the YAAI windows, nothing else.
   startIdiotStorm();
 }
 
@@ -2087,69 +1873,186 @@ function startIdiotStorm() {
     idiotAudio.play().catch(err => console.warn('YAAI audio blocked:', err));
   }
 
+  const trayAvast = document.getElementById('tray-security');
+  if (trayAvast) trayAvast.classList.add('infected');
+
   for (let i = 0; i < 9; i++) {
     createIdiotWindow();
   }
 
-  // random error popups spawn alongside the bouncing windows
-  let stormOver = false;
-  const spawnRandomError = () => {
-    if (stormOver) return;
-    spawnRandomIdiotError();
-    setTimeout(spawnRandomError, 800 + Math.random() * 1800);
-  };
-  setTimeout(spawnRandomError, 600);
-
+  // the storm used to wipe itself out after 15s. now avast! steps in at that
+  // moment and the virus only goes away once the user tells avast to remove it.
   setTimeout(() => {
-    stormOver = true;
-    idiotWindows.slice().forEach(win => {
-      if (win._trail) win._trail.slice().forEach(t => t.parentNode && t.remove());
-      if (win.parentNode) win.parentNode.removeChild(win);
-    });
-    idiotWindows = [];
-    document.querySelectorAll('.idiot-warning.random-error').forEach(el => el.remove());
-    stopIdiotAudio();
+    showAvastWarning();
   }, 15000);
 }
 
-// random error popup that pops up at a random screen position during the storm.
-// clicking ok dismisses it, but more keep coming until the storm ends.
-function spawnRandomIdiotError() {
-  zIndexCounter++;
-  const popup = document.createElement('div');
-  popup.className = 'xp-window active-window idiot-warning random-error';
-  popup.style.zIndex = zIndexCounter;
-  popup.style.position = 'absolute';
-  popup.style.width = '300px';
+// --- avast! Warning dialog -----------------------------------------------
+// appears exactly when the YAAI storm would previously have vanished, on the
+// same window chrome as every other window on this desktop.
+const AVAST_ALERT = {
+  file: 'C:\\Windows\\System32\\yaai.exe',
+  malware: 'Win32:YAAI',
+  malwareType: 'Virus',
+  vps: '080331-0, 31/03/2008'
+};
+
+const AVAST_REMOVE_STAGGER = 130;   // ms between each YAAI window disappearing
+const AVAST_NAG_DELAY = 8000;       // how long the virus gets before avast returns
+
+let avastWarningWindow = null;
+let avastNagTimer = null;
+let avastSoundPlayed = false;
+
+function playAvastVirusSound() {
+  if (avastSoundPlayed) return;
+  avastSoundPlayed = true;
+  const sound = new Audio('virussound.mp3');
+  sound.play().catch(err => console.warn('avast virus sound blocked:', err));
+}
+
+function closeAvastWarning() {
+  if (avastWarningWindow && avastWarningWindow.parentNode) {
+    avastWarningWindow.parentNode.removeChild(avastWarningWindow);
+  }
+  avastWarningWindow = null;
+}
+
+function scheduleAvastNag() {
+  clearTimeout(avastNagTimer);
+  if (!idiotWindows.length) return;
+  avastNagTimer = setTimeout(showAvastWarning, AVAST_NAG_DELAY);
+}
+
+// delete / move to chest: the YAAI windows disappear one at a time.
+function removeIdiotWindowsOneByOne() {
+  clearTimeout(avastNagTimer);
+  closeAvastWarning();
+
+  const doomed = idiotWindows.slice();
+  idiotWindows = [];
+
+  if (!doomed.length) {
+    stopIdiotAudio();
+    return;
+  }
+
+  doomed.forEach((win, index) => {
+    setTimeout(() => {
+      if (win._trail) {
+        win._trail.slice().forEach(t => t.parentNode && t.remove());
+        win._trail = [];
+      }
+      if (win.parentNode) win.parentNode.removeChild(win);
+
+      if (index === doomed.length - 1) {
+        document.querySelectorAll('.idiot-afterimage').forEach(el => el.remove());
+        yaaiWindowsClosed = 0;
+        stopIdiotAudio();
+      }
+    }, index * AVAST_REMOVE_STAGGER);
+  });
+}
+
+function showAvastWarning() {
+  if (avastWarningWindow && avastWarningWindow.parentNode) return;
+
+  // park the warning near the top of the stack: every window climbs its own
+  // z-index when it is opened or brought forward, so a fixed high value is
+  // the only thing that reliably keeps avast above the virus and the rest.
+  const alertZ = Math.max(zIndexCounter + 1, 9000);
+
+  const win = document.createElement('div');
+  win.className = 'xp-window active-window';
+  win.id = 'avast-warning-window';
+  win.style.zIndex = alertZ;
+
+  win.innerHTML = `
+        <div class="window-titlebar">
+          <div class="window-titlebar-title">
+            <span>avast! Warning</span>
+          </div>
+          <div class="window-buttons">
+            <button class="window-button close" type="button" data-avast-continue="1">
+              <img src="close.png" alt="close">
+            </button>
+          </div>
+        </div>
+        <div class="window-content avast-content">
+          <div class="avast-heading">A Virus Was Found!</div>
+          <div class="avast-top">
+            <img class="avast-icon" src="warningvirus.gif" alt="Virus detected">
+            <p class="avast-blurb">There is no reason to panic, though. Try to follow the given advice and links.</p>
+          </div>
+          <dl class="avast-details">
+            <dt>File name:</dt><dd>${AVAST_ALERT.file}</dd>
+            <dt>Malware name:</dt><dd>${AVAST_ALERT.malware}</dd>
+            <dt>Malware type:</dt><dd>${AVAST_ALERT.malwareType}</dd>
+            <dt>VPS version:</dt><dd>${AVAST_ALERT.vps}</dd>
+          </dl>
+          <fieldset class="avast-group">
+            <legend>Available actions</legend>
+            <div class="avast-actions">
+              <button type="button" class="avast-btn" data-avast-noop="1">Move/<u>R</u>ename...</button>
+              <button type="button" class="avast-btn" data-avast-remove="1"><u>D</u>elete...</button>
+              <button type="button" class="avast-btn" data-avast-remove="1">Move to <u>c</u>hest</button>
+            </div>
+            <div class="avast-recommended">Recommended action: Move to chest</div>
+          </fieldset>
+          <fieldset class="avast-group">
+            <legend>Processing</legend>
+            <div class="avast-processing">
+              <button type="button" class="avast-btn" data-avast-continue="1"><u>C</u>ontinue</button>
+              <button type="button" class="avast-btn" data-avast-continue="1"><u>S</u>top</button>
+              <label class="avast-nag"><input type="checkbox" class="avast-nag-box"> Don't show this dialog next time</label>
+            </div>
+            <a class="avast-link" href="#" data-avast-continue="1">Schedule boot-time scan...</a>
+          </fieldset>
+          <div class="avast-footer">
+            <a href="http://www.avast.com" target="_blank" rel="noopener">http://www.avast.com</a>
+            <a href="#" data-avast-continue="1">Fill in our virus report to help us improve avast!...</a>
+          </div>
+        </div>
+      `;
+
+  desktop.appendChild(win);
+  avastWarningWindow = win;
 
   const rect = desktop.getBoundingClientRect();
-  popup.style.left = Math.round(Math.random() * Math.max(1, rect.width - 300)) + 'px';
-  popup.style.top = Math.round(Math.random() * Math.max(1, rect.height - 160)) + 'px';
+  win.style.width = Math.min(430, Math.max(260, rect.width - 24)) + 'px';
+  win.style.left = Math.max(8, Math.round((rect.width - win.offsetWidth) / 2)) + 'px';
+  win.style.top = Math.max(8, Math.round((rect.height - win.offsetHeight) / 2)) + 'px';
 
-  popup.innerHTML = `
-    <div class="window-titlebar">
-      <span>Microsoft Internet Explorer</span>
-      <div class="window-buttons">
-        <button class="window-button close" type="button" data-idiot-err-close="1">
-          <img src="close.png" alt="close">
-        </button>
-      </div>
-    </div>
-    <div class="window-content idiot-warning-body">
-      <img class="idiot-warning-icon" src="error.png" alt="warning">
-      <div class="idiot-warning-text">You are an idiot!</div>
-      <div class="idiot-warning-buttons">
-        <button type="button" class="idiot-warning-ok">OK</button>
-      </div>
-    </div>
-  `;
+  playAvastVirusSound();
 
-  const close = () => { if (popup.parentNode) popup.remove(); };
-  popup.querySelectorAll('.idiot-warning-ok, [data-idiot-err-close]').forEach(b => {
-    b.addEventListener('click', (e) => { e.stopPropagation(); close(); });
+  // delete and move to chest both clear the virus, a window at a time
+  win.querySelectorAll('[data-avast-remove]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      clickSound.play();
+      removeIdiotWindowsOneByOne();
+    });
   });
 
-  desktop.appendChild(popup);
+  // move/rename is a dud - it does nothing at all
+  win.querySelectorAll('[data-avast-noop]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      clickSound.play();
+    });
+  });
+
+  // continue / stop / close dismiss it, and avast is back if the virus is alive
+  win.querySelectorAll('[data-avast-continue]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const box = win.querySelector('.avast-nag-box');
+      const silenced = !!(box && box.checked);
+      closeAvastWarning();
+      if (!silenced) scheduleAvastNag();
+    });
+  });
 }
 
 function createIdiotWindow() {
@@ -2321,119 +2224,6 @@ let calcState = {
   operator: null,
   waitingForSecondOperand: false
 };
-function updateSecretTokenStates(panel) {
-  if (!panel) return;
-  const tokens = panel.querySelectorAll('.secret-token');
-  tokens.forEach(token => {
-    const available = !token.classList.contains('used');
-    token.disabled = !available;
-    token.setAttribute('aria-disabled', available ? 'false' : 'true');
-    token.classList.toggle('disabled', !available);
-    token.tabIndex = available ? 0 : -1;
-  });
-}
-
-function shuffleSecretTokens(panel) {
-  const tray = panel.querySelector('.secret-token-tray');
-  if (!tray) return;
-  const tokens = Array.from(tray.querySelectorAll('.secret-token'));
-  for (let i = tokens.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [tokens[i], tokens[j]] = [tokens[j], tokens[i]];
-  }
-  tokens.forEach(token => tray.appendChild(token));
-}
-
-function selectSecretSlot(panel, slot) {
-  const slots = panel.querySelectorAll('.secret-slot');
-  slots.forEach(s => s.classList.remove('selected'));
-  if (slot) {
-    slot.classList.add('selected');
-    panel.dataset.selectedSlot = slot.dataset.index;
-  } else {
-    delete panel.dataset.selectedSlot;
-  }
-}
-
-function releaseSecretSlot(panel, slot) {
-  if (!slot || !slot.dataset.tokenId) return;
-  const token = panel.querySelector(`.secret-token[data-token-id="${slot.dataset.tokenId}"]`);
-  if (token) {
-    token.classList.remove('used');
-    token.disabled = false;
-    token.setAttribute('aria-disabled', 'false');
-    token.classList.remove('disabled');
-    token.tabIndex = 0;
-  }
-  slot.dataset.value = '';
-  slot.dataset.tokenId = '';
-  slot.textContent = '';
-  slot.classList.remove('filled');
-  updateSecretTokenStates(panel);
-}
-
-function resetCalculatorSecret(panel) {
-  if (!panel) return;
-  panel.classList.remove('solved');
-  selectSecretSlot(panel, null);
-  const slots = panel.querySelectorAll('.secret-slot');
-  slots.forEach(slot => {
-    slot.dataset.value = '';
-    slot.dataset.tokenId = '';
-    slot.textContent = '';
-    slot.classList.remove('filled');
-  });
-  const tokens = panel.querySelectorAll('.secret-token');
-  tokens.forEach(token => {
-    token.classList.remove('used', 'disabled');
-    token.disabled = false;
-    token.setAttribute('aria-disabled', 'false');
-    token.tabIndex = 0;
-  });
-  shuffleSecretTokens(panel);
-  updateSecretTokenStates(panel);
-}
-
-function chooseSecretSlot(panel) {
-  const selectedIndex = panel.dataset.selectedSlot;
-  if (selectedIndex) {
-    const slot = panel.querySelector(`.secret-slot[data-index="${selectedIndex}"]`);
-    if (slot) return slot;
-  }
-  return Array.from(panel.querySelectorAll('.secret-slot')).find(slot => !slot.dataset.value) || null;
-}
-
-function handleSecretTokenClick(panel, token) {
-  if (!panel || !token || token.disabled || token.classList.contains('used')) return;
-  const slot = chooseSecretSlot(panel);
-  if (!slot) return;
-  slot.dataset.value = token.dataset.value;
-  slot.dataset.tokenId = token.dataset.tokenId;
-  slot.textContent = token.textContent;
-  slot.classList.add('filled');
-  token.classList.add('used');
-  token.disabled = true;
-  token.setAttribute('aria-disabled', 'true');
-  updateSecretTokenStates(panel);
-  selectSecretSlot(panel, null);
-  const allFilled = Array.from(panel.querySelectorAll('.secret-slot')).every(s => s.dataset.value);
-  if (allFilled) {
-    checkCalculatorSecret(panel);
-  }
-}
-
-function handleSecretSlotClick(panel, slot) {
-  if (!panel || !slot) return;
-  if (slot.classList.contains('selected')) {
-    if (slot.dataset.tokenId) {
-      releaseSecretSlot(panel, slot);
-    }
-    selectSecretSlot(panel, null);
-  } else {
-    selectSecretSlot(panel, slot);
-  }
-}
-
 function updateCalculatorDisplay() {
   const el = document.getElementById('calculator-display');
   if (el) el.textContent = calcState.displayValue;
@@ -2493,78 +2283,6 @@ function operate(a, op, b) {
   if (op === '*') return a * b;
   if (op === '/') return a / b;
   return b;
-}
-
-function setupCalculatorWindow(win) {
-  if (!win || win.dataset.calcReady === 'true') return;
-  win.dataset.calcReady = 'true';
-  const wrapper = win.querySelector('.calculator-display-wrapper');
-  const maintenancePanel = win.querySelector('#calculator-secret-panel');
-  const screws = win.querySelectorAll('.calc-screw');
-  if (!wrapper || !maintenancePanel || !screws.length) return;
-
-  const revealMaintenancePanel = () => {
-    if (wrapper.classList.contains('panel-active')) return;
-    wrapper.classList.add('panel-active');
-    maintenancePanel.setAttribute('aria-hidden', 'false');
-    initializeCalculatorSecret(maintenancePanel);
-  };
-
-  let unscrewed = 0;
-  screws.forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (btn.classList.contains('unscrewed')) return;
-      btn.classList.add('unscrewed');
-      btn.textContent = 'x';
-      btn.setAttribute('aria-disabled', 'true');
-      unscrewed += 1;
-      if (unscrewed === screws.length) {
-        revealMaintenancePanel();
-      }
-    });
-  });
-}
-
-function initializeCalculatorSecret(panel) {
-  if (!panel) return;
-  const tokens = panel.querySelectorAll('.secret-token');
-  const slots = panel.querySelectorAll('.secret-slot');
-  if (panel.dataset.bound !== 'true') {
-    tokens.forEach((token, index) => {
-      if (!token.dataset.tokenId) {
-        token.dataset.tokenId = `calc-token-${index}`;
-      }
-      token.addEventListener('click', () => handleSecretTokenClick(panel, token));
-    });
-    slots.forEach(slot => {
-      slot.addEventListener('click', () => handleSecretSlotClick(panel, slot));
-    });
-    const resetBtn = panel.querySelector('.secret-reset-btn');
-    if (resetBtn) {
-      resetBtn.addEventListener('click', () => resetCalculatorSecret(panel));
-    }
-    panel.dataset.bound = 'true';
-  }
-  resetCalculatorSecret(panel);
-}
-
-function checkCalculatorSecret(panel) {
-  const slots = panel.querySelectorAll('.secret-slot');
-  const values = Array.from(slots).map(slot => slot.dataset.value || null);
-  if (values.some(v => !v)) return;
-  const equationOk =
-    values[0] === '1' &&
-    values[1] === '8' &&
-    ['*', '/'].includes(values[2]) &&
-    values[3] === '5' &&
-    ['9', ')', '/'].includes(values[4]) &&
-    values[5] === '=';
-  if (equationOk) {
-    panel.classList.add('solved');
-    setTimeout(() => {
-      window.location.href = 'calculator/game.html';
-    }, 900);
-  }
 }
 
 // --- Minesweeper Logic ---
@@ -2857,3 +2575,54 @@ function checkWinCondition() {
   }
 }
 
+/* ------------------------------------------------------------------
+   system tray icons: click for volume / connection / avast status
+   ------------------------------------------------------------------ */
+const TRAY_BALLOON_MS = 4000;
+let trayBalloonTimer = null;
+
+function showTrayBalloon(title, message) {
+  let balloon = document.getElementById('tray-balloon');
+  if (!balloon) {
+    balloon = document.createElement('div');
+    balloon.id = 'tray-balloon';
+    balloon.innerHTML = '<div class="tray-balloon-title"></div><div class="tray-balloon-body"></div>';
+    document.body.appendChild(balloon);
+  }
+  balloon.querySelector('.tray-balloon-title').textContent = title;
+  balloon.querySelector('.tray-balloon-body').textContent = message;
+  balloon.classList.add('visible');
+  clearTimeout(trayBalloonTimer);
+  trayBalloonTimer = setTimeout(() => balloon.classList.remove('visible'), TRAY_BALLOON_MS);
+}
+
+const trayVolumeIcon = document.getElementById('tray-volume');
+if (trayVolumeIcon) {
+  trayVolumeIcon.addEventListener('click', () => {
+    clickSound.play().catch(() => {});
+    const muted = !jukeboxAudio.muted;
+    jukeboxAudio.muted = muted;
+    trayVolumeIcon.classList.toggle('muted', muted);
+    showTrayBalloon('Volume', muted ? 'Muted' : 'Playing through your speakers');
+  });
+}
+
+const trayNetworkIcon = document.getElementById('tray-network');
+if (trayNetworkIcon) {
+  trayNetworkIcon.addEventListener('click', () => {
+    clickSound.play().catch(() => {});
+    showTrayBalloon('Local Area Connection', 'Status: Connected\nSpeed: 100.0 Mbps\nPackets sent: 1,337   received: 42,069');
+  });
+}
+
+const traySecurityIcon = document.getElementById('tray-security');
+if (traySecurityIcon) {
+  traySecurityIcon.addEventListener('click', () => {
+    clickSound.play().catch(() => {});
+    if (traySecurityIcon.classList.contains('infected')) {
+      showTrayBalloon('Security Center', 'avast! Antivirus: virus protection is OFF.\nA virus was found in memory - move it to the chest.');
+    } else {
+      showTrayBalloon('Security Center', `avast! Antivirus: up to date.\nVPS ${AVAST_ALERT.vps}`);
+    }
+  });
+}

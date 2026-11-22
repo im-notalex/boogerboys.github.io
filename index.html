@@ -5,11 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>
-    << terminal>>
+    bbOS 0.3 // guest@boogerboys: ~/temp
   </title>
   <!-- open graph / share preview -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="<< terminal >>">
+  <meta property="og:title" content="bbOS 0.3 // << terminal >>">
   <meta property="og:description" content="our cool pages">
   <meta property="og:url" content="https://im-notalex.github.io/boogerboys.github.io/">
   <meta name="twitter:card" content="summary">
@@ -25,14 +25,19 @@
       --text-dim: #59d859;
       --text-soft: #2f7d2f;
       --warn: #c8ffc8;
+      --cyan: #63f2d6;
+      --red: #ff7b72;
     }
 
-    * {
-      box-sizing: border-box;
+    * { box-sizing: border-box; }
+
+    ::selection {
+      background: #ffffff;
+      color: #000000;
+      text-shadow: none;
     }
 
-    html,
-    body {
+    html, body {
       margin: 0;
       min-height: 100%;
       background: var(--bg);
@@ -63,10 +68,7 @@
       mix-blend-mode: multiply;
     }
 
-    button,
-    input {
-      font: inherit;
-    }
+    button, input { font: inherit; }
 
     .screen {
       width: min(100%, 1100px);
@@ -79,6 +81,16 @@
       flex-direction: column;
       position: relative;
       overflow: hidden;
+      text-shadow: 0.4px 0 rgba(160, 255, 190, 0.22), -0.4px 0 rgba(90, 190, 255, 0.16);
+    }
+
+    .screen::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      background: radial-gradient(ellipse at center, transparent 52%, rgba(0, 0, 0, 0.5) 100%);
     }
 
     .screen::after {
@@ -86,53 +98,136 @@
       position: absolute;
       inset: 0;
       pointer-events: none;
+      z-index: 4;
       background: linear-gradient(rgba(200, 255, 200, 0.03), rgba(0, 0, 0, 0.02));
+      animation: crt-flicker 4.8s steps(18, end) infinite;
+    }
+
+    @keyframes crt-flicker {
+      0%, 100% { opacity: 1; }
+      12% { opacity: 0.94; }
+      13% { opacity: 1; }
+      46% { opacity: 0.97; }
+      47% { opacity: 1; }
+      78% { opacity: 0.93; }
+      79% { opacity: 1; }
+    }
+
+    .screen.flash { box-shadow: inset 0 0 140px rgba(200, 255, 200, 0.32); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .screen::after, .cursor, .terminal-pane { animation: none !important; }
+      .boot-type { width: auto !important; animation: none !important; }
+      .boot-cursor { display: none; }
+      .boot-bar-fill { width: 14ch !important; animation: none !important; }
+      .boot-status { opacity: 1 !important; animation: none !important; }
+      .banner-type { width: auto !important; animation: none !important; }
+      .banner-cursor { display: none; }
+      .boot-delayed { opacity: 1 !important; animation: none !important; }
     }
 
     .titlebar {
       display: flex;
-      justify-content: flex-end;
-      gap: 16px;
-      padding: 12px 16px;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 10px;
       border-bottom: 1px solid var(--line);
       color: var(--text-dim);
-      text-transform: lowercase;
-      font-size: 0.95rem;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
       position: relative;
-      z-index: 1;
+      z-index: 6;
+      background: rgba(2, 16, 2, 0.85);
+    }
+
+    .titlebar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .titlebar-brand { color: var(--warn); text-transform: lowercase; }
+    .titlebar-sep, .titlebar-title { color: var(--text-soft); }
+    .titlebar-buttons { display: flex; gap: 4px; flex-shrink: 0; }
+
+    .titlebar-buttons span {
+      width: 17px;
+      height: 15px;
+      border: 1px solid var(--line);
+      color: var(--text-soft);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      line-height: 1;
     }
 
     .content {
       flex: 1;
       display: grid;
       grid-template-columns: minmax(0, 1.5fr) minmax(280px, 340px);
+      min-height: 0;
       position: relative;
       z-index: 1;
     }
 
-    .terminal-pane,
-    .side-pane {
-      padding: 16px;
-    }
+    .terminal-pane, .side-pane { padding: 16px; }
 
     .terminal-pane {
       min-height: 0;
+      display: flex;
+      flex-direction: column;
+      animation: crt-settle 0.9s steps(1, end) both;
     }
 
     .side-pane {
       border-left: 1px solid var(--line);
       background: rgba(2, 16, 2, 0.82);
+      overflow-y: auto;
+      max-height: 100%;
     }
 
     .terminal-output {
-      min-height: 52vh;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
       white-space: pre-wrap;
       word-break: break-word;
+      padding-right: 6px;
+      scrollbar-color: var(--line) transparent;
     }
 
-    .line {
-      margin: 0 0 8px;
-      line-height: 1.55;
+    .terminal-output::-webkit-scrollbar { width: 10px; }
+    .terminal-output::-webkit-scrollbar-track { background: transparent; }
+    .terminal-output::-webkit-scrollbar-thumb {
+      background: var(--line);
+      border: 1px solid var(--panel-strong);
+    }
+
+    .line { margin: 0 0 6px; line-height: 1.5; }
+    .line--dim { color: var(--text-soft); }
+    .line--err { color: var(--red); }
+    .line--accent { color: var(--warn); }
+
+    .ps-user { color: var(--warn); }
+    .ps-path { color: var(--cyan); }
+    .ps-dim { color: var(--text-soft); }
+
+    .banner {
+      display: block;
+      margin: 0 0 10px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      line-height: 1.18;
+      color: var(--warn);
+      text-shadow: 0 0 8px rgba(141, 255, 141, 0.35);
+      white-space: pre;
+      overflow-x: auto;
     }
 
     .prompt-row {
@@ -140,32 +235,222 @@
       gap: 10px;
       align-items: center;
       border-top: 1px solid var(--line);
-      padding-top: 14px;
-      margin-top: 14px;
+      padding-top: 12px;
+      margin-top: 12px;
     }
 
-    .prompt {
-      color: var(--warn);
-      white-space: nowrap;
+    .prompt { color: var(--warn); white-space: nowrap; }
+
+    .input-line {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-echo {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      white-space: pre;
+      overflow: hidden;
+      color: var(--text);
+      pointer-events: none;
+      z-index: 1;
+      padding: 6px 0;
+      line-height: 1.3;
     }
 
     #terminal-input {
-      flex: 1;
+      width: 100%;
       min-width: 0;
-      border: 1px solid var(--line);
-      background: #010601;
-      color: var(--text);
-      padding: 10px 12px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: transparent;
       caret-color: transparent;
+      padding: 6px 0;
+      line-height: 1.3;
+      position: relative;
+      z-index: 2;
     }
 
-    #terminal-input:focus {
-      outline: 1px solid var(--text-dim);
-      border-color: var(--text-dim);
+    #terminal-input:focus { outline: none; }
+    #terminal-input:disabled, #terminal-input:disabled + .input-echo { opacity: 0.45; }
+
+    .cursor {
+      display: inline-block;
+      width: 1ch;
+      color: var(--warn);
+      animation: cursor-blink 1.1s steps(1) infinite;
     }
 
-    .panel,
-    #jukebox {
+    @keyframes cursor-blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    /* CRT power-on: teleports down, then up, then snaps into place */
+    @keyframes crt-settle {
+      0% { transform: translateY(96px); filter: brightness(0.45); opacity: 0.85; }
+      34% { transform: translateY(-64px); filter: brightness(1.4); opacity: 1; }
+      68% { transform: translateY(0); filter: brightness(1); opacity: 1; }
+      100% { transform: translateY(0); filter: none; opacity: 1; }
+    }
+
+    /* boot rows: label types out with a █ cursor, ░ bar fills with █ */
+    .boot-row {
+      display: grid;
+      grid-template-columns: 13ch 16ch auto;
+      column-gap: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      font-size: 0.8rem;
+    }
+
+    .boot-label { overflow: hidden; }
+
+    .boot-type {
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 0;
+      animation: boot-type 0.3s steps(10, end) forwards;
+      animation-delay: var(--delay);
+    }
+
+    @keyframes boot-type {
+      to { width: calc(var(--chars) * 1ch); }
+    }
+
+    .boot-cursor {
+      display: inline-block;
+      color: var(--warn);
+      animation: cursor-blink 1.1s steps(1) infinite, boot-cursor-off 0.01s linear forwards;
+      animation-delay: 0s, calc(var(--delay) + 0.42s);
+    }
+
+    @keyframes boot-cursor-off {
+      to { opacity: 0; }
+    }
+
+    .boot-bar {
+      position: relative;
+      display: inline-block;
+      color: var(--text-soft);
+    }
+
+    .boot-bar-empty { color: var(--text-soft); }
+
+    .boot-bar-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: var(--warn);
+      overflow: hidden;
+      white-space: nowrap;
+      width: 0;
+      animation: boot-bar 0.45s steps(14, end) forwards;
+      animation-delay: calc(var(--delay) + 0.36s);
+    }
+
+    @keyframes boot-bar {
+      to { width: 14ch; }
+    }
+
+    .boot-status {
+      padding-left: 5px;
+      color: var(--text-soft);
+      opacity: 0;
+      animation: boot-status 0.01s linear forwards;
+      animation-delay: calc(var(--delay) + 0.82s);
+    }
+
+    @keyframes boot-status {
+      to { opacity: 1; }
+    }
+
+    /* the bbOS banner types itself out, one row at a time */
+    .banner-line {
+      display: block;
+      height: 1.18em;
+      white-space: pre;
+      overflow: hidden;
+    }
+
+    .banner-type {
+      display: inline-block;
+      white-space: pre;
+      overflow: hidden;
+      width: 0;
+      animation: banner-type 0.16s steps(14, end) forwards;
+      animation-delay: var(--delay);
+    }
+
+    @keyframes banner-type {
+      to { width: calc(var(--chars) * 1ch); }
+    }
+
+    .banner-cursor {
+      display: inline-block;
+      color: var(--warn);
+      animation: cursor-blink 1s steps(1) infinite, banner-cursor-off 0.01s linear forwards;
+      animation-delay: 0s, calc(var(--delay) + 0.24s);
+    }
+
+    @keyframes banner-cursor-off {
+      to { opacity: 0; }
+    }
+
+    /* a few boot steps stall halfway, then catch up late */
+    .boot-lag .boot-type {
+      animation-name: boot-type-lag;
+      animation-duration: 0.8s;
+    }
+
+    @keyframes boot-type-lag {
+      0% { width: 0; }
+      34% { width: calc(var(--chars) * 0.5 * 1ch); }
+      68% { width: calc(var(--chars) * 0.5 * 1ch); }
+      100% { width: calc(var(--chars) * 1ch); }
+    }
+
+    .boot-lag .boot-bar-fill {
+      animation-name: boot-bar-lag;
+      animation-duration: 0.95s;
+    }
+
+    @keyframes boot-bar-lag {
+      0% { width: 0; }
+      28% { width: 4ch; }
+      66% { width: 4ch; }
+      100% { width: 14ch; }
+    }
+
+    .boot-lag .boot-cursor {
+      animation-delay: 0s, calc(var(--delay) + 1s);
+    }
+
+    .boot-lag .boot-status {
+      animation-delay: calc(var(--delay) + 1.38s);
+    }
+
+    /* fallback: if animations were paused (hidden tab) or unsupported,
+       force the finished boot state so nothing is left invisible */
+    .boot-done .boot-type { width: auto !important; animation: none !important; }
+    .boot-done .boot-bar-fill { width: 14ch !important; animation: none !important; }
+    .boot-done .boot-cursor { display: none !important; }
+    .boot-done .boot-status { opacity: 1 !important; animation: none !important; }
+    .boot-done .boot-login { opacity: 1 !important; animation: none !important; }
+    .boot-done .boot-delayed { opacity: 1 !important; animation: none !important; }
+    .boot-done .banner-type { width: auto !important; animation: none !important; }
+    .boot-done .banner-cursor { display: none !important; }
+    .terminal-pane.boot-done { animation: none !important; transform: none !important; }
+
+    .prompt-row:not(:focus-within) .cursor { animation: none; opacity: 0.4; }
+
+    .panel, #jukebox {
       border: 1px solid var(--line);
       background: rgba(1, 15, 1, 0.72);
       padding: 14px;
@@ -175,202 +460,297 @@
     .panel h2 {
       margin: 0 0 12px;
       color: var(--warn);
-      font-size: 1rem;
+      font-size: 0.9rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
     }
 
-    .help-list,
-    .simple-links {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
+    .help-list { margin: 0; padding: 0; list-style: none; }
 
-    .help-list li,
-    .simple-links li {
-      margin-bottom: 10px;
+    .help-list li {
+      margin-bottom: 8px;
       line-height: 1.5;
       color: var(--text-dim);
+      font-size: 0.82rem;
     }
 
-    .simple-links a {
-      color: var(--text);
+    .dir-list { line-height: 1.9; font-size: 0.86rem; }
+
+    .dir {
+      color: var(--cyan);
       text-decoration: none;
-      border-bottom: 1px dotted var(--text-soft);
+      margin-right: 12px;
+      white-space: nowrap;
     }
 
-    .simple-links a:hover,
-    .simple-links a:focus-visible {
+    .dir:hover, .dir:focus-visible {
       color: var(--warn);
+      text-decoration: underline;
       outline: none;
     }
 
-    .jukebox-head {
+    #jukebox { position: relative; font-size: 0.8rem; margin-top: 22px; }
+
+    .curses-title {
+      position: absolute;
+      top: -0.72em;
+      left: 10px;
+      background: #020f02;
+      padding: 0 6px;
       display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-      color: var(--warn);
-    }
-
-    .song {
-      display: grid;
-      grid-template-columns: 56px 1fr;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .song img {
-      width: 56px;
-      height: 56px;
-      object-fit: cover;
-      border: 1px solid var(--line);
-      background: #000;
-      image-rendering: pixelated;
-    }
-
-    #song-info {
-      line-height: 1.5;
-      font-size: 0.92rem;
-    }
-
-    .controls {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-bottom: 12px;
+      color: var(--warn);
+      letter-spacing: 0.05em;
+      font-size: 0.75rem;
     }
 
-    button {
-      border: 1px solid var(--line);
-      background: var(--panel-strong);
+    .curses-state { color: var(--text-soft); }
+
+    .jukebox-now {
       color: var(--text);
-      padding: 10px 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-bottom: 8px;
+    }
+
+    .jukebox-progress-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      font-size: 0.78rem;
+    }
+
+    .jukebox-bar { color: var(--warn); letter-spacing: 0; }
+    .jukebox-time { color: var(--text-soft); }
+
+    .jukebox-keys {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .key {
+      border: 0;
+      background: none;
+      color: var(--text-dim);
+      font: inherit;
+      padding: 0;
       cursor: pointer;
     }
 
-    button:hover,
-    button:focus-visible {
-      border-color: var(--text-dim);
+    .key:hover, .key:focus-visible {
+      color: var(--warn);
       outline: none;
+      text-decoration: underline;
     }
 
-    .volume-container {
-      display: grid;
-      gap: 8px;
+    .jukebox-vol {
+      margin-top: 8px;
+      color: var(--text-soft);
+      font-size: 0.76rem;
+      cursor: pointer;
+    }
+
+    .statusline {
+      display: flex;
+      align-items: stretch;
+      border-top: 1px solid var(--line);
+      background: #062006;
       color: var(--text-dim);
+      font-size: 0.7rem;
+      position: relative;
+      z-index: 6;
+      white-space: nowrap;
+      overflow: hidden;
     }
 
-    input[type="range"] {
+    .status-seg { padding: 3px 9px; display: flex; align-items: center; }
+    .status-seg + .status-seg { border-left: 1px solid var(--line); }
+    .status-mode { background: var(--line); color: #031003; }
+    .status-spacer { flex: 1; }
+
+    /* pre-redirect: three bars, then a white line that shrinks into a dot */
+    .redirect-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      z-index: 60;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.12s linear;
+    }
+
+    .redirect-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* black curtains that close in from the top and bottom,
+       their white edges meeting in the middle */
+    .redirect-shutter {
+      position: absolute;
+      left: 0;
       width: 100%;
-      accent-color: var(--text);
+      height: 0;
+      background: #000000;
+      border: 0 solid #ffffff;
+      z-index: 1;
+      transition: height 0.3s steps(6, end);
     }
 
-    .simple-only {
-      display: none;
+    .redirect-shutter.top { top: 0; }
+    .redirect-shutter.bottom { bottom: 0; }
+
+    .redirect-overlay.line .redirect-shutter { height: 50%; }
+    .redirect-overlay.line .redirect-shutter.top { border-bottom-width: 2px; }
+    .redirect-overlay.line .redirect-shutter.bottom { border-top-width: 2px; }
+    .redirect-overlay.dot .redirect-shutter { border-color: transparent; }
+
+    .collapse-line {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 100%;
+      height: 2px;
+      background: #ffffff;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 14px rgba(255, 255, 255, 0.65);
+      opacity: 0;
+      z-index: 3;
+      transition:
+        width 0.24s steps(3, end),
+        height 0.24s steps(3, end),
+        border-radius 0.24s steps(3, end);
     }
 
-    .simple-mode .simple-only {
-      display: block;
+    .redirect-overlay.line .collapse-line {
+      animation: collapse-line-in 0.01s linear 0.3s forwards;
     }
 
-    .simple-mode .terminal-output {
-      min-height: 30vh;
+    @keyframes collapse-line-in {
+      to { opacity: 1; }
+    }
+
+    .redirect-overlay.dot .collapse-line {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .redirect-shutter, .collapse-line { transition: none !important; }
+      .redirect-overlay.line .collapse-line { animation: none !important; opacity: 1; }
     }
 
     @media (max-width: 900px) {
-      body {
-        padding: 10px;
-      }
-
-      .screen {
-        min-height: calc(100vh - 20px);
-      }
-
-      .content {
-        grid-template-columns: 1fr;
-      }
-
+      body { padding: 10px; }
+      .screen { min-height: calc(100vh - 20px); }
+      .content { grid-template-columns: 1fr; }
       .side-pane {
         border-left: 0;
         border-top: 1px solid var(--line);
+        max-height: none;
       }
+      .terminal-output { min-height: 42vh; }
+      .titlebar-title { font-size: 0.72rem; }
     }
   </style>
 </head>
 
 <body>
-  <audio id="bg-music"></audio>
+  <audio id="bg-music" preload="none"></audio>
 
   <main id="app" class="screen advanced-mode">
     <div class="titlebar">
-      <span>bb terminal</span>
+      <div class="titlebar-left">
+        <span class="titlebar-brand">bbterm</span>
+        <span class="titlebar-sep">//</span>
+        <span class="titlebar-title">bbOS 0.3 · guest@boogerboys: ~/temp</span>
+      </div>
+      <div class="titlebar-buttons" aria-hidden="true">
+        <span>-</span><span>&#9633;</span><span>&#215;</span>
+      </div>
     </div>
 
     <div class="content">
-      <section class="terminal-pane">
+      <section class="terminal-pane" id="terminal-pane">
         <div id="terminal-output" class="terminal-output" aria-live="polite"></div>
-        <div class="prompt-row">
-          <span class="prompt">guest@boogerboys:~/temp$</span>
-          <input id="terminal-input" type="text" spellcheck="false" autocomplete="off" aria-label="Terminal input">
+        <div class="prompt-row" id="prompt-row">
+          <span class="prompt"><span class="ps-user">guest@boogerboys</span><span class="ps-dim">:</span><span class="ps-path">~/temp</span><span class="ps-dim">$</span></span>
+          <div class="input-line">
+            <span class="input-echo" id="input-echo" aria-hidden="true"><span id="echo-before"></span><span class="cursor" id="terminal-cursor">&#9608;</span><span id="echo-after"></span></span>
+            <input id="terminal-input" type="text" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Terminal input">
+          </div>
         </div>
       </section>
 
       <aside class="side-pane">
         <section class="panel simple-only">
-          <h2>Sites</h2>
-          <ul class="simple-links">
-            <li><a
-                href="alex/WoahItsMyReallyCoolSiteThatYouShouldStayOnForAReallyReallyLongTimeFromJustHowAwesomeItIs.html">alex</a>
-            </li>
-            <li><a href="hoodie/index.html">hoodie</a></li>
-            <li><a href="riley/reallycool.html">riley</a></li>
-            <li><a href="temp/index.html">valk</a></li>
-            <li><a href="temp/index.html">temp</a></li>
-          </ul>
+          <h2>./sites</h2>
+          <div class="dir-list">
+            <a class="dir"
+              href="alex/WoahItsMyReallyCoolSiteThatYouShouldStayOnForAReallyReallyLongTimeFromJustHowAwesomeItIs.html">alex/</a>
+            <a class="dir" href="hoodie/index.html">hoodie/</a>
+            <a class="dir" href="riley/reallycool.html">riley/</a>
+            <a class="dir" href="temp/index.html">valk/</a>
+            <a class="dir" href="temp/index.html">temp/</a>
+          </div>
         </section>
 
         <section class="panel simple-only">
-          <h2>Toggle</h2>
+          <h2>./toggle</h2>
           <ul class="help-list">
             <li><code>sed -i 's/simple/advanced/g' site.txt</code></li>
           </ul>
         </section>
 
-        <div id="jukebox" aria-label="Music player">
-          <div class="jukebox-head">
-            <span>jukebox.service</span>
-            <span>online</span>
+        <section id="jukebox" aria-label="Music player">
+          <div class="curses-title"><span>jukebox.service</span><span class="curses-state">online</span></div>
+          <div class="jukebox-now" id="song-info">&#9834; ready</div>
+          <div class="jukebox-progress-row">
+            <span class="jukebox-bar" id="jukebox-bar">[&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;]</span>
+            <span class="jukebox-time" id="jukebox-time">0:00 / 0:00</span>
           </div>
-
-          <div class="song">
-            <img id="song-icon" src="Music1.png" alt="Current song art">
-            <div id="song-info">ready. press prev or next to start audio.</div>
+          <div class="jukebox-keys">
+            <button type="button" class="key" id="prev-button">[p] prev</button>
+            <button type="button" class="key" id="next-button">[n] next</button>
+            <button type="button" class="key" id="play-button">[s] play</button>
           </div>
-
-          <div class="controls">
-            <button type="button" id="prev-button">prev</button>
-            <button type="button" id="next-button">next</button>
-          </div>
-
-          <label class="volume-container" for="volume">
-            <span>volume</span>
-            <input id="volume" type="range" min="0" max="1" step="0.01" value="0.85">
-          </label>
-        </div>
+          <div class="jukebox-vol" id="volume-indicator" title="Cycle volume">vol [&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;] 75%</div>
+        </section>
       </aside>
+    </div>
+
+    <div class="statusline" aria-hidden="true">
+      <span class="status-seg status-mode">[0] guest@boogerboys: ~/temp*</span>
+      <span class="status-seg" id="status-mode-label">advanced</span>
+      <span class="status-seg">bbOS 0.3 unstable</span>
+      <span class="status-spacer"></span>
+      <span class="status-seg" id="status-clock">--:--:--</span>
     </div>
   </main>
 
+  <div id="redirect-overlay" class="redirect-overlay" aria-hidden="true">
+    <span class="redirect-shutter top"></span>
+    <span class="redirect-shutter bottom"></span>
+    <span class="collapse-line"></span>
+  </div>
+
   <script>
-    const promptText = "guest@boogerboys:~/temp$";
+    /* bbOS 0.3 // bbsh terminal */
+
     const modeKey = "boogerboys-site-mode";
     const sedToSimple = "sed -i 's/advanced/simple/g' site.txt";
     const sedToAdvanced = "sed -i 's/simple/advanced/g' site.txt";
-    const typingDelayMs = 100;
     const bootTime = Date.now();
+
     const siteRoutes = {
       alex: "alex/WoahItsMyReallyCoolSiteThatYouShouldStayOnForAReallyReallyLongTimeFromJustHowAwesomeItIs.html",
       hoodie: "hoodie/index.html",
@@ -385,6 +765,13 @@
         "welcome to boogerboys.",
         "bbOS 0.3 unstable",
         "watch your step."
+      ],
+      "/etc/bbos-release": [
+        "NAME=bbOS",
+        "VERSION=0.3",
+        "CODENAME=unstable",
+        "SHELL=/bin/bbsh",
+        "HOST=boogerboys"
       ],
       "/etc/services": [
         "jukebox.service online",
@@ -407,92 +794,135 @@
         "riley: terminal approved",
         "hoodie: hoobeangpt online",
         "valk: send build when ready"
+      ],
+      "/home/bb/.bashrc": [
+        "export PS1='guest@boogerboys:~/temp$ '",
+        "alias ll='ls -la'",
+        "# do not remove the CRT bloom"
       ]
     };
 
     const songs = [
-      { file: "Music1.mp3", credit: "Donkey Kong Country 2 - Stickerbush Symphony - Nintendo", icon: "Music1.png" },
-      { file: "Music2.mp3", credit: "Lisa: The Pointless OST - Soft Hearts (World's Last Autumn Version)", icon: "Music2.png" },
-      { file: "Music3.mp3", credit: "Deltarune Chapter 3 + 4 - 12 am - Toby Fox", icon: "Music3.png" }
+      { file: "Music1.mp3", credit: "Donkey Kong Country 2 - Stickerbush Symphony - Nintendo" },
+      { file: "Music2.mp3", credit: "Lisa: The Pointless OST - Soft Hearts (World's Last Autumn Version)" },
+      { file: "Music3.mp3", credit: "Deltarune Chapter 3 + 4 - 12 am - Toby Fox" }
     ];
 
+    const COMMANDS = [
+      "help", "ls", "ls -la", "pwd", "clear", "whoami", "uptime", "systeminfo",
+      "neofetch", "man", "sudo", "ping", "history", "cat", "cd", "exit", "logout"
+    ];
+
+    const SITES = ["alex", "hoodie", "riley", "valk", "temp"];
+
     const app = document.getElementById("app");
+    const terminalPane = document.getElementById("terminal-pane");
     const terminalOutput = document.getElementById("terminal-output");
     const terminalInput = document.getElementById("terminal-input");
+    const echoBefore = document.getElementById("echo-before");
+    const echoAfter = document.getElementById("echo-after");
+    const statusClock = document.getElementById("status-clock");
+    const statusModeLabel = document.getElementById("status-mode-label");
+
     const audio = document.getElementById("bg-music");
-    const songInfo = document.getElementById("song-info");
-    const songIcon = document.getElementById("song-icon");
-    const volumeSlider = document.getElementById("volume");
-    const prevButton = document.getElementById("prev-button");
-    const nextButton = document.getElementById("next-button");
+    const songInfoEl = document.getElementById("song-info");
+    const barEl = document.getElementById("jukebox-bar");
+    const timeEl = document.getElementById("jukebox-time");
+    const playButton = document.getElementById("play-button");
+    const volumeIndicator = document.getElementById("volume-indicator");
 
-    let currentSong = Math.floor(Math.random() * songs.length);
+    const BANNER = [
+      "  _     _       ___  ____",
+      " | |__ | |__   / _ \\/ ___|",
+      " | '_ \\| '_ \\ | | | \\___ \\",
+      " | |_) | |_) || |_| |___) |",
+      " |_.__/|_.__/  \\___/|____/"
+    ].join("\n");
+
+    const BOOT_STEPS = [
+      { label: "POST", status: "ok" },
+      { label: "kernel", status: "ok" },
+      { label: "mount /dev", status: "ok" },
+      { label: "jukebox", status: "online" },
+      { label: "router", status: "degraded" },
+      { label: "guestbook", status: "idle" }
+    ];
+
     let currentMode = "advanced";
-    let displayValue = "";
-    let desiredValue = "";
-    let inputTimer = null;
+    const commandHistory = [];
+    let historyPos = 0;
 
-    function formatUptime() {
-      const elapsed = Math.floor((Date.now() - bootTime) / 1000);
-      const minutes = Math.floor(elapsed / 60);
-      const seconds = elapsed % 60;
-      return minutes + "m " + seconds + "s";
-    }
+    /* ---------- output ---------- */
 
-    function printLine(text) {
-      const line = document.createElement("p");
-      line.className = "line";
-      line.textContent = text;
-      terminalOutput.appendChild(line);
+    function scrollOutput() {
       terminalOutput.scrollTop = terminalOutput.scrollHeight;
     }
 
-    function printLines(lines) {
-      lines.forEach(printLine);
+    function escapeHTML(str) {
+      return String(str).replace(/[&<>"']/g, ch => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[ch]);
     }
 
-    function printPrompt(command) {
-      printLine(promptText + " " + command);
+    function printLine(text = "", kind = "") {
+      const p = document.createElement("p");
+      p.className = "line" + (kind ? " line--" + kind : "");
+      p.textContent = text;
+      terminalOutput.appendChild(p);
+      scrollOutput();
+      return p;
     }
 
-    function updateSongDisplay(index, messageOverride) {
-      songIcon.src = songs[index].icon;
-      songInfo.textContent = messageOverride || songs[index].credit;
+    function printHTML(html, kind = "") {
+      const p = document.createElement("p");
+      p.className = "line" + (kind ? " line--" + kind : "");
+      p.innerHTML = html;
+      terminalOutput.appendChild(p);
+      scrollOutput();
+      return p;
     }
 
-    function playSong(index) {
-      currentSong = index;
-      audio.src = songs[index].file;
-      audio.volume = parseFloat(volumeSlider.value);
-      updateSongDisplay(index, "loading " + songs[index].credit);
-      audio.play().then(() => {
-        updateSongDisplay(index);
-      }).catch(() => {
-        updateSongDisplay(index, "audio locked. press prev or next to authorize playback.");
-      });
+    function printLines(lines, kind = "") {
+      lines.forEach(line => printLine(line, kind));
     }
 
-    function nextSong() {
-      playSong((currentSong + 1) % songs.length);
+    function printCommand(command) {
+      printHTML(
+        '<span class="ps-user">guest@boogerboys</span><span class="ps-dim">:</span>' +
+        '<span class="ps-path">~/temp</span><span class="ps-dim">$</span> ' +
+        escapeHTML(command)
+      );
     }
 
-    function prevSong() {
-      playSong((currentSong - 1 + songs.length) % songs.length);
+    function flashScreen() {
+      app.classList.add("flash");
+      window.setTimeout(() => app.classList.remove("flash"), 170);
     }
 
-    function showDefaultIntro() {
-      terminalOutput.innerHTML = "";
-      printLine("welcome to boogerboys.");
-      printLine("type help for commands.");
-      printLine("site switch: " + sedToSimple);
+    /* ---------- prompt echo ---------- */
+
+    function renderEcho() {
+      const value = terminalInput.value;
+      const pos = typeof terminalInput.selectionStart === "number"
+        ? terminalInput.selectionStart
+        : value.length;
+      echoBefore.textContent = value.slice(0, pos);
+      echoAfter.textContent = value.slice(pos);
     }
 
-    function showSimpleIntro() {
-      terminalOutput.innerHTML = "";
-      printLine("welcome to boogerboys.");
-      printLine("type cd <site> or use the links on the right.");
-      printLine("site switch: " + sedToAdvanced);
+    function setInputValue(value) {
+      terminalInput.value = value;
+      terminalInput.setSelectionRange(value.length, value.length);
+      renderEcho();
     }
+
+    function resetInput() {
+      terminalInput.value = "";
+      historyPos = commandHistory.length;
+      renderEcho();
+    }
+
+    /* ---------- modes ---------- */
 
     function persistMode(mode) {
       try {
@@ -501,84 +931,313 @@
       }
     }
 
-    function setMode(mode) {
+    function updateStatusMode() {
+      statusModeLabel.textContent = currentMode;
+    }
+
+    function printWelcome(delayed = false) {
+      const lines = currentMode === "simple"
+        ? [
+          ["welcome to boogerboys.", ""],
+          ["type cd <site> or use the links on the right.", "dim"],
+          ["site switch: " + sedToAdvanced, "dim"]
+        ]
+        : [
+          ["welcome to boogerboys.", ""],
+          ["type help for commands.", "dim"],
+          ["site switch: " + sedToSimple, "dim"],
+          ["bbOS 0.3 unstable // be kind to the hardware.", "dim"]
+        ];
+
+      lines.forEach((entry, index) => {
+        const line = printLine(entry[0], entry[1]);
+        if (delayed) {
+          line.classList.add("boot-delayed");
+          line.style.opacity = "0";
+          line.style.animation = "boot-status 0.01s linear forwards";
+          line.style.animationDelay = (2.7 + index * 0.06) + "s";
+        }
+      });
+    }
+
+    function setMode(mode, options = {}) {
       currentMode = mode === "simple" ? "simple" : "advanced";
       app.className = "screen " + currentMode + "-mode";
       persistMode(currentMode);
-
-      if (currentMode === "simple") {
-        showSimpleIntro();
-      } else {
-        showDefaultIntro();
+      updateStatusMode();
+      if (options.clear !== false) {
+        terminalOutput.innerHTML = "";
+        printWelcome();
       }
     }
 
-    function navigateToSite(name) {
-      const route = siteRoutes[name];
-      if (!route) {
-        printLine("cd: no such site: " + name);
+    /* ---------- clock ---------- */
+
+    function formatUptime() {
+      const elapsed = Math.floor((Date.now() - bootTime) / 1000);
+      return Math.floor(elapsed / 60) + "m " + (elapsed % 60) + "s";
+    }
+
+    function updateClock() {
+      const now = new Date();
+      statusClock.textContent =
+        now.toLocaleTimeString("en-US", { hour12: false }) + " · up " + formatUptime();
+    }
+
+    /* ---------- boot ---------- */
+
+    function renderBanner() {
+      const banner = document.createElement("div");
+      banner.className = "banner";
+      BANNER.split("\n").forEach((line, index) => {
+        const row = document.createElement("span");
+        row.className = "banner-line";
+        row.style.setProperty("--chars", line.length);
+        row.style.setProperty("--delay", (index * 0.18) + "s");
+        row.innerHTML =
+          '<span class="banner-type">' + escapeHTML(line) + "</span>" +
+          '<span class="banner-cursor">\u2588</span>';
+        banner.appendChild(row);
+      });
+      terminalOutput.appendChild(banner);
+      scrollOutput();
+    }
+
+    function runBootSequence() {
+      // Rendered up-front and revealed with CSS so a background/throttled tab
+      // can never leave the boot half-finished or the prompt disabled.
+      renderBanner();
+
+      const bootingLine = printLine("bbOS 0.3 unstable // booting…", "dim");
+      printLine("");
+      const hostLine = printLine("bbOS 0.3 unstable // boogerboys", "accent");
+      [bootingLine, hostLine].forEach((line, index) => {
+        line.classList.add("boot-delayed");
+        line.style.opacity = "0";
+        line.style.animation = "boot-status 0.01s linear forwards";
+        line.style.animationDelay = (0.95 + index * 0.07) + "s";
+      });
+
+      const barBlocks = "\u2588".repeat(14);
+      const emptyBlocks = "\u2591".repeat(14);
+
+      BOOT_STEPS.forEach((step, index) => {
+        const row = document.createElement("p");
+        const lagging = index === 2 || index === 5;
+        row.className = "line line--dim boot-row" + (lagging ? " boot-lag" : "");
+        row.style.setProperty("--delay", (1.15 + index * 0.16) + "s");
+        row.innerHTML =
+          '<span class="boot-label"><span class="boot-type" style="--chars:' + step.label.length + '">' +
+          escapeHTML(step.label) +
+          '</span><span class="boot-cursor">\u2588</span></span>' +
+          '<span class="boot-bar"><span class="boot-bar-empty">' + emptyBlocks +
+          '</span><span class="boot-bar-fill">' + barBlocks + "</span></span>" +
+          '<span class="boot-status">' + escapeHTML(step.status) + "</span>";
+        terminalOutput.appendChild(row);
+        scrollOutput();
+      });
+
+      const loginLine = printLine("login: guest", "accent");
+      loginLine.classList.add("boot-login");
+      loginLine.style.opacity = "0";
+      loginLine.style.animation = "boot-status 0.01s linear forwards";
+      loginLine.style.animationDelay = (1.15 + BOOT_STEPS.length * 0.16 + 0.5) + "s";
+      printLine("");
+      printWelcome(true);
+      terminalInput.disabled = false;
+      terminalInput.focus();
+      renderEcho();
+
+      window.setTimeout(() => {
+        terminalOutput.classList.add("boot-done");
+        terminalPane.classList.add("boot-done");
+      }, 4600);
+    }
+
+    /* ---------- listing / cat ---------- */
+
+    function printSiteListing(detailed) {
+      if (!detailed) {
+        printHTML(
+          SITES.map(site => '<span class="ps-path">' + site + "/</span>").join("  ") +
+          '  <span class="ps-dim">etc/  log/  dev/  home/</span>'
+        );
         return;
       }
-
-      printLine("cd " + name);
-      window.location.href = route;
-    }
-
-    function syncInputToDesired() {
-      if (displayValue === desiredValue) {
-        inputTimer = null;
-        return;
-      }
-
-      if (displayValue.length < desiredValue.length) {
-        displayValue = desiredValue.slice(0, displayValue.length + 1);
-      } else {
-        displayValue = displayValue.slice(0, -1);
-      }
-
-      terminalInput.value = displayValue;
-      terminalInput.setSelectionRange(displayValue.length, displayValue.length);
-      inputTimer = window.setTimeout(syncInputToDesired, typingDelayMs);
-    }
-
-    function queueInputSync() {
-      if (inputTimer !== null) {
-        return;
-      }
-      inputTimer = window.setTimeout(syncInputToDesired, typingDelayMs);
-    }
-
-    function setDesiredValue(nextValue) {
-      desiredValue = nextValue;
-      queueInputSync();
+      printLine("total 9", "dim");
+      SITES.forEach(site => {
+        printHTML(
+          '<span class="ps-dim">drwxr-xr-x 2 guest guest 4096 Nov 22 15:00</span> ' +
+          '<span class="ps-path">' + site + "/</span>"
+        );
+      });
+      printHTML('<span class="ps-dim">drwxr-xr-x 3 guest guest 4096 Nov 22 15:00</span> <span class="ps-path">etc/</span>');
+      printHTML('<span class="ps-dim">drwxr-xr-x 2 guest guest 4096 Nov 22 15:00</span> <span class="ps-path">log/</span>');
+      printHTML('<span class="ps-dim">drwxr-xr-x 2 guest guest 4096 Nov 22 15:00</span> <span class="ps-path">dev/</span>');
+      printLine("-rw-r--r-- 1 guest guest  512 Nov 22 15:00 motd.txt", "dim");
     }
 
     function handleCat(target) {
       if (!target) {
-        printLine("cat: missing file operand");
+        printLine("cat: missing file operand", "err");
         return;
       }
-
       if (target === "site.txt") {
         printLine(currentMode);
         return;
       }
-
       if (fileSystem[target]) {
         printLines(fileSystem[target]);
         return;
       }
-
-      printLine("cat: " + target + ": No such file or directory");
+      printLine("cat: " + target + ": No such file or directory", "err");
     }
+
+    /* ---------- extra commands ---------- */
+
+    function runNeofetch() {
+      const logo = [
+        " ___  ___   ___  ___",
+        "| __|| _ ) / _ \\/ __|",
+        "|__ || _ \\| (_) \\__ \\",
+        "|___||___/ \\___/|___/"
+      ];
+      const info = [
+        "guest@boogerboys",
+        "----------------",
+        "OS: bbOS 0.3 unstable",
+        "Kernel: greenbean 0.9",
+        "Shell: bbsh 1.0",
+        "WM: Explorer.exe",
+        "Theme: BB Green [CRT]",
+        "Uptime: " + formatUptime(),
+        "Resolution: " + window.innerWidth + "x" + window.innerHeight
+      ];
+      const logoWidth = Math.max(...logo.map(line => line.length)) + 3;
+      const rows = Math.max(logo.length, info.length);
+      const pre = document.createElement("pre");
+      pre.className = "banner";
+      for (let i = 0; i < rows; i++) {
+        pre.textContent += (logo[i] || "").padEnd(logoWidth) + (info[i] || "") + "\n";
+      }
+      terminalOutput.appendChild(pre);
+      scrollOutput();
+    }
+
+    const MAN_PAGES = {
+      help: ["help // list available commands.", "usage: help"],
+      ls: ["ls // list directory contents.", "usage: ls | ls -la"],
+      cd: ["cd <site> // jump to a boogerboys site.", "usage: cd alex"],
+      cat: ["cat <file> // print a file.", "usage: cat /etc/motd"],
+      neofetch: ["neofetch // print system information.", "usage: neofetch"],
+      ping: ["ping <host> // send fake ICMP packets.", "usage: ping boogerboys.gg"],
+      jukebox: ["jukebox // curses music player.", "keys: p prev, n next, s play/stop"],
+      exit: ["exit // close the terminal session.", "usage: exit"]
+    };
+
+    function runMan(arg) {
+      if (!arg) {
+        printLine("What manual page do you want?", "dim");
+        return;
+      }
+      const page = MAN_PAGES[arg];
+      if (!page) {
+        printLine("No manual entry for " + arg, "err");
+        return;
+      }
+      printLine("BBOS(1)".padEnd(24) + "bbOS manual".padEnd(20) + "BBOS(1)");
+      printLine(page[0]);
+      printLine(page[1], "dim");
+    }
+
+    function runPing(host) {
+      const target = host || "boogerboys.gg";
+      printLine("PING " + target + " (10.0.0.3): 56 data bytes", "dim");
+      let seq = 0;
+      const tick = () => {
+        if (seq >= 4) {
+          printLine("--- " + target + " ping statistics ---", "dim");
+          printLine("4 packets transmitted, 4 received, 0% packet loss", "dim");
+          return;
+        }
+        const ms = (18 + Math.random() * 14).toFixed(1);
+        printLine("64 bytes from 10.0.0.3: seq=" + seq + " ttl=64 time=" + ms + " ms");
+        seq += 1;
+        window.setTimeout(tick, 420);
+      };
+      window.setTimeout(tick, 300);
+    }
+
+    function printHistory() {
+      if (!commandHistory.length) {
+        printLine("no commands yet.", "dim");
+        return;
+      }
+      commandHistory.forEach((command, index) => {
+        printLine(String(index + 1).padStart(3) + "  " + command, "dim");
+      });
+    }
+
+    function clearTerminal() {
+      flashScreen();
+      terminalOutput.innerHTML = "";
+    }
+
+    function logout() {
+      printLine("logout", "dim");
+      printLine("Connection to boogerboys closed.", "dim");
+      terminalInput.disabled = true;
+      window.setTimeout(() => {
+        window.location.href = siteRoutes.alex;
+      }, 1100);
+    }
+
+    let redirecting = false;
+
+    function redirectTo(url) {
+      if (redirecting) return;
+      redirecting = true;
+      const overlay = document.getElementById("redirect-overlay");
+      overlay.classList.add("active");
+      window.setTimeout(() => overlay.classList.add("line"), 120);
+      window.setTimeout(() => overlay.classList.add("dot"), 720);
+      window.setTimeout(() => {
+        window.location.href = url;
+      }, 1100);
+    }
+
+    window.addEventListener("pageshow", () => {
+      redirecting = false;
+      const overlay = document.getElementById("redirect-overlay");
+      if (overlay) overlay.classList.remove("active", "line", "dot");
+    });
+
+    document.querySelectorAll(".dir").forEach(link => {
+      link.addEventListener("click", event => {
+        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        redirectTo(link.getAttribute("href"));
+      });
+    });
+
+    function navigateToSite(name) {
+      const route = siteRoutes[name];
+      if (!route) {
+        printLine("cd: no such site: " + name, "err");
+        return;
+      }
+      printLine("cd " + name);
+      redirectTo(route);
+    }
+
+    /* ---------- dispatch ---------- */
 
     function runCommand(rawValue) {
       const value = rawValue.trim();
-      if (!value) {
-        return;
-      }
+      if (!value) return;
 
-      printPrompt(value);
+      printCommand(value);
+
       const normalized = value.toLowerCase();
       const parts = normalized.split(/\s+/);
       const command = parts[0];
@@ -598,37 +1257,37 @@
 
       if (normalized === "help") {
         printLines([
-          "help",
-          "ls",
-          "pwd",
-          "clear",
-          "whoami",
-          "systeminfo",
-          "uptime",
-          "cat site.txt",
-          "cat /etc/motd",
-          "cat /etc/services",
-          "cat /log/visitors",
-          "cat /dev/notes",
-          "cat /home/bb/feedback",
+          "bbOS 0.3 // bbsh builtins",
+          "  help              this list",
+          "  ls | ls -la       list sites and files",
+          "  pwd               print working directory",
+          "  whoami            print current user",
+          "  uptime            system uptime",
+          "  systeminfo        system summary",
+          "  neofetch          logo + system info",
+          "  man <command>     manual page",
+          "  history           command history",
+          "  ping <host>       fake ICMP ping",
+          "  sudo <command>    nice try",
+          "  cat <file>        print a file",
+          "  clear             clear the screen",
+          "  exit | logout     close the session",
           sedToSimple,
           sedToAdvanced,
-          "cd alex",
-          "cd hoodie",
-          "cd riley",
-          "cd valk",
-          "cd temp"
-        ]);
+          "  cd alex | hoodie | riley | valk | temp",
+          "",
+          "keys: up/down history · tab completion · ctrl+l clear"
+        ], "dim");
         return;
       }
 
-      if (normalized === "ls") {
-        printLine("alex  hoodie  riley  valk  temp  etc  log  dev");
+      if (normalized === "ls" || normalized === "ls -la" || normalized === "ls -l") {
+        printSiteListing(normalized !== "ls");
         return;
       }
 
       if (normalized === "pwd") {
-        printLine("/home/bb");
+        printLine("/home/guest/temp");
         return;
       }
 
@@ -638,7 +1297,7 @@
       }
 
       if (normalized === "uptime") {
-        printLine(formatUptime());
+        printLine("up " + formatUptime() + ", 2 users, load average: 0.03, 0.01, 0.00");
         return;
       }
 
@@ -647,18 +1306,47 @@
           "user: guest",
           "host: boogerboys",
           "os: bbOS 0.3 unstable",
+          "kernel: greenbean 0.9",
+          "shell: bbsh 1.0",
           "uptime: " + formatUptime(),
-          "services: jukebox.service (online)"
+          "services: jukebox.service (online), router.service (degraded)"
         ]);
         return;
       }
 
+      if (normalized === "neofetch") {
+        runNeofetch();
+        return;
+      }
+
+      if (command === "man") {
+        runMan(arg);
+        return;
+      }
+
+      if (command === "ping") {
+        runPing(arg);
+        return;
+      }
+
+      if (normalized === "history") {
+        printHistory();
+        return;
+      }
+
+      if (command === "sudo") {
+        printLine("guest is not in the sudoers file. This incident has been reported.", "err");
+        window.setTimeout(() => printLine("…reported to /dev/null.", "dim"), 700);
+        return;
+      }
+
       if (normalized === "clear") {
-        if (currentMode === "simple") {
-          showSimpleIntro();
-        } else {
-          showDefaultIntro();
-        }
+        clearTerminal();
+        return;
+      }
+
+      if (normalized === "exit" || normalized === "logout") {
+        logout();
         return;
       }
 
@@ -669,73 +1357,284 @@
 
       if (command === "cd") {
         if (!arg) {
-          printLine("cd: missing site name");
+          printLine("cd: missing site name", "err");
           return;
         }
         navigateToSite(arg);
         return;
       }
 
-      printLine("command not found: " + value);
+      printLine("bbsh: " + value + ": command not found", "err");
     }
+
+    /* ---------- tab completion ---------- */
+
+    function commonPrefix(words) {
+      let prefix = words[0];
+      words.forEach(word => {
+        while (word.indexOf(prefix) !== 0) {
+          prefix = prefix.slice(0, -1);
+        }
+      });
+      return prefix;
+    }
+
+    function handleTabCompletion() {
+      const value = terminalInput.value;
+      const lastSpace = value.lastIndexOf(" ");
+      const partial = value.slice(lastSpace + 1);
+      const base = value.slice(0, lastSpace + 1);
+      if (!partial) {
+        printLine(COMMANDS.join("  "), "dim");
+        return;
+      }
+      const pool = lastSpace === -1
+        ? COMMANDS.slice()
+        : SITES.concat(Object.keys(fileSystem));
+      const matches = pool.filter(candidate => candidate.indexOf(partial) === 0);
+      if (!matches.length) return;
+
+      if (matches.length === 1) {
+        setInputValue(base + matches[0]);
+        return;
+      }
+      const shared = commonPrefix(matches);
+      if (shared.length > partial.length) {
+        setInputValue(base + shared);
+        return;
+      }
+      printLine(base + matches.join("  "), "dim");
+    }
+
+    /* ---------- jukebox ---------- */
+
+    let currentSong = 0;
+    let baseVolume = 0.75;
+    audio.volume = baseVolume;
+
+    function formatTime(seconds) {
+      if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+      return Math.floor(seconds / 60) + ":" + String(Math.floor(seconds % 60)).padStart(2, "0");
+    }
+
+    function renderProgress() {
+      const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+      const current = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+      const blocks = 15;
+      const filled = duration > 0
+        ? Math.min(blocks, Math.round((current / duration) * blocks))
+        : 0;
+      barEl.textContent = "[" + "\u2588".repeat(filled) + "\u2591".repeat(blocks - filled) + "]";
+      timeEl.textContent = formatTime(current) + " / " + formatTime(duration);
+    }
+
+    function renderVolume() {
+      const blocks = 8;
+      const filled = Math.round(baseVolume * blocks);
+      volumeIndicator.textContent =
+        "vol [" + "\u2588".repeat(filled) + "\u2591".repeat(blocks - filled) + "] " +
+        Math.round(baseVolume * 100) + "%";
+    }
+
+    function renderPlayState() {
+      playButton.textContent = audio.paused ? "[s] play" : "[s] pause";
+    }
+
+    function attemptPlay() {
+      const attempt = audio.play();
+      if (attempt && typeof attempt.catch === "function") {
+        attempt.catch(() => { });
+      }
+    }
+
+    function playSong(index, autoplay = true) {
+      currentSong = (index + songs.length) % songs.length;
+      const song = songs[currentSong];
+      audio.src = song.file;
+      audio.volume = baseVolume;
+      songInfoEl.textContent = "\u266a " + song.credit;
+      renderProgress();
+      if (autoplay) attemptPlay();
+    }
+
+    function nextSong() { playSong(currentSong + 1); }
+    function prevSong() { playSong(currentSong - 1); }
+
+    function togglePlay() {
+      if (audio.paused) {
+        if (audio.volume === 0) audio.volume = baseVolume;
+        attemptPlay();
+      } else {
+        clearVolumeFade();
+        audio.pause();
+      }
+    }
+
+    let volumeFadeTimer = null;
+
+    function clearVolumeFade() {
+      if (volumeFadeTimer) {
+        window.clearInterval(volumeFadeTimer);
+        volumeFadeTimer = null;
+      }
+    }
+
+    function fadeVolumeTo(target, duration) {
+      clearVolumeFade();
+      const from = audio.volume;
+      const steps = 30;
+      let step = 0;
+      volumeFadeTimer = window.setInterval(() => {
+        step += 1;
+        const value = from + (target - from) * (step / steps);
+        audio.volume = Math.max(0, Math.min(1, value));
+        if (step >= steps) {
+          clearVolumeFade();
+          audio.volume = target;
+        }
+      }, duration / steps);
+    }
+
+    let musicUnlocked = false;
+
+    function unlockMusic(event) {
+      if (musicUnlocked) return;
+      if (event && event.target && event.target.closest("#jukebox, a, button, input")) return;
+      if (!audio.paused) {
+        musicUnlocked = true;
+        return;
+      }
+      audio.volume = 0;
+      musicUnlocked = true;
+      fadeVolumeTo(baseVolume, 1500);
+      const attempt = audio.play();
+      if (attempt && typeof attempt.catch === "function") {
+        attempt.catch(() => {
+          musicUnlocked = false;
+          clearVolumeFade();
+          audio.volume = baseVolume;
+        });
+      }
+    }
+
+    document.addEventListener("pointerdown", unlockMusic);
+    document.addEventListener("click", unlockMusic);
+
+    function setVolume(value) {
+      clearVolumeFade();
+      baseVolume = Math.max(0, Math.min(1, value));
+      audio.volume = baseVolume;
+      renderVolume();
+    }
+
+    document.getElementById("prev-button").addEventListener("click", prevSong);
+    document.getElementById("next-button").addEventListener("click", nextSong);
+    playButton.addEventListener("click", togglePlay);
+    volumeIndicator.addEventListener("click", () => {
+      setVolume(baseVolume >= 1 ? 0.25 : baseVolume + 0.25);
+    });
+
+    audio.addEventListener("timeupdate", renderProgress);
+    audio.addEventListener("loadedmetadata", renderProgress);
+    audio.addEventListener("durationchange", renderProgress);
+    audio.addEventListener("ended", nextSong);
+    audio.addEventListener("play", renderPlayState);
+    audio.addEventListener("pause", renderPlayState);
+
+    /* ---------- input ---------- */
 
     terminalInput.addEventListener("keydown", event => {
       if (event.key === "Enter") {
         event.preventDefault();
-        const submittedValue = desiredValue;
-        displayValue = "";
-        desiredValue = "";
-        if (inputTimer !== null) {
-          window.clearTimeout(inputTimer);
-          inputTimer = null;
+        const value = terminalInput.value;
+        if (!value.trim()) {
+          resetInput();
+          return;
         }
-        terminalInput.value = "";
-        runCommand(submittedValue);
+        commandHistory.push(value.trim());
+        historyPos = commandHistory.length;
+        runCommand(value);
+        resetInput();
         return;
       }
 
-      if (event.key === "Backspace") {
+      if (event.key === "ArrowUp") {
         event.preventDefault();
-        setDesiredValue(desiredValue.slice(0, -1));
+        if (!commandHistory.length) return;
+        historyPos = Math.max(0, historyPos - 1);
+        setInputValue(commandHistory[historyPos] || "");
+        return;
+      }
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        historyPos = Math.min(commandHistory.length, historyPos + 1);
+        setInputValue(historyPos === commandHistory.length ? "" : commandHistory[historyPos]);
         return;
       }
 
       if (event.key === "Tab") {
         event.preventDefault();
+        handleTabCompletion();
         return;
       }
 
-      if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      if (event.ctrlKey && event.key.toLowerCase() === "l") {
         event.preventDefault();
-        setDesiredValue(desiredValue + event.key);
+        clearTerminal();
+        return;
       }
     });
 
-    terminalInput.addEventListener("paste", event => {
-      event.preventDefault();
-      const pasted = (event.clipboardData || window.clipboardData).getData("text");
-      setDesiredValue(desiredValue + pasted);
+    terminalInput.addEventListener("input", renderEcho);
+    terminalInput.addEventListener("keyup", renderEcho);
+    terminalInput.addEventListener("click", () => window.setTimeout(renderEcho, 0));
+    document.addEventListener("selectionchange", () => {
+      if (document.activeElement === terminalInput) renderEcho();
     });
 
-    prevButton.addEventListener("click", prevSong);
-    nextButton.addEventListener("click", nextSong);
-    audio.addEventListener("ended", nextSong);
-    volumeSlider.addEventListener("input", () => {
-      audio.volume = parseFloat(volumeSlider.value);
+    terminalPane.addEventListener("click", event => {
+      if (event.target.closest("a")) return;
+      terminalInput.focus();
     });
 
-    let mode = "advanced";
+    document.addEventListener("keydown", event => {
+      if (document.activeElement === terminalInput) return;
+      if (event.ctrlKey || event.metaKey || event.altKey) return;
+      if (event.key === "p") {
+        prevSong();
+      } else if (event.key === "n") {
+        nextSong();
+      } else if (event.key === "s") {
+        togglePlay();
+      } else if (event.key === "-") {
+        setVolume(baseVolume - 0.1);
+      } else if (event.key === "=") {
+        setVolume(baseVolume + 0.1);
+      } else if (event.key === "v") {
+        setVolume(baseVolume >= 1 ? 0.25 : baseVolume + 0.25);
+      }
+    });
+
+    /* ---------- startup ---------- */
+
+    let savedMode = "advanced";
     try {
-      const savedMode = localStorage.getItem(modeKey);
-      if (savedMode === "simple" || savedMode === "advanced") {
-        mode = savedMode;
-      }
+      const stored = localStorage.getItem(modeKey);
+      if (stored === "simple" || stored === "advanced") savedMode = stored;
     } catch (error) {
     }
 
-    setMode(mode);
-    terminalInput.focus();
-    updateSongDisplay(currentSong, "ready. press prev or next to start audio.");
+    currentMode = savedMode;
+    app.className = "screen " + currentMode + "-mode";
+    updateStatusMode();
+    updateClock();
+    window.setInterval(updateClock, 1000);
+    playSong(0, false);
+    renderVolume();
+    renderPlayState();
+    renderEcho();
+    runBootSequence();
   </script>
 </body>
 

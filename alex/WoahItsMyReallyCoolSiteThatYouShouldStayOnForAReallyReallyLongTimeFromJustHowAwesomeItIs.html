@@ -16,7 +16,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#3a6ea5">
   <!-- im gonna intentionally leave this blank cause i dont wanna add font pointers lmao -->
-  <link rel="stylesheet" href="style.css?v=20260605c">
+  <link rel="stylesheet" href="style.css?v=20261122j">
 </head>
 
 <body>
@@ -133,7 +133,24 @@
     <button id="start-btn" onclick="toggleStartMenu(); clickSound.play();"></button>
     <div id="taskbar-apps"></div>
     <div id="system-tray">
-      <div id="notification-area"></div>
+      <div id="notification-area">
+        <button id="tray-network" class="tray-icon" type="button" title="Local Area Connection" aria-label="Network"></button>
+        <button id="tray-security" class="tray-icon" type="button" title="Security Center" aria-label="Security Center">
+          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <path d="M8 1.1 13.5 2.9v5.2c0 3.3-2.3 5.8-5.5 6.9-3.2-1.1-5.5-3.6-5.5-6.9V2.9z" fill="#c8202a" stroke="#6d0d13" stroke-width="0.9" stroke-linejoin="round"/>
+            <path d="M5.5 5.6 10.5 10.4M10.5 5.6 5.5 10.4" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button id="tray-volume" class="tray-icon" type="button" title="Volume" aria-label="Volume">
+          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <path d="M1.5 6.1h2.1L6.8 3.3v9.4L3.6 9.9H1.5z" fill="#dcdfe4" stroke="#1d232b" stroke-width="0.8" stroke-linejoin="round"/>
+            <path d="M6.8 3.5v9" stroke="#8b929a" stroke-width="0.7"/>
+            <path d="M2 7.1h1.4v1.8H2z" fill="#f3f5f8"/>
+            <path d="M8.7 5.7a3.2 3.2 0 0 1 0 4.6" fill="none" stroke="#bfdcf7" stroke-width="1"/>
+            <path d="M10.6 4.3a5.5 5.5 0 0 1 0 7.4" fill="none" stroke="#bfdcf7" stroke-width="1"/>
+          </svg>
+        </button>
+      </div>
       <div id="clock"></div>
     </div>
   </div>
@@ -148,85 +165,99 @@
   </div>
 
   <div id="start-menu" class="hidden">
-    <div class="start-menu-left-col">
-      <div class="start-menu-user">
-        <img src="alex.png" alt="User">
-        <span>alex</span>
-      </div>
-      <div class="start-menu-entries">
-        <div class="start-menu-entry" onclick="openWindow('Bio', 1); toggleStartMenu(); clickSound.play();">
-          <img src="1.png" alt="Bio">
-          <span>Bio</span>
-        </div>
-        <div class="start-menu-entry" onclick="openWindow('Interests', 2); toggleStartMenu(); clickSound.play();">
-          <img src="2.png" alt="Interests">
-          <span>Interests</span>
-        </div>
-        <div class="start-menu-entry" onclick="openWindow('DNI', 3); toggleStartMenu(); clickSound.play();">
-          <img src="3.png" alt="DNI">
-          <span>DNI</span>
-        </div>
-        <div class="start-menu-entry" onclick="openWindow('Journal', 4); toggleStartMenu(); clickSound.play();">
-          <img src="4.png" alt="Journal">
-          <span>Journal</span>
-        </div>
-        <div class="start-menu-entry" onclick="openWindow('Drawings', 5); toggleStartMenu(); clickSound.play();">
-          <img src="5.png" alt="Drawings">
-          <span>Drawings</span>
-        </div>
-        <div class="start-menu-entry" onclick="openWindow('Games', 6); toggleStartMenu(); clickSound.play();">
-          <img src="6.png" alt="Games">
-          <span>Games</span>
-        </div>
-        <div class="start-menu-entry" onclick="openWindow('Programming', 17); toggleStartMenu(); clickSound.play();">
-          <img src="17.png" alt="Programming">
-          <span>Programming</span>
-        </div>
-      </div>
+    <div class="start-menu-header">
+      <img src="alex.png" alt="User">
+      <span>alex</span>
     </div>
-    <div class="start-menu-right-col">
-      <div>
-        <div class="start-menu-entry" onclick="openWindow('My Computer', 8); toggleStartMenu(); clickSound.play();">
-          <img src="8.png" alt="My Computer">
-          <span>My Computer</span>
+    <div class="start-menu-body">
+      <div class="start-menu-left-col">
+        <div class="start-menu-entries">
+          <div class="start-menu-entry" onclick="openWindow('Bio', 1); toggleStartMenu(); clickSound.play();">
+            <img src="1.png" alt="Bio">
+            <span>Bio</span>
+            <span class="start-menu-arrow"></span>
+          </div>
+          <div class="start-menu-entry" onclick="openWindow('Interests', 2); toggleStartMenu(); clickSound.play();">
+            <img src="2.png" alt="Interests">
+            <span>Interests</span>
+            <span class="start-menu-arrow"></span>
+          </div>
+          <div class="start-menu-entry" onclick="openWindow('DNI', 3); toggleStartMenu(); clickSound.play();">
+            <img src="3.png" alt="DNI">
+            <span>DNI</span>
+            <span class="start-menu-arrow"></span>
+          </div>
+          <div class="start-menu-entry" onclick="openWindow('Journal', 4); toggleStartMenu(); clickSound.play();">
+            <img src="4.png" alt="Journal">
+            <span>Journal</span>
+            <span class="start-menu-arrow"></span>
+          </div>
+          <div class="start-menu-entry" onclick="openWindow('Drawings', 5); toggleStartMenu(); clickSound.play();">
+            <img src="5.png" alt="Drawings">
+            <span>Drawings</span>
+            <span class="start-menu-arrow"></span>
+          </div>
+          <div class="start-menu-entry" onclick="openWindow('Games', 6); toggleStartMenu(); clickSound.play();">
+            <img src="6.png" alt="Games">
+            <span>Games</span>
+            <span class="start-menu-arrow"></span>
+          </div>
+          <div class="start-menu-entry" onclick="openWindow('Programming', 17); toggleStartMenu(); clickSound.play();">
+            <img src="17.png" alt="Programming">
+            <span>Programming</span>
+            <span class="start-menu-arrow"></span>
+          </div>
         </div>
-        <div class="start-menu-entry"
-          onclick="openWindow('Jukebox', 10, Math.max(12, window.innerWidth / 2 - 160), Math.max(32, window.innerHeight / 3 - 120)); toggleStartMenu(); clickSound.play();">
-          <img src="10.png" alt="Jukebox">
-          <span>Jukebox</span>
-        </div>
-        <div class="start-menu-entry" onclick="openWindow('Browser', 'browser'); toggleStartMenu(); clickSound.play();">
-          <img src="12.png" alt="Browser">
-          <span>Browser</span>
-        </div>
-        <div class="start-menu-entry" onclick="openWindow('Chat', 'chat'); toggleStartMenu(); clickSound.play();">
-          <img src="chat.png" alt="Chat">
-          <span>Chat</span>
-        </div>
-        <div class="start-menu-entry" onclick="openWindow('PowerShell', 'ps'); toggleStartMenu(); clickSound.play();">
-          <img src="ps.png" alt="PowerShell">
-          <span>PowerShell</span>
-        </div>
-        <div class="start-menu-entry"
-          onclick="openWindow('Calculator', 'calculator'); toggleStartMenu(); clickSound.play();">
-          <img src="calculator.png" alt="Calculator">
-          <span>Calculator</span>
-        </div>
-        <div class="start-menu-entry"
-          onclick="openWindow('Minesweeper', 'minesweeper'); toggleStartMenu(); clickSound.play();">
-          <img src="minesweeper.png" alt="Minesweeper">
-          <span>Minesweeper</span>
+        <div class="start-menu-all-programs">
+          <span>All Programs</span>
+          <span class="start-menu-arrow"></span>
         </div>
       </div>
-      <div class="start-menu-logoff-shutdown">
-        <button id="logoff-btn" class="logoff-shutdown-btn" onclick="logOff(); clickSound.play();">
-          <img src="14.png" alt="Log Off">
-          Log Off
-        </button>
-        <button id="shutdown-btn" class="logoff-shutdown-btn" onclick="shutdownSequence(); clickSound.play();">
-          <img src="13.png" alt="Shutdown">
-          Turn Off Computer
-        </button>
+      <div class="start-menu-right-col">
+        <div class="start-menu-group">
+          <div class="start-menu-entry" onclick="openWindow('My Computer', 8); toggleStartMenu(); clickSound.play();">
+            <img src="8.png" alt="My Computer">
+            <span>My Computer</span>
+          </div>
+          <div class="start-menu-entry" onclick="openWindow('Jukebox', 10, Math.max(12, window.innerWidth / 2 - 160), Math.max(32, window.innerHeight / 3 - 120)); toggleStartMenu(); clickSound.play();">
+            <img src="10.png" alt="Jukebox">
+            <span>Jukebox</span>
+          </div>
+          <div class="start-menu-entry" onclick="openWindow('Browser', 'browser'); toggleStartMenu(); clickSound.play();">
+            <img src="12.png" alt="Browser">
+            <span>Browser</span>
+          </div>
+          <div class="start-menu-entry" onclick="openWindow('Chat', 'chat'); toggleStartMenu(); clickSound.play();">
+            <img src="chat.png" alt="Chat">
+            <span>Chat</span>
+          </div>
+        </div>
+        <div class="start-menu-group">
+          <div class="start-menu-entry" onclick="openWindow('PowerShell', 'ps'); toggleStartMenu(); clickSound.play();">
+            <img src="ps.png" alt="PowerShell">
+            <span>PowerShell</span>
+          </div>
+          <div class="start-menu-entry" onclick="openWindow('Calculator', 'calculator'); toggleStartMenu(); clickSound.play();">
+            <img src="calculator.png" alt="Calculator">
+            <span>Calculator</span>
+          </div>
+          <div class="start-menu-entry" onclick="openWindow('Minesweeper', 'minesweeper'); toggleStartMenu(); clickSound.play();">
+            <img src="minesweeper.png" alt="Minesweeper">
+            <span>Minesweeper</span>
+          </div>
+        </div>
+        <div class="start-menu-logoff-shutdown">
+          <button id="logoff-btn" class="logoff-shutdown-btn" onclick="logOff(); clickSound.play();">
+            <img src="14.png" alt="Log Off">
+            <span>Log Off</span>
+            <span class="start-menu-arrow"></span>
+          </button>
+          <button id="shutdown-btn" class="logoff-shutdown-btn" onclick="shutdownSequence(); clickSound.play();">
+            <img src="13.png" alt="Turn Off Computer">
+            <span>Turn Off Computer</span>
+            <span class="start-menu-arrow"></span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -238,7 +269,7 @@
   <audio id="shutdown-sound" src="XPshutdown.mp3"></audio>
   <audio id="notification-sound" src="notif.mp3"></audio>
 
-  <script src="main.js?v=20260605c"></script>
+  <script src="main.js?v=20261122j"></script>
   <script src="https://iframe.chat/scripts/main.min.js" async></script>
 </body>
 

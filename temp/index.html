@@ -1,29 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>temp terminal</title>
+  <title>bbOS 0.3 // 404: ~/temp</title>
   <style>
     :root {
       color-scheme: dark;
-      --bg: #020402;
-      --panel: #071107;
-      --line: #173417;
-      --text: #92ff92;
-      --text-dim: #5fd45f;
-      --text-soft: #356f35;
-      --warn: #e4ff8e;
-      --blue: #79c0ff;
-      --cyan: #7ee7ff;
+      --bg: #000000;
+      --panel: #021102;
+      --panel-strong: #062006;
+      --line: #134913;
+      --text: #8dff8d;
+      --text-dim: #59d859;
+      --text-soft: #2f7d2f;
+      --warn: #c8ffc8;
+      --cyan: #63f2d6;
+      --red: #ff7b72;
     }
 
-    * {
-      box-sizing: border-box;
+    * { box-sizing: border-box; }
+
+    ::selection {
+      background: #ffffff;
+      color: #000000;
+      text-shadow: none;
     }
 
-    html,
-    body {
+    html, body {
       margin: 0;
       min-height: 100%;
       background: var(--bg);
@@ -33,14 +38,11 @@
       font-family: "Consolas", "Liberation Mono", "Courier New", monospace;
       color: var(--text);
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
       background-image:
-        radial-gradient(circle at top, rgba(27, 92, 27, 0.16), transparent 34%),
-        linear-gradient(rgba(146, 255, 146, 0.03) 1px, transparent 1px);
+        radial-gradient(circle at top, rgba(18, 75, 18, 0.22), transparent 34%),
+        linear-gradient(rgba(141, 255, 141, 0.045) 1px, transparent 1px);
       background-size: auto, 100% 4px;
+      padding: 18px;
     }
 
     body::before {
@@ -48,114 +50,265 @@
       position: fixed;
       inset: 0;
       pointer-events: none;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0) 0,
-        rgba(0, 0, 0, 0) 2px,
-        rgba(0, 0, 0, 0.18) 3px,
-        rgba(0, 0, 0, 0.18) 4px
-      );
+      background: repeating-linear-gradient(to bottom,
+          rgba(0, 0, 0, 0) 0,
+          rgba(0, 0, 0, 0) 2px,
+          rgba(0, 0, 0, 0.18) 3px,
+          rgba(0, 0, 0, 0.18) 4px);
       opacity: 0.55;
       mix-blend-mode: multiply;
+      z-index: 3;
     }
 
-    .terminal {
+    button, input, a { font: inherit; }
+
+    .screen {
       width: min(100%, 760px);
+      margin: 0 auto;
       border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(5, 12, 5, 0.97), rgba(2, 5, 2, 0.99));
-      box-shadow: 0 0 0 1px rgba(146, 255, 146, 0.08), 0 0 36px rgba(33, 92, 33, 0.18);
-      padding: 24px;
+      background: rgba(0, 8, 0, 0.96);
+      box-shadow: 0 0 0 1px rgba(141, 255, 141, 0.08), 0 0 40px rgba(22, 80, 22, 0.24);
+      min-height: calc(100vh - 36px);
+      display: flex;
+      flex-direction: column;
       position: relative;
       overflow: hidden;
+      text-shadow: 0.4px 0 rgba(160, 255, 190, 0.22), -0.4px 0 rgba(90, 190, 255, 0.16);
     }
 
-    .terminal::after {
+    .screen::before {
       content: "";
       position: absolute;
       inset: 0;
       pointer-events: none;
+      z-index: 2;
+      background: radial-gradient(ellipse at center, transparent 52%, rgba(0, 0, 0, 0.5) 100%);
+    }
+
+    .screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
       background: linear-gradient(rgba(200, 255, 200, 0.03), rgba(0, 0, 0, 0.02));
+      animation: crt-flicker 4.8s steps(18, end) infinite;
+    }
+
+    @keyframes crt-flicker {
+      0%, 100% { opacity: 1; }
+      11% { opacity: 0.93; }
+      12% { opacity: 1; }
+      44% { opacity: 0.96; }
+      45% { opacity: 1; }
+      77% { opacity: 0.92; }
+      78% { opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .screen::after, .cursor { animation: none !important; }
+    }
+
+    .titlebar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--line);
+      color: var(--text-dim);
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+      position: relative;
+      z-index: 4;
+      background: rgba(2, 16, 2, 0.85);
+    }
+
+    .titlebar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .titlebar-brand { color: var(--warn); text-transform: lowercase; }
+    .titlebar-sep, .titlebar-title { color: var(--text-soft); }
+    .titlebar-buttons { display: flex; gap: 4px; flex-shrink: 0; }
+
+    .titlebar-buttons span {
+      width: 17px;
+      height: 15px;
+      border: 1px solid var(--line);
+      color: var(--text-soft);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      line-height: 1;
     }
 
     .content {
+      flex: 1;
       position: relative;
       z-index: 1;
+      padding: 18px;
+      animation: crt-settle 1.1s steps(9, end) both;
     }
 
-    .line,
-    .prompt {
-      margin: 0 0 10px;
+    /* CRT power-on settle: hard stepped jumps, no smooth tweening */
+    @keyframes crt-settle {
+      0% { transform: translateY(-12px); filter: brightness(1.3); opacity: 0.7; }
+      9% { transform: translateY(-12px); filter: brightness(0.5); opacity: 1; }
+      10% { transform: translateY(9px); filter: brightness(1.15); }
+      13% { transform: translateY(88px); filter: brightness(0.4); }
+      31% { transform: translateY(88px); filter: brightness(0.9); }
+      32% { transform: translateY(-44px); filter: brightness(1.35); }
+      34% { transform: translateY(26px); filter: brightness(0.65); }
+      36% { transform: translateY(-8px); filter: brightness(1.1); }
+      57% { transform: translateY(12px); filter: brightness(0.8); }
+      59% { transform: translateY(-3px); filter: brightness(1.05); }
+      78% { transform: translateY(4px); filter: brightness(1); }
+      94% { transform: translateY(-1px); }
+      100% { transform: translateY(0); filter: none; opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .content { animation: none !important; }
+    }
+
+    .line, .prompt-line {
+      margin: 0 0 6px;
       line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
-    .prompt::before {
-      content: "guest@boogerboys:~/temp$ ";
-      color: var(--warn);
+    .line--dim, .ps-dim { color: var(--text-soft); }
+    .line--accent { color: var(--warn); }
+    .line--err { color: var(--red); }
+
+    .ps-user { color: var(--warn); }
+    .ps-path { color: var(--cyan); }
+    .cmd { color: var(--text); }
+
+    .cursor {
+      display: inline-block;
+      color: var(--text);
+      animation: cursor-blink 1.1s steps(1) infinite;
     }
 
-    .cmd {
-      color: var(--blue);
+    @keyframes cursor-blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
     }
 
-    .path {
-      color: var(--cyan);
-    }
-
-    .panel,
-    #jukebox {
-      margin-top: 18px;
+    .panel {
+      margin: 16px 0;
       border: 1px solid var(--line);
-      background: var(--panel);
-      padding: 16px;
+      background: rgba(2, 17, 2, 0.82);
+      padding: 12px 14px;
     }
+
+    .panel .line:last-child { margin-bottom: 0; }
 
     .home-link {
-      display: inline-block;
-      margin-top: 12px;
       color: var(--text);
-      text-decoration: none;
-      border: 1px solid var(--line);
-      padding: 10px 14px;
-      background: rgba(2, 5, 2, 0.9);
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
 
-    .home-link:hover,
-    .home-link:focus-visible {
-      border-color: var(--text-dim);
+    .home-link:hover, .home-link:focus-visible {
+      color: var(--warn);
       outline: none;
     }
 
-    .status-line {
-      color: var(--text-soft);
-      margin-top: 18px;
+    .statusline {
+      display: flex;
+      align-items: stretch;
+      border-top: 1px solid var(--line);
+      background: var(--panel-strong);
+      color: var(--text-dim);
+      font-size: 0.7rem;
+      position: relative;
+      z-index: 4;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .status-seg { padding: 3px 9px; display: flex; align-items: center; }
+    .status-seg + .status-seg { border-left: 1px solid var(--line); }
+    .status-mode { background: var(--line); color: #031003; }
+    .status-spacer { flex: 1; }
+    .status-err { color: var(--red); }
+
+    @media (max-width: 520px) {
+      body { padding: 10px; }
+      .screen { min-height: calc(100vh - 20px); }
+      .titlebar-title { display: none; }
     }
   </style>
 </head>
+
 <body>
   <audio id="bg-music" autoplay loop>
     <source src="Temporary.mp3" type="audio/mpeg">
   </audio>
 
-  <main class="terminal">
-    <div class="content">
-      <p class="prompt"><span class="cmd">cat</span> <span class="path">status.txt</span></p>
+  <main class="screen">
+    <div class="titlebar">
+      <div class="titlebar-left">
+        <span class="titlebar-brand">bbterm</span>
+        <span class="titlebar-sep">//</span>
+        <span class="titlebar-title">bbOS 0.3 · guest@boogerboys: ~/temp</span>
+      </div>
+      <div class="titlebar-buttons" aria-hidden="true">
+        <span>-</span><span>&#9633;</span><span>&#215;</span>
+      </div>
+    </div>
+
+    <section class="content">
+      <p class="prompt-line"><span class="ps-user">guest@boogerboys</span><span class="ps-dim">:</span><span class="ps-path">~/temp</span><span class="ps-dim">$</span> <span class="cmd">cat</span> status.txt</p>
       <p class="line">temporary page loaded.</p>
       <p class="line">no site found here yet.</p>
 
+      <p class="prompt-line"><span class="ps-user">guest@boogerboys</span><span class="ps-dim">:</span><span class="ps-path">~/temp</span><span class="ps-dim">$</span> <span class="cmd">curl</span> -I http://boogerboys.gg/temp</p>
       <div class="panel">
-        <p class="prompt"><span class="cmd">help</span></p>
-        <p class="line"><span class="cmd">cd</span> <span class="path">..</span> to go back to the launcher.</p>
-        <p class="line"><span class="cmd">wait</span> for an actual page build.</p>
-        <a class="home-link" href="../index.html">return to launcher</a>
+        <p class="line">HTTP/1.1 404 Not Found</p>
+        <p class="line">Server: nginx/1.18.0 (Ubuntu)</p>
+        <p class="line">Content-Type: text/html</p>
+        <p class="line">Content-Length: 162</p>
+        <p class="line">Connection: keep-alive</p>
       </div>
 
-      <div id="jukebox">
-        <p class="line">now looping: dialtone - toby fox</p>
-        <p class="line">if autoplay is blocked, click anywhere once.</p>
+      <p class="line line--dim">bash: cd: /var/www/temp: No such file or directory</p>
+
+      <p class="prompt-line"><span class="ps-user">guest@boogerboys</span><span class="ps-dim">:</span><span class="ps-path">~/temp</span><span class="ps-dim">$</span> <span class="cmd">exit</span></p>
+      <p class="line line--err">exit code: 404</p>
+
+      <div class="panel">
+        <p class="line line--accent">help</p>
+        <p class="line"><span class="ps-path">cd ..</span> to go back to the launcher.</p>
+        <p class="line"><a class="home-link" href="../index.html">return to launcher</a></p>
       </div>
 
-      <p class="status-line">exit code: 127</p>
-    </div>
+      <div class="panel">
+        <p class="line line--accent">jukebox.service</p>
+        <p class="line">♪ now looping: dialtone // toby fox</p>
+        <p class="line line--dim">if autoplay is blocked, click anywhere once.</p>
+      </div>
+
+      <p class="prompt-line"><span class="ps-user">guest@boogerboys</span><span class="ps-dim">:</span><span class="ps-path">~/temp</span><span class="ps-dim">$</span> <span class="cursor">&#9608;</span></p>
+    </section>
+
+    <footer class="statusline">
+      <span class="status-seg status-mode">[0]</span>
+      <span class="status-seg">guest@boogerboys: ~/temp</span>
+      <span class="status-spacer"></span>
+      <span class="status-seg status-err">exit code: 404</span>
+    </footer>
   </main>
 
   <script>
@@ -176,4 +329,5 @@
     });
   </script>
 </body>
+
 </html>
