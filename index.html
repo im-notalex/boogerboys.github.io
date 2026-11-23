@@ -29,7 +29,9 @@
       --red: #ff7b72;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     ::selection {
       background: #ffffff;
@@ -37,7 +39,8 @@
       text-shadow: none;
     }
 
-    html, body {
+    html,
+    body {
       margin: 0;
       min-height: 100%;
       background: var(--bg);
@@ -68,7 +71,10 @@
       mix-blend-mode: multiply;
     }
 
-    button, input { font: inherit; }
+    button,
+    input {
+      font: inherit;
+    }
 
     .screen {
       width: min(100%, 1100px);
@@ -104,26 +110,81 @@
     }
 
     @keyframes crt-flicker {
-      0%, 100% { opacity: 1; }
-      12% { opacity: 0.94; }
-      13% { opacity: 1; }
-      46% { opacity: 0.97; }
-      47% { opacity: 1; }
-      78% { opacity: 0.93; }
-      79% { opacity: 1; }
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      12% {
+        opacity: 0.94;
+      }
+
+      13% {
+        opacity: 1;
+      }
+
+      46% {
+        opacity: 0.97;
+      }
+
+      47% {
+        opacity: 1;
+      }
+
+      78% {
+        opacity: 0.93;
+      }
+
+      79% {
+        opacity: 1;
+      }
     }
 
-    .screen.flash { box-shadow: inset 0 0 140px rgba(200, 255, 200, 0.32); }
+    .screen.flash {
+      box-shadow: inset 0 0 140px rgba(200, 255, 200, 0.32);
+    }
 
     @media (prefers-reduced-motion: reduce) {
-      .screen::after, .cursor, .terminal-pane { animation: none !important; }
-      .boot-type { width: auto !important; animation: none !important; }
-      .boot-cursor { display: none; }
-      .boot-bar-fill { width: 14ch !important; animation: none !important; }
-      .boot-status { opacity: 1 !important; animation: none !important; }
-      .banner-type { width: auto !important; animation: none !important; }
-      .banner-cursor { display: none; }
-      .boot-delayed { opacity: 1 !important; animation: none !important; }
+
+      .screen::after,
+      .cursor,
+      .terminal-pane {
+        animation: none !important;
+      }
+
+      .boot-type {
+        width: auto !important;
+        animation: none !important;
+      }
+
+      .boot-cursor {
+        display: none;
+      }
+
+      .boot-bar-fill {
+        width: 14ch !important;
+        animation: none !important;
+      }
+
+      .boot-status {
+        opacity: 1 !important;
+        animation: none !important;
+      }
+
+      .banner-type {
+        width: auto !important;
+        animation: none !important;
+      }
+
+      .banner-cursor {
+        display: none;
+      }
+
+      .boot-delayed {
+        opacity: 1 !important;
+        animation: none !important;
+      }
     }
 
     .titlebar {
@@ -151,9 +212,21 @@
       text-overflow: ellipsis;
     }
 
-    .titlebar-brand { color: var(--warn); text-transform: lowercase; }
-    .titlebar-sep, .titlebar-title { color: var(--text-soft); }
-    .titlebar-buttons { display: flex; gap: 4px; flex-shrink: 0; }
+    .titlebar-brand {
+      color: var(--warn);
+      text-transform: lowercase;
+    }
+
+    .titlebar-sep,
+    .titlebar-title {
+      color: var(--text-soft);
+    }
+
+    .titlebar-buttons {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
 
     .titlebar-buttons span {
       width: 17px;
@@ -176,7 +249,10 @@
       z-index: 1;
     }
 
-    .terminal-pane, .side-pane { padding: 16px; }
+    .terminal-pane,
+    .side-pane {
+      padding: 16px;
+    }
 
     .terminal-pane {
       min-height: 0;
@@ -202,21 +278,47 @@
       scrollbar-color: var(--line) transparent;
     }
 
-    .terminal-output::-webkit-scrollbar { width: 10px; }
-    .terminal-output::-webkit-scrollbar-track { background: transparent; }
+    .terminal-output::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .terminal-output::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
     .terminal-output::-webkit-scrollbar-thumb {
       background: var(--line);
       border: 1px solid var(--panel-strong);
     }
 
-    .line { margin: 0 0 6px; line-height: 1.5; }
-    .line--dim { color: var(--text-soft); }
-    .line--err { color: var(--red); }
-    .line--accent { color: var(--warn); }
+    .line {
+      margin: 0 0 6px;
+      line-height: 1.5;
+    }
 
-    .ps-user { color: var(--warn); }
-    .ps-path { color: var(--cyan); }
-    .ps-dim { color: var(--text-soft); }
+    .line--dim {
+      color: var(--text-soft);
+    }
+
+    .line--err {
+      color: var(--red);
+    }
+
+    .line--accent {
+      color: var(--warn);
+    }
+
+    .ps-user {
+      color: var(--warn);
+    }
+
+    .ps-path {
+      color: var(--cyan);
+    }
+
+    .ps-dim {
+      color: var(--text-soft);
+    }
 
     .banner {
       display: block;
@@ -239,7 +341,10 @@
       margin-top: 12px;
     }
 
-    .prompt { color: var(--warn); white-space: nowrap; }
+    .prompt {
+      color: var(--warn);
+      white-space: nowrap;
+    }
 
     .input-line {
       position: relative;
@@ -276,8 +381,14 @@
       z-index: 2;
     }
 
-    #terminal-input:focus { outline: none; }
-    #terminal-input:disabled, #terminal-input:disabled + .input-echo { opacity: 0.45; }
+    #terminal-input:focus {
+      outline: none;
+    }
+
+    #terminal-input:disabled,
+    #terminal-input:disabled+.input-echo {
+      opacity: 0.45;
+    }
 
     .cursor {
       display: inline-block;
@@ -287,16 +398,43 @@
     }
 
     @keyframes cursor-blink {
-      0%, 49% { opacity: 1; }
-      50%, 100% { opacity: 0; }
+
+      0%,
+      49% {
+        opacity: 1;
+      }
+
+      50%,
+      100% {
+        opacity: 0;
+      }
     }
 
     /* CRT power-on: teleports down, then up, then snaps into place */
     @keyframes crt-settle {
-      0% { transform: translateY(96px); filter: brightness(0.45); opacity: 0.85; }
-      34% { transform: translateY(-64px); filter: brightness(1.4); opacity: 1; }
-      68% { transform: translateY(0); filter: brightness(1); opacity: 1; }
-      100% { transform: translateY(0); filter: none; opacity: 1; }
+      0% {
+        transform: translateY(96px);
+        filter: brightness(0.45);
+        opacity: 0.85;
+      }
+
+      34% {
+        transform: translateY(-64px);
+        filter: brightness(1.4);
+        opacity: 1;
+      }
+
+      68% {
+        transform: translateY(0);
+        filter: brightness(1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(0);
+        filter: none;
+        opacity: 1;
+      }
     }
 
     /* boot rows: label types out with a █ cursor, ░ bar fills with █ */
@@ -309,7 +447,9 @@
       font-size: 0.8rem;
     }
 
-    .boot-label { overflow: hidden; }
+    .boot-label {
+      overflow: hidden;
+    }
 
     .boot-type {
       display: inline-block;
@@ -321,7 +461,9 @@
     }
 
     @keyframes boot-type {
-      to { width: calc(var(--chars) * 1ch); }
+      to {
+        width: calc(var(--chars) * 1ch);
+      }
     }
 
     .boot-cursor {
@@ -332,7 +474,9 @@
     }
 
     @keyframes boot-cursor-off {
-      to { opacity: 0; }
+      to {
+        opacity: 0;
+      }
     }
 
     .boot-bar {
@@ -341,7 +485,9 @@
       color: var(--text-soft);
     }
 
-    .boot-bar-empty { color: var(--text-soft); }
+    .boot-bar-empty {
+      color: var(--text-soft);
+    }
 
     .boot-bar-fill {
       position: absolute;
@@ -356,7 +502,9 @@
     }
 
     @keyframes boot-bar {
-      to { width: 14ch; }
+      to {
+        width: 14ch;
+      }
     }
 
     .boot-status {
@@ -368,7 +516,9 @@
     }
 
     @keyframes boot-status {
-      to { opacity: 1; }
+      to {
+        opacity: 1;
+      }
     }
 
     /* the bbOS banner types itself out, one row at a time */
@@ -389,7 +539,9 @@
     }
 
     @keyframes banner-type {
-      to { width: calc(var(--chars) * 1ch); }
+      to {
+        width: calc(var(--chars) * 1ch);
+      }
     }
 
     .banner-cursor {
@@ -400,7 +552,9 @@
     }
 
     @keyframes banner-cursor-off {
-      to { opacity: 0; }
+      to {
+        opacity: 0;
+      }
     }
 
     /* a few boot steps stall halfway, then catch up late */
@@ -410,10 +564,21 @@
     }
 
     @keyframes boot-type-lag {
-      0% { width: 0; }
-      34% { width: calc(var(--chars) * 0.5 * 1ch); }
-      68% { width: calc(var(--chars) * 0.5 * 1ch); }
-      100% { width: calc(var(--chars) * 1ch); }
+      0% {
+        width: 0;
+      }
+
+      34% {
+        width: calc(var(--chars) * 0.5 * 1ch);
+      }
+
+      68% {
+        width: calc(var(--chars) * 0.5 * 1ch);
+      }
+
+      100% {
+        width: calc(var(--chars) * 1ch);
+      }
     }
 
     .boot-lag .boot-bar-fill {
@@ -422,10 +587,21 @@
     }
 
     @keyframes boot-bar-lag {
-      0% { width: 0; }
-      28% { width: 4ch; }
-      66% { width: 4ch; }
-      100% { width: 14ch; }
+      0% {
+        width: 0;
+      }
+
+      28% {
+        width: 4ch;
+      }
+
+      66% {
+        width: 4ch;
+      }
+
+      100% {
+        width: 14ch;
+      }
     }
 
     .boot-lag .boot-cursor {
@@ -438,19 +614,56 @@
 
     /* fallback: if animations were paused (hidden tab) or unsupported,
        force the finished boot state so nothing is left invisible */
-    .boot-done .boot-type { width: auto !important; animation: none !important; }
-    .boot-done .boot-bar-fill { width: 14ch !important; animation: none !important; }
-    .boot-done .boot-cursor { display: none !important; }
-    .boot-done .boot-status { opacity: 1 !important; animation: none !important; }
-    .boot-done .boot-login { opacity: 1 !important; animation: none !important; }
-    .boot-done .boot-delayed { opacity: 1 !important; animation: none !important; }
-    .boot-done .banner-type { width: auto !important; animation: none !important; }
-    .boot-done .banner-cursor { display: none !important; }
-    .terminal-pane.boot-done { animation: none !important; transform: none !important; }
+    .boot-done .boot-type {
+      width: auto !important;
+      animation: none !important;
+    }
 
-    .prompt-row:not(:focus-within) .cursor { animation: none; opacity: 0.4; }
+    .boot-done .boot-bar-fill {
+      width: 14ch !important;
+      animation: none !important;
+    }
 
-    .panel, #jukebox {
+    .boot-done .boot-cursor {
+      display: none !important;
+    }
+
+    .boot-done .boot-status {
+      opacity: 1 !important;
+      animation: none !important;
+    }
+
+    .boot-done .boot-login {
+      opacity: 1 !important;
+      animation: none !important;
+    }
+
+    .boot-done .boot-delayed {
+      opacity: 1 !important;
+      animation: none !important;
+    }
+
+    .boot-done .banner-type {
+      width: auto !important;
+      animation: none !important;
+    }
+
+    .boot-done .banner-cursor {
+      display: none !important;
+    }
+
+    .terminal-pane.boot-done {
+      animation: none !important;
+      transform: none !important;
+    }
+
+    .prompt-row:not(:focus-within) .cursor {
+      animation: none;
+      opacity: 0.4;
+    }
+
+    .panel,
+    #jukebox {
       border: 1px solid var(--line);
       background: rgba(1, 15, 1, 0.72);
       padding: 14px;
@@ -465,7 +678,11 @@
       letter-spacing: 0.06em;
     }
 
-    .help-list { margin: 0; padding: 0; list-style: none; }
+    .help-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
 
     .help-list li {
       margin-bottom: 8px;
@@ -474,7 +691,10 @@
       font-size: 0.82rem;
     }
 
-    .dir-list { line-height: 1.9; font-size: 0.86rem; }
+    .dir-list {
+      line-height: 1.9;
+      font-size: 0.86rem;
+    }
 
     .dir {
       color: var(--cyan);
@@ -483,13 +703,18 @@
       white-space: nowrap;
     }
 
-    .dir:hover, .dir:focus-visible {
+    .dir:hover,
+    .dir:focus-visible {
       color: var(--warn);
       text-decoration: underline;
       outline: none;
     }
 
-    #jukebox { position: relative; font-size: 0.8rem; margin-top: 22px; }
+    #jukebox {
+      position: relative;
+      font-size: 0.8rem;
+      margin-top: 22px;
+    }
 
     .curses-title {
       position: absolute;
@@ -504,7 +729,9 @@
       font-size: 0.75rem;
     }
 
-    .curses-state { color: var(--text-soft); }
+    .curses-state {
+      color: var(--text-soft);
+    }
 
     .jukebox-now {
       color: var(--text);
@@ -523,8 +750,14 @@
       font-size: 0.78rem;
     }
 
-    .jukebox-bar { color: var(--warn); letter-spacing: 0; }
-    .jukebox-time { color: var(--text-soft); }
+    .jukebox-bar {
+      color: var(--warn);
+      letter-spacing: 0;
+    }
+
+    .jukebox-time {
+      color: var(--text-soft);
+    }
 
     .jukebox-keys {
       display: flex;
@@ -542,7 +775,8 @@
       cursor: pointer;
     }
 
-    .key:hover, .key:focus-visible {
+    .key:hover,
+    .key:focus-visible {
       color: var(--warn);
       outline: none;
       text-decoration: underline;
@@ -568,10 +802,24 @@
       overflow: hidden;
     }
 
-    .status-seg { padding: 3px 9px; display: flex; align-items: center; }
-    .status-seg + .status-seg { border-left: 1px solid var(--line); }
-    .status-mode { background: var(--line); color: #031003; }
-    .status-spacer { flex: 1; }
+    .status-seg {
+      padding: 3px 9px;
+      display: flex;
+      align-items: center;
+    }
+
+    .status-seg+.status-seg {
+      border-left: 1px solid var(--line);
+    }
+
+    .status-mode {
+      background: var(--line);
+      color: #031003;
+    }
+
+    .status-spacer {
+      flex: 1;
+    }
 
     /* pre-redirect: three bars, then a white line that shrinks into a dot */
     .redirect-overlay {
@@ -605,13 +853,29 @@
       transition: height 0.3s steps(6, end);
     }
 
-    .redirect-shutter.top { top: 0; }
-    .redirect-shutter.bottom { bottom: 0; }
+    .redirect-shutter.top {
+      top: 0;
+    }
 
-    .redirect-overlay.line .redirect-shutter { height: 50%; }
-    .redirect-overlay.line .redirect-shutter.top { border-bottom-width: 2px; }
-    .redirect-overlay.line .redirect-shutter.bottom { border-top-width: 2px; }
-    .redirect-overlay.dot .redirect-shutter { border-color: transparent; }
+    .redirect-shutter.bottom {
+      bottom: 0;
+    }
+
+    .redirect-overlay.line .redirect-shutter {
+      height: 50%;
+    }
+
+    .redirect-overlay.line .redirect-shutter.top {
+      border-bottom-width: 2px;
+    }
+
+    .redirect-overlay.line .redirect-shutter.bottom {
+      border-top-width: 2px;
+    }
+
+    .redirect-overlay.dot .redirect-shutter {
+      border-color: transparent;
+    }
 
     .collapse-line {
       position: absolute;
@@ -635,7 +899,9 @@
     }
 
     @keyframes collapse-line-in {
-      to { opacity: 1; }
+      to {
+        opacity: 1;
+      }
     }
 
     .redirect-overlay.dot .collapse-line {
@@ -645,21 +911,44 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .redirect-shutter, .collapse-line { transition: none !important; }
-      .redirect-overlay.line .collapse-line { animation: none !important; opacity: 1; }
+
+      .redirect-shutter,
+      .collapse-line {
+        transition: none !important;
+      }
+
+      .redirect-overlay.line .collapse-line {
+        animation: none !important;
+        opacity: 1;
+      }
     }
 
     @media (max-width: 900px) {
-      body { padding: 10px; }
-      .screen { min-height: calc(100vh - 20px); }
-      .content { grid-template-columns: 1fr; }
+      body {
+        padding: 10px;
+      }
+
+      .screen {
+        min-height: calc(100vh - 20px);
+      }
+
+      .content {
+        grid-template-columns: 1fr;
+      }
+
       .side-pane {
         border-left: 0;
         border-top: 1px solid var(--line);
         max-height: none;
       }
-      .terminal-output { min-height: 42vh; }
-      .titlebar-title { font-size: 0.72rem; }
+
+      .terminal-output {
+        min-height: 42vh;
+      }
+
+      .titlebar-title {
+        font-size: 0.72rem;
+      }
     }
   </style>
 </head>
@@ -670,7 +959,7 @@
   <main id="app" class="screen advanced-mode">
     <div class="titlebar">
       <div class="titlebar-left">
-        <span class="titlebar-brand">bbterm</span>
+        <span class="titlebar-brand">terminal</span>
         <span class="titlebar-sep">//</span>
         <span class="titlebar-title">bbOS 0.3 · guest@boogerboys: ~/temp</span>
       </div>
@@ -683,10 +972,13 @@
       <section class="terminal-pane" id="terminal-pane">
         <div id="terminal-output" class="terminal-output" aria-live="polite"></div>
         <div class="prompt-row" id="prompt-row">
-          <span class="prompt"><span class="ps-user">guest@boogerboys</span><span class="ps-dim">:</span><span class="ps-path">~/temp</span><span class="ps-dim">$</span></span>
+          <span class="prompt"><span class="ps-user">guest@boogerboys</span><span class="ps-dim">:</span><span
+              class="ps-path">~/temp</span><span class="ps-dim">$</span></span>
           <div class="input-line">
-            <span class="input-echo" id="input-echo" aria-hidden="true"><span id="echo-before"></span><span class="cursor" id="terminal-cursor">&#9608;</span><span id="echo-after"></span></span>
-            <input id="terminal-input" type="text" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Terminal input">
+            <span class="input-echo" id="input-echo" aria-hidden="true"><span id="echo-before"></span><span
+                class="cursor" id="terminal-cursor">&#9608;</span><span id="echo-after"></span></span>
+            <input id="terminal-input" type="text" spellcheck="false" autocomplete="off" autocapitalize="off"
+              aria-label="Terminal input">
           </div>
         </div>
       </section>
@@ -699,7 +991,6 @@
               href="alex/WoahItsMyReallyCoolSiteThatYouShouldStayOnForAReallyReallyLongTimeFromJustHowAwesomeItIs.html">alex/</a>
             <a class="dir" href="hoodie/index.html">hoodie/</a>
             <a class="dir" href="riley/reallycool.html">riley/</a>
-            <a class="dir" href="temp/index.html">valk/</a>
             <a class="dir" href="temp/index.html">temp/</a>
           </div>
         </section>
@@ -715,7 +1006,8 @@
           <div class="curses-title"><span>jukebox.service</span><span class="curses-state">online</span></div>
           <div class="jukebox-now" id="song-info">&#9834; ready</div>
           <div class="jukebox-progress-row">
-            <span class="jukebox-bar" id="jukebox-bar">[&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;]</span>
+            <span class="jukebox-bar"
+              id="jukebox-bar">[&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;]</span>
             <span class="jukebox-time" id="jukebox-time">0:00 / 0:00</span>
           </div>
           <div class="jukebox-keys">
@@ -723,7 +1015,8 @@
             <button type="button" class="key" id="next-button">[n] next</button>
             <button type="button" class="key" id="play-button">[s] play</button>
           </div>
-          <div class="jukebox-vol" id="volume-indicator" title="Cycle volume">vol [&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;] 75%</div>
+          <div class="jukebox-vol" id="volume-indicator" title="Cycle volume">vol
+            [&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;] 75%</div>
         </section>
       </aside>
     </div>
@@ -755,7 +1048,6 @@
       alex: "alex/WoahItsMyReallyCoolSiteThatYouShouldStayOnForAReallyReallyLongTimeFromJustHowAwesomeItIs.html",
       hoodie: "hoodie/index.html",
       riley: "riley/reallycool.html",
-      valk: "temp/index.html",
       val: "temp/index.html",
       temp: "temp/index.html"
     };
@@ -781,8 +1073,7 @@
       "/log/visitors": [
         "alex: left the lights on",
         "riley: pushed at 03:12",
-        "hoodie: ai terminal live",
-        "valk: route forwarded to temp"
+        "hoodie: ai terminal live"
       ],
       "/dev/notes": [
         "disk activity: nominal",
@@ -792,8 +1083,7 @@
       "/home/bb/feedback": [
         "alex: site looks haunted in a good way",
         "riley: terminal approved",
-        "hoodie: hoobeangpt online",
-        "valk: send build when ready"
+        "hoodie: hoobeangpt online"
       ],
       "/home/bb/.bashrc": [
         "export PS1='guest@boogerboys:~/temp$ '",
@@ -813,7 +1103,7 @@
       "neofetch", "man", "sudo", "ping", "history", "cat", "cd", "exit", "logout"
     ];
 
-    const SITES = ["alex", "hoodie", "riley", "valk", "temp"];
+    const SITES = ["alex", "hoodie", "riley", "temp"];
 
     const app = document.getElementById("app");
     const terminalPane = document.getElementById("terminal-pane");
@@ -1097,10 +1387,11 @@
 
     function runNeofetch() {
       const logo = [
-        " ___  ___   ___  ___",
-        "| __|| _ ) / _ \\/ __|",
-        "|__ || _ \\| (_) \\__ \\",
-        "|___||___/ \\___/|___/"
+        "  _     _       ___  ____",
+        " | |__ | |__   / _ \\/ ___|",
+        " | '_ \\| '_ \\ | | | \\___ \\",
+        " | |_) | |_) || |_| |___) |",
+        " |_.__/|_.__/  \\___/|____/"
       ];
       const info = [
         "guest@boogerboys",
@@ -1274,7 +1565,7 @@
           "  exit | logout     close the session",
           sedToSimple,
           sedToAdvanced,
-          "  cd alex | hoodie | riley | valk | temp",
+          "  cd alex | hoodie | riley | temp",
           "",
           "keys: up/down history · tab completion · ctrl+l clear"
         ], "dim");
