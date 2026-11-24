@@ -2668,7 +2668,9 @@ const BSOD_TEXT = [
   "",
   "Error: 0E : 016F : BFF9B3D4",
   "",
-  "Press any key to continue"
+  "Press any key to continue",
+  "",
+  "(speed why you tryin not to laugh bro...)"
 ].join(NL);
 
 let bsodRunning = false;

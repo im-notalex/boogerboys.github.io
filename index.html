@@ -825,18 +825,33 @@
     }
 
     @keyframes frame-draw-x {
-      from { clip-path: inset(0 100% 0 0); }
-      to { clip-path: inset(0 0 0 0); }
+      from {
+        clip-path: inset(0 100% 0 0);
+      }
+
+      to {
+        clip-path: inset(0 0 0 0);
+      }
     }
 
     @keyframes frame-draw-y {
-      from { clip-path: inset(0 0 100% 0); }
-      to { clip-path: inset(0 0 0 0); }
+      from {
+        clip-path: inset(0 0 100% 0);
+      }
+
+      to {
+        clip-path: inset(0 0 0 0);
+      }
     }
 
     @keyframes frame-cap {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
     }
 
     /* pull the caps half a cell outward so their stems sit on the borders */
@@ -900,7 +915,7 @@
     }
 
     /* the shell's own columns start inside the bezel, level with the rules */
-    .screen > .frame-col {
+    .screen>.frame-col {
       top: calc(var(--bez) + 1.25em);
       bottom: calc(var(--bez) + 1.25em);
     }
@@ -1266,7 +1281,7 @@
   </script>
 </head>
 
-    <body class="crt-booting">
+<body class="crt-booting">
   <div id="crt-flicker" aria-hidden="true"></div>
 
   <!-- the tube: one displacement pass over the finished shell, so rules,
@@ -1275,8 +1290,7 @@
     style="position:absolute;width:0;height:0;overflow:hidden">
     <filter id="tube-warp" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="100"
       height="100" color-interpolation-filters="sRGB">
-      <feImage id="tube-map" x="0" y="0" width="100" height="100" preserveAspectRatio="none"
-        result="barrel"></feImage>
+      <feImage id="tube-map" x="0" y="0" width="100" height="100" preserveAspectRatio="none" result="barrel"></feImage>
       <feDisplacementMap id="tube-shift" in="SourceGraphic" in2="barrel" scale="1" xChannelSelector="R"
         yChannelSelector="G"></feDisplacementMap>
     </filter>
@@ -2509,7 +2523,7 @@
 
       const rows = [
         edge("\u2552", "\u2564", "\u2555"),
-        line(" bbOS 0.3 // cold start", " preheating system"),
+        line(" bbOS 0.3 // bootloader", " preheating..."),
         edge("\u255E", "\u256A", "\u2561"),
         line(" " + inner[0] + " ", " hv rail      24.6 kv"),
         line(" " + inner[1] + " ", " beam current 0.42 ma"),
