@@ -18,15 +18,26 @@
     :root {
       color-scheme: dark;
       --bg: #000000;
-      --panel: #021102;
-      --panel-strong: #062006;
-      --line: #134913;
-      --text: #8dff8d;
-      --text-dim: #59d859;
-      --text-soft: #2f7d2f;
-      --warn: #c8ffc8;
-      --cyan: #63f2d6;
-      --red: #ff7b72;
+      /* one green (hue 142), sampled at different brightnesses only */
+      --g1: #e6ffc9;
+      --g2: #80ffb8;
+      --g3: #47ff8b;
+      --g4: #00ff7c;
+      --g5: #00c247;
+      --g6: #008531;
+      --g7: #00521e;
+      --g8: #003313;
+      --panel: #000000;
+      --panel-strong: var(--g8);
+      --line: var(--g6);
+      --frame: var(--g4);
+      --glow: rgba(186, 255, 104, 0.55);
+      --text: var(--g2);
+      --text-dim: var(--g3);
+      --text-soft: var(--g5);
+      --warn: var(--g1);
+      --cyan: var(--g1);
+      --red: var(--g1);
     }
 
     * {
@@ -44,17 +55,19 @@
       margin: 0;
       min-height: 100%;
       background: var(--bg);
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
     }
 
     body {
       font-family: "Consolas", "Liberation Mono", "Courier New", monospace;
       color: var(--text);
       min-height: 100vh;
-      background-image:
-        radial-gradient(circle at top, rgba(18, 75, 18, 0.22), transparent 34%),
-        linear-gradient(rgba(141, 255, 141, 0.045) 1px, transparent 1px);
-      background-size: auto, 100% 4px;
-      padding: 18px;
+      background-color: #000000;
+      background-image: linear-gradient(rgba(51, 255, 126, 0.05) 1px, transparent 1px);
+      background-size: 100% 4px;
+      /* full bleed: the glyph frame is the edge of the tube */
+      padding: 0;
     }
 
     body::before {
@@ -67,8 +80,7 @@
           rgba(0, 0, 0, 0) 2px,
           rgba(0, 0, 0, 0.18) 3px,
           rgba(0, 0, 0, 0.18) 4px);
-      opacity: 0.55;
-      mix-blend-mode: multiply;
+      opacity: 0.5;
     }
 
     button,
@@ -77,35 +89,61 @@
     }
 
     .screen {
-      width: min(100%, 1100px);
-      margin: 0 auto;
-      border: 1px solid var(--line);
-      background: rgba(0, 8, 0, 0.96);
-      box-shadow: 0 0 0 1px rgba(141, 255, 141, 0.08), 0 0 40px rgba(22, 80, 22, 0.24);
-      min-height: calc(100vh - 36px);
+      /* edge to edge on any monitor: the tube has no bezel to sit inside */
+      width: 100%;
+      margin: 0;
+      background: #000000;
+      /* dark bezel wide enough to absorb the edge of the barrel warp, so the
+         frame rules bend instead of getting sliced off */
+      --bez: 0px;
+      padding: var(--bez);
+      box-shadow: 0 0 70px rgba(51, 255, 126, 0.16);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       position: relative;
       overflow: hidden;
-      text-shadow: 0.4px 0 rgba(160, 255, 190, 0.22), -0.4px 0 rgba(90, 190, 255, 0.16);
+      /* neon: the tight ring carries the colour, the wide one is the bloom
+         that makes the glass look lit from behind the glyphs */
+      text-shadow:
+        0.4px 0 rgba(196, 255, 122, 0.62),
+        -0.4px 0 rgba(150, 255, 78, 0.42),
+        0 0 9px rgba(182, 255, 96, 1),
+        0 0 22px rgba(150, 255, 74, 0.55);
     }
 
+    /* static glass vignette: the curved tube face, for free */
     .screen::before {
       content: "";
       position: absolute;
       inset: 0;
-      pointer-events: none;
       z-index: 5;
-      background: radial-gradient(ellipse at center, transparent 52%, rgba(0, 0, 0, 0.5) 100%);
+      pointer-events: none;
+      background: radial-gradient(115% 78% at 50% 45%,
+          rgba(0, 0, 0, 0) 52%,
+          rgba(0, 0, 0, 0.42) 100%);
     }
 
-    .screen::after {
-      content: "";
+    /* the tube backdrop is rendered and filtered by pixi (webgl) */
+    .crt-glass {
       position: absolute;
       inset: 0;
+      z-index: 0;
+      display: block;
       pointer-events: none;
-      z-index: 4;
-      background: linear-gradient(rgba(200, 255, 200, 0.03), rgba(0, 0, 0, 0.02));
+    }
+
+    /* the flicker sits outside the warped shell, so animating it costs a
+       composite instead of a full re-filter of every glyph on screen */
+    #crt-flicker {
+      position: fixed;
+      inset: 0;
+      /* above the warm-up overlay (40) as well as the shell, so the boot
+         sequence flickers through the same glass */
+      z-index: 45;
+      pointer-events: none;
+      /* barely-there tint: the glass should read black, not green */
+      background: linear-gradient(rgba(190, 255, 110, 0.012), rgba(0, 0, 0, 0.014));
       animation: crt-flicker 4.8s steps(18, end) infinite;
     }
 
@@ -142,12 +180,12 @@
     }
 
     .screen.flash {
-      box-shadow: inset 0 0 140px rgba(200, 255, 200, 0.32);
+      box-shadow: inset 0 0 140px rgba(51, 255, 126, 0.32);
     }
 
     @media (prefers-reduced-motion: reduce) {
 
-      .screen::after,
+      #crt-flicker,
       .cursor,
       .terminal-pane {
         animation: none !important;
@@ -192,14 +230,13 @@
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      padding: 6px 10px;
-      border-bottom: 1px solid var(--line);
+      padding: 6px 16px;
       color: var(--text-dim);
       font-size: 0.78rem;
       letter-spacing: 0.02em;
       position: relative;
       z-index: 6;
-      background: rgba(2, 16, 2, 0.85);
+      background: #000000;
     }
 
     .titlebar-left {
@@ -222,22 +259,38 @@
       color: var(--text-soft);
     }
 
-    .titlebar-buttons {
-      display: flex;
-      gap: 4px;
-      flex-shrink: 0;
+    /* panels fold down to their header bar when the title is clicked */
+    .panel h2,
+    .curses-title {
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
-    .titlebar-buttons span {
-      width: 17px;
-      height: 15px;
-      border: 1px solid var(--line);
-      color: var(--text-soft);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.7rem;
-      line-height: 1;
+    .panel h2::after {
+      content: " \25BE";
+      color: var(--g5);
+    }
+
+    .curses-title::after {
+      content: " \25BE";
+      color: var(--g5);
+    }
+
+    .panel.is-collapsed h2::after,
+    #jukebox.is-collapsed .curses-title::after {
+      content: " \25B8";
+    }
+
+    .panel.is-collapsed .dir-list,
+    .panel.is-collapsed .help-list,
+    #jukebox.is-collapsed .jukebox-now,
+    #jukebox.is-collapsed .jukebox-progress-row,
+    #jukebox.is-collapsed .jukebox-keys,
+    #jukebox.is-collapsed .jukebox-vol,
+    .panel.is-collapsed .frame-divider,
+    #jukebox.is-collapsed .frame-divider {
+      display: none;
     }
 
     .content {
@@ -249,12 +302,17 @@
       z-index: 1;
     }
 
-    .terminal-pane,
-    .side-pane {
+    .terminal-pane {
       padding: 16px;
     }
 
+    /* side sections hang off the frame walls instead of floating in boxes */
+    .side-pane {
+      padding: 12px 0 0;
+    }
+
     .terminal-pane {
+      position: relative;
       min-height: 0;
       display: flex;
       flex-direction: column;
@@ -262,9 +320,10 @@
     }
 
     .side-pane {
-      border-left: 1px solid var(--line);
-      background: rgba(2, 16, 2, 0.82);
+      background: #000000;
       overflow-y: auto;
+      /* the ceiling caps overhang by half a cell; never grow a scrollbar */
+      overflow-x: hidden;
       max-height: 100%;
     }
 
@@ -327,16 +386,16 @@
       font-size: 0.82rem;
       line-height: 1.18;
       color: var(--warn);
-      text-shadow: 0 0 8px rgba(141, 255, 141, 0.35);
+      text-shadow: 0 0 12px rgba(51, 255, 126, 0.9), 0 0 26px rgba(51, 255, 126, 0.45);
       white-space: pre;
       overflow-x: auto;
+      max-width: 100%;
     }
 
     .prompt-row {
       display: flex;
       gap: 10px;
       align-items: center;
-      border-top: 1px solid var(--line);
       padding-top: 12px;
       margin-top: 12px;
     }
@@ -408,6 +467,67 @@
       100% {
         opacity: 0;
       }
+    }
+
+    /* CRT power-on intro: the page stays dark while crton.mp3 warms the tube */
+    .crt-intro {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      background: #000;
+      /* no fade: the picture cuts in the way a tube actually does */
+    }
+
+    /* the shell gets its scanlines from body::before, which this overlay sits
+       on top of, so the warm-up carries the same lines itself */
+    .crt-intro::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: repeating-linear-gradient(to bottom,
+          rgba(0, 0, 0, 0) 0,
+          rgba(0, 0, 0, 0) 2px,
+          rgba(0, 0, 0, 0.18) 3px,
+          rgba(0, 0, 0, 0.18) 4px);
+      opacity: 0.5;
+    }
+
+    .crt-intro--off {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .crt-intro-box {
+      margin: 0;
+      max-width: 100%;
+      overflow-x: auto;
+      font-family: inherit;
+      font-size: clamp(0.42rem, 1.9vw, 0.9rem);
+      line-height: 1.25;
+      color: #c2ff3d;
+      white-space: pre;
+      /* the shine lives on the glyphs: a hot tight core, two softer rings
+         that fall off fast instead of washing the whole screen green */
+      text-shadow:
+        0 0 7px rgba(214, 255, 128, 1),
+        0 0 20px rgba(180, 255, 80, 0.95),
+        0 0 48px rgba(150, 255, 50, 0.44);
+    }
+
+
+
+    body.crt-booting {
+      overflow: hidden;
+    }
+
+    /* the shell stays dark until the warm-up finishes counting down */
+    body.crt-booting #app {
+      display: none;
     }
 
     /* CRT power-on: teleports down, then up, then snaps into place */
@@ -662,20 +782,156 @@
       opacity: 0.4;
     }
 
+    /* every box is framed with ╒ ╕ ╘ ╛ ╞ ╡ and ═; the sides stay 1px │ */
     .panel,
     #jukebox {
-      border: 1px solid var(--line);
-      background: rgba(1, 15, 1, 0.72);
-      padding: 14px;
-      margin-bottom: 14px;
+      position: relative;
+      background: #000000;
+      padding: 12px 0 14px;
+      margin: 0;
     }
 
     .panel h2 {
-      margin: 0 0 12px;
+      margin: 0 0 8px;
       color: var(--warn);
       font-size: 0.9rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
+      text-shadow: 0 0 13px var(--glow), 0 0 28px var(--glow);
+    }
+
+    /* frame rows: corner caps plus a clipped run of ═ */
+    .frame-row {
+      display: flex;
+      align-items: stretch;
+      flex: none;
+      position: relative;
+      /* above the titlebar and statusline so the rules never get holes */
+      z-index: 7;
+      margin: 0 calc(-1 * var(--frame-pad, 0px));
+      height: 1.25em;
+      line-height: 1.25;
+      font-size: 0.86rem;
+      color: var(--frame);
+      text-shadow: 0 0 10px rgba(51, 255, 126, 1), 0 0 26px rgba(51, 255, 126, 0.62);
+      white-space: pre;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .frame-row .cap {
+      flex: none;
+      animation: frame-cap 0.1s steps(1, end) both;
+    }
+
+    @keyframes frame-draw-x {
+      from { clip-path: inset(0 100% 0 0); }
+      to { clip-path: inset(0 0 0 0); }
+    }
+
+    @keyframes frame-draw-y {
+      from { clip-path: inset(0 0 100% 0); }
+      to { clip-path: inset(0 0 0 0); }
+    }
+
+    @keyframes frame-cap {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* pull the caps half a cell outward so their stems sit on the borders */
+    .frame-row .cap:first-child {
+      margin-left: -0.5ch;
+    }
+
+    .frame-row .cap:last-child {
+      margin-right: -0.5ch;
+    }
+
+    /* the run is out of flow so it can never widen the panel or the grid */
+    .frame-row .fill {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .frame-row .run {
+      position: absolute;
+      top: 0;
+      left: 0;
+      white-space: pre;
+      animation: frame-draw-x 0.4s steps(26, end) both;
+    }
+
+    /* vertical rules are real │ glyphs stacked in vertical writing mode;
+       letter-spacing is tightened at runtime so they butt together */
+    .frame-col {
+      position: absolute;
+      top: 1.25em;
+      bottom: 1.25em;
+      z-index: 7;
+      /* one em wide so the upright glyph centres on the box edge */
+      width: 1em;
+      overflow: hidden;
+      color: var(--frame);
+      text-shadow: 0 0 10px rgba(51, 255, 126, 1), 0 0 26px rgba(51, 255, 126, 0.62);
+      font-family: inherit;
+      font-size: 0.86rem;
+      line-height: 1;
+      letter-spacing: calc(-1 * var(--frame-squeeze, 2px));
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      user-select: none;
+      pointer-events: none;
+      animation: frame-draw-y 0.45s steps(22, end) both;
+    }
+
+    /* the divider between the terminal and the side pane is a glyph too */
+    .frame-col--pane {
+      top: 0;
+      bottom: 0;
+      right: -0.5em;
+    }
+
+    .frame-col--left {
+      /* a hair inside the viewport so the stem is not clipped in half */
+      left: calc(-0.5em + 1px);
+    }
+
+    /* the shell's own columns start inside the bezel, level with the rules */
+    .screen > .frame-col {
+      top: calc(var(--bez) + 1.25em);
+      bottom: calc(var(--bez) + 1.25em);
+    }
+
+    .frame-col--right {
+      right: calc(-0.5em + 1px);
+    }
+
+    .frame-row--screen {
+      --frame-pad: -1px;
+    }
+
+    .frame-row--pane {
+      --frame-pad: 17px;
+    }
+
+    .frame-row--panel {
+      /* wall to wall: the caps land on the frame itself */
+      --frame-pad: 0px;
+    }
+
+    .panel h2,
+    .panel .dir-list,
+    .panel .help-list,
+    .curses-title,
+    .jukebox-now,
+    .jukebox-progress-row,
+    .jukebox-keys,
+    .jukebox-vol {
+      padding-left: 16px;
+      padding-right: 16px;
     }
 
     .help-list {
@@ -713,18 +969,15 @@
     #jukebox {
       position: relative;
       font-size: 0.8rem;
-      margin-top: 22px;
+      margin-top: 0;
     }
 
     .curses-title {
-      position: absolute;
-      top: -0.72em;
-      left: 10px;
-      background: #020f02;
-      padding: 0 6px;
       display: flex;
       gap: 10px;
+      margin: 0 0 8px;
       color: var(--warn);
+      text-shadow: 0 0 13px var(--glow), 0 0 28px var(--glow);
       letter-spacing: 0.05em;
       font-size: 0.75rem;
     }
@@ -792,14 +1045,14 @@
     .statusline {
       display: flex;
       align-items: stretch;
-      border-top: 1px solid var(--line);
-      background: #062006;
+      background: #000000;
       color: var(--text-dim);
       font-size: 0.7rem;
       position: relative;
       z-index: 6;
       white-space: nowrap;
       overflow: hidden;
+      padding: 0 1.1ch;
     }
 
     .status-seg {
@@ -809,12 +1062,19 @@
     }
 
     .status-seg+.status-seg {
-      border-left: 1px solid var(--line);
+      padding-left: 0;
+    }
+
+    /* segment split is the │ glyph, not a css rule */
+    .status-seg+.status-seg::before {
+      content: "\2502";
+      margin-right: 9px;
+      color: var(--g5);
     }
 
     .status-mode {
-      background: var(--line);
-      color: #031003;
+      background: var(--g5);
+      color: #000000;
     }
 
     .status-spacer {
@@ -848,7 +1108,7 @@
       width: 100%;
       height: 0;
       background: #000000;
-      border: 0 solid #ffffff;
+      border: 0 solid var(--g1);
       z-index: 1;
       transition: height 0.3s steps(6, end);
     }
@@ -883,9 +1143,9 @@
       top: 50%;
       width: 100%;
       height: 2px;
-      background: #ffffff;
+      background: var(--g1);
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 14px rgba(255, 255, 255, 0.65);
+      box-shadow: 0 0 14px rgba(51, 255, 126, 0.65);
       opacity: 0;
       z-index: 3;
       transition:
@@ -923,13 +1183,42 @@
       }
     }
 
+    /* the [s] key flickers brighter green until the jukebox is used */
+    #jukebox.hint #play-button {
+      animation: key-hint 1.2s steps(1, end) infinite;
+    }
+
+    @keyframes key-hint {
+
+      0%,
+      54% {
+        color: var(--g1);
+        opacity: 1;
+        text-shadow: 0 0 15px rgba(51, 255, 126, 1), 0 0 32px rgba(51, 255, 126, 0.7);
+      }
+
+      55%,
+      100% {
+        color: var(--text-soft);
+        opacity: 0.5;
+        text-shadow: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #jukebox.hint #play-button {
+        animation: none;
+        color: var(--g1);
+      }
+    }
+
     @media (max-width: 900px) {
       body {
         padding: 10px;
       }
 
       .screen {
-        min-height: calc(100vh - 20px);
+        min-height: 100vh;
       }
 
       .content {
@@ -937,9 +1226,12 @@
       }
 
       .side-pane {
-        border-left: 0;
-        border-top: 1px solid var(--line);
+        border-top: 0;
         max-height: none;
+      }
+
+      .frame-col--pane {
+        display: none;
       }
 
       .terminal-output {
@@ -950,11 +1242,51 @@
         font-size: 0.72rem;
       }
     }
+
+    /* narrow phones: keep the ASCII wordmark inside the terminal */
+    @media (max-width: 640px) {
+      .banner {
+        font-size: 0.7rem;
+        line-height: 1.12;
+      }
+
+      .banner-line {
+        /* rows clip their own overflow, which chopped the "S" on phones */
+        overflow: visible;
+      }
+    }
   </style>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "pixi.js": "https://cdn.jsdelivr.net/npm/pixi.js@8/dist/pixi.mjs"
+      }
+    }
+  </script>
 </head>
 
-<body>
+    <body class="crt-booting">
+  <div id="crt-flicker" aria-hidden="true"></div>
+
+  <!-- the tube: one displacement pass over the finished shell, so rules,
+       walls and glyphs all bend together instead of in separate blocks -->
+  <svg id="tube-defs" aria-hidden="true" focusable="false" width="0" height="0"
+    style="position:absolute;width:0;height:0;overflow:hidden">
+    <filter id="tube-warp" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="100"
+      height="100" color-interpolation-filters="sRGB">
+      <feImage id="tube-map" x="0" y="0" width="100" height="100" preserveAspectRatio="none"
+        result="barrel"></feImage>
+      <feDisplacementMap id="tube-shift" in="SourceGraphic" in2="barrel" scale="1" xChannelSelector="R"
+        yChannelSelector="G"></feDisplacementMap>
+    </filter>
+  </svg>
   <audio id="bg-music" preload="none"></audio>
+  <audio id="crt-sound" src="crton.mp3" preload="auto"></audio>
+
+  <div id="crt-intro" class="crt-intro" role="status" aria-label="bbOS is powering on">
+    <pre id="crt-intro-box" class="crt-intro-box" aria-hidden="true"></pre>
+  </div>
 
   <main id="app" class="screen advanced-mode">
     <div class="titlebar">
@@ -963,9 +1295,7 @@
         <span class="titlebar-sep">//</span>
         <span class="titlebar-title">bbOS 0.3 · guest@boogerboys: ~/temp</span>
       </div>
-      <div class="titlebar-buttons" aria-hidden="true">
-        <span>-</span><span>&#9633;</span><span>&#215;</span>
-      </div>
+
     </div>
 
     <div class="content">
@@ -1002,7 +1332,7 @@
           </ul>
         </section>
 
-        <section id="jukebox" aria-label="Music player">
+        <section id="jukebox" class="hint" aria-label="Music player">
           <div class="curses-title"><span>jukebox.service</span><span class="curses-state">online</span></div>
           <div class="jukebox-now" id="song-info">&#9834; ready</div>
           <div class="jukebox-progress-row">
@@ -1028,6 +1358,8 @@
       <span class="status-spacer"></span>
       <span class="status-seg" id="status-clock">--:--:--</span>
     </div>
+
+    <canvas id="crt-glass" class="crt-glass" aria-hidden="true"></canvas>
   </main>
 
   <div id="redirect-overlay" class="redirect-overlay" aria-hidden="true">
@@ -1035,6 +1367,18 @@
     <span class="redirect-shutter bottom"></span>
     <span class="collapse-line"></span>
   </div>
+
+  <script>
+    /* safety net: if the terminal script dies before the tube lights up,
+       still show the page instead of leaving it black forever */
+    window.setTimeout(function () {
+      var box = document.getElementById("crt-intro-box");
+      if (!box || box.textContent) return;
+      document.body.classList.remove("crt-booting");
+      var intro = document.getElementById("crt-intro");
+      if (intro) intro.remove();
+    }, 5000);
+  </script>
 
   <script>
     /* bbOS 0.3 // bbsh terminal */
@@ -1054,7 +1398,7 @@
 
     const fileSystem = {
       "/etc/motd": [
-        "welcome to boogerboys.",
+        "heh... welcome to... my site...",
         "bbOS 0.3 unstable",
         "watch your step."
       ],
@@ -1225,29 +1569,49 @@
       statusModeLabel.textContent = currentMode;
     }
 
-    function printWelcome(delayed = false) {
-      const lines = currentMode === "simple"
+    function welcomeLines() {
+      return currentMode === "simple"
         ? [
-          ["welcome to boogerboys.", ""],
+          ["heh... welcome to... my site...", ""],
           ["type cd <site> or use the links on the right.", "dim"],
           ["site switch: " + sedToAdvanced, "dim"]
         ]
         : [
-          ["welcome to boogerboys.", ""],
+          ["heh... welcome to... my site...", ""],
           ["type help for commands.", "dim"],
           ["site switch: " + sedToSimple, "dim"],
           ["bbOS 0.3 unstable // be kind to the hardware.", "dim"]
         ];
+    }
 
-      lines.forEach((entry, index) => {
-        const line = printLine(entry[0], entry[1]);
-        if (delayed) {
-          line.classList.add("boot-delayed");
-          line.style.opacity = "0";
-          line.style.animation = "boot-status 0.01s linear forwards";
-          line.style.animationDelay = (2.7 + index * 0.06) + "s";
-        }
+    function printWelcome() {
+      welcomeLines().forEach(entry => printLine(entry[0], entry[1]));
+    }
+
+    /* one character at a time, so boot output reads like a real terminal */
+    function typeInto(element, text, speed) {
+      if (!text) return Promise.resolve(element);
+      return new Promise(resolve => {
+        let index = 0;
+        const step = () => {
+          index += 1;
+          element.textContent = text.slice(0, index);
+          scrollOutput();
+          if (index < text.length) window.setTimeout(step, speed);
+          else resolve(element);
+        };
+        window.setTimeout(step, speed);
       });
+    }
+
+    /* line shells are placed in document order up front, then typed in turn */
+    async function typeQueue(lines, startDelay) {
+      const nodes = lines.map(entry => printLine("", entry[1]));
+      await new Promise(resolve => window.setTimeout(resolve, Math.max(0, startDelay)));
+      for (let index = 0; index < lines.length; index += 1) {
+        const text = lines[index][0];
+        await typeInto(nodes[index], text, text.length > 40 ? 9 : 16);
+      }
     }
 
     function setMode(mode, options = {}) {
@@ -1291,31 +1655,70 @@
       });
       terminalOutput.appendChild(banner);
       scrollOutput();
+      fitBanner();
+    }
+
+    /* Shrink the ASCII wordmark until it fits the terminal so it is never
+       cut off on narrow screens. Re-run on rotate/resize and after fonts load. */
+    function fitBanner() {
+      const banner = terminalOutput.querySelector(".banner");
+      if (!banner) return;
+
+      banner.style.fontSize = "";
+      const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      const basePx = parseFloat(getComputedStyle(banner).fontSize) || 0.82 * rootPx;
+      const maxChars = BANNER.split("\n").reduce((max, line) => Math.max(max, line.length), 0) + 1;
+
+      const probe = document.createElement("span");
+      probe.textContent = "0".repeat(maxChars);
+      probe.style.cssText =
+        "position:absolute;top:0;left:0;visibility:hidden;pointer-events:none;" +
+        "white-space:pre;line-height:1;font-family:" + getComputedStyle(banner).fontFamily +
+        ";font-size:" + basePx + "px";
+      document.body.appendChild(probe);
+      const fullWidth = probe.getBoundingClientRect().width;
+      probe.remove();
+
+      const available = terminalOutput.clientWidth - 10;
+      if (!fullWidth || available <= 0) return;
+
+      const scale = Math.min(1, available / fullWidth);
+      banner.style.fontSize = Math.max(6, basePx * scale) + "px";
+    }
+
+    let bannerFitTimer = 0;
+    function scheduleBannerFit() {
+      window.clearTimeout(bannerFitTimer);
+      bannerFitTimer = window.setTimeout(fitBanner, 120);
+    }
+    window.addEventListener("resize", scheduleBannerFit);
+    window.addEventListener("orientationchange", scheduleBannerFit);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(fitBanner).catch(() => { });
     }
 
     function runBootSequence() {
       // Rendered up-front and revealed with CSS so a background/throttled tab
       // can never leave the boot half-finished or the prompt disabled.
       renderBanner();
+      terminalInput.disabled = true;
 
-      const bootingLine = printLine("bbOS 0.3 unstable // booting…", "dim");
-      printLine("");
-      const hostLine = printLine("bbOS 0.3 unstable // boogerboys", "accent");
-      [bootingLine, hostLine].forEach((line, index) => {
-        line.classList.add("boot-delayed");
-        line.style.opacity = "0";
-        line.style.animation = "boot-status 0.01s linear forwards";
-        line.style.animationDelay = (0.95 + index * 0.07) + "s";
-      });
+      typeQueue([
+        ["bbOS 0.3 unstable // booting…", "dim"],
+        ["", ""],
+        ["bbOS 0.3 unstable // boogerboys", "accent"]
+      ], 120);
 
       const barBlocks = "\u2588".repeat(14);
       const emptyBlocks = "\u2591".repeat(14);
+      const barEnds = [];
 
       BOOT_STEPS.forEach((step, index) => {
         const row = document.createElement("p");
         const lagging = index === 2 || index === 5;
+        const delay = 1.15 + index * 0.16;
         row.className = "line line--dim boot-row" + (lagging ? " boot-lag" : "");
-        row.style.setProperty("--delay", (1.15 + index * 0.16) + "s");
+        row.style.setProperty("--delay", delay + "s");
         row.innerHTML =
           '<span class="boot-label"><span class="boot-type" style="--chars:' + step.label.length + '">' +
           escapeHTML(step.label) +
@@ -1325,23 +1728,21 @@
           '<span class="boot-status">' + escapeHTML(step.status) + "</span>";
         terminalOutput.appendChild(row);
         scrollOutput();
+        barEnds.push(delay + 0.36 + (lagging ? 0.95 : 0.45));
       });
 
-      const loginLine = printLine("login: guest", "accent");
-      loginLine.classList.add("boot-login");
-      loginLine.style.opacity = "0";
-      loginLine.style.animation = "boot-status 0.01s linear forwards";
-      loginLine.style.animationDelay = (1.15 + BOOT_STEPS.length * 0.16 + 0.5) + "s";
-      printLine("");
-      printWelcome(true);
-      terminalInput.disabled = false;
-      terminalInput.focus();
-      renderEcho();
-
-      window.setTimeout(() => {
+      // login and everything after it wait for the last bar to finish filling
+      const lastBar = Math.max.apply(null, barEnds);
+      typeQueue(
+        [["login: guest", "accent"], ["", ""]].concat(welcomeLines()),
+        lastBar * 1000 + 240
+      ).then(() => {
+        terminalInput.disabled = false;
+        terminalInput.focus();
+        renderEcho();
         terminalOutput.classList.add("boot-done");
         terminalPane.classList.add("boot-done");
-      }, 4600);
+      });
     }
 
     /* ---------- listing / cat ---------- */
@@ -1748,71 +2149,31 @@
       if (autoplay) attemptPlay();
     }
 
-    function nextSong() { playSong(currentSong + 1); }
-    function prevSong() { playSong(currentSong - 1); }
+    const jukeboxEl = document.getElementById("jukebox");
+
+    /* nothing starts by itself: the jukebox waits for [s] or a music key */
+    function settleJukeboxHint() {
+      jukeboxEl.classList.remove("hint");
+    }
+
+    jukeboxEl.addEventListener("pointerdown", settleJukeboxHint);
+    window.setTimeout(settleJukeboxHint, 18000);
+
+    function nextSong() { settleJukeboxHint(); playSong(currentSong + 1); }
+    function prevSong() { settleJukeboxHint(); playSong(currentSong - 1); }
 
     function togglePlay() {
+      settleJukeboxHint();
       if (audio.paused) {
         if (audio.volume === 0) audio.volume = baseVolume;
         attemptPlay();
       } else {
-        clearVolumeFade();
         audio.pause();
       }
     }
 
-    let volumeFadeTimer = null;
-
-    function clearVolumeFade() {
-      if (volumeFadeTimer) {
-        window.clearInterval(volumeFadeTimer);
-        volumeFadeTimer = null;
-      }
-    }
-
-    function fadeVolumeTo(target, duration) {
-      clearVolumeFade();
-      const from = audio.volume;
-      const steps = 30;
-      let step = 0;
-      volumeFadeTimer = window.setInterval(() => {
-        step += 1;
-        const value = from + (target - from) * (step / steps);
-        audio.volume = Math.max(0, Math.min(1, value));
-        if (step >= steps) {
-          clearVolumeFade();
-          audio.volume = target;
-        }
-      }, duration / steps);
-    }
-
-    let musicUnlocked = false;
-
-    function unlockMusic(event) {
-      if (musicUnlocked) return;
-      if (event && event.target && event.target.closest("#jukebox, a, button, input")) return;
-      if (!audio.paused) {
-        musicUnlocked = true;
-        return;
-      }
-      audio.volume = 0;
-      musicUnlocked = true;
-      fadeVolumeTo(baseVolume, 1500);
-      const attempt = audio.play();
-      if (attempt && typeof attempt.catch === "function") {
-        attempt.catch(() => {
-          musicUnlocked = false;
-          clearVolumeFade();
-          audio.volume = baseVolume;
-        });
-      }
-    }
-
-    document.addEventListener("pointerdown", unlockMusic);
-    document.addEventListener("click", unlockMusic);
-
     function setVolume(value) {
-      clearVolumeFade();
+      settleJukeboxHint();
       baseVolume = Math.max(0, Math.min(1, value));
       audio.volume = baseVolume;
       renderVolume();
@@ -1907,6 +2268,389 @@
       }
     });
 
+    /* ---------- crt glass ---------- */
+
+    function resizeCrtGlass() {
+      if (typeof window.crtGlassResize === "function") window.crtGlassResize();
+    }
+
+    /* ---------- frames ---------- */
+
+    /* both runs are deliberately far longer than any panel: the box clips the
+       overflow, so a rule can never stop short of the wall it has to reach */
+    const FRAME_RUN = "\u2550".repeat(600);
+    const FRAME_COL = "\u2502".repeat(2400);
+    const CAP = {
+      topLeft: "\u2552",     // ╒
+      topRight: "\u2555",    // ╕
+      bottomLeft: "\u2558",  // ╘
+      bottomRight: "\u255B", // ╛
+      teeLeft: "\u255E",     // ╞
+      teeRight: "\u2561"     // ╡
+    };
+
+    function frameCap(glyph) {
+      const cap = document.createElement("span");
+      cap.className = "cap";
+      cap.textContent = glyph;
+      return cap;
+    }
+
+    function frameRow(left, right, variant) {
+      const row = document.createElement("div");
+      row.className = "frame-row" + (variant ? " frame-row--" + variant : "");
+      row.setAttribute("aria-hidden", "true");
+      if (left) row.appendChild(frameCap(left));
+      const fill = document.createElement("span");
+      fill.className = "fill";
+      const run = document.createElement("span");
+      run.className = "run";
+      run.textContent = FRAME_RUN;
+      fill.appendChild(run);
+      row.appendChild(fill);
+      if (right) row.appendChild(frameCap(right));
+      return row;
+    }
+
+    function frameColumn(side) {
+      const col = document.createElement("span");
+      col.className = "frame-col frame-col--" + side;
+      col.setAttribute("aria-hidden", "true");
+      col.textContent = FRAME_COL;
+      return col;
+    }
+
+    /* vertical │ glyphs have a font advance taller than their em box, which
+       would draw a dashed rule; tighten the spacing so they butt together */
+    function calibrateFrameColumns() {
+      const probe = document.createElement("span");
+      probe.style.cssText =
+        "position:absolute;top:-9999px;left:0;visibility:hidden;white-space:pre;" +
+        "writing-mode:vertical-rl;text-orientation:upright;font-family:inherit;" +
+        "font-size:0.86rem;line-height:1;letter-spacing:0";
+      probe.textContent = "\u2502".repeat(10);
+      document.body.appendChild(probe);
+      const advance = probe.getBoundingClientRect().height / 10;
+      probe.remove();
+      const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      const em = 0.86 * rootPx;
+      if (advance > 0) {
+        document.documentElement.style.setProperty(
+          "--frame-squeeze", (advance - em).toFixed(2) + "px"
+        );
+      }
+    }
+
+    function buildFrames() {
+      calibrateFrameColumns();
+
+      const screen = document.getElementById("app");
+      const titlebar = screen.querySelector(".titlebar");
+      const statusline = screen.querySelector(".statusline");
+
+      screen.prepend(frameRow(CAP.topLeft, CAP.topRight, "screen"));
+      titlebar.after(frameRow(CAP.teeLeft, CAP.teeRight, "screen"));
+      statusline.before(frameRow(CAP.teeLeft, CAP.teeRight, "screen"));
+      screen.appendChild(frameRow(CAP.bottomLeft, CAP.bottomRight, "screen"));
+
+      /* each section gets one ceiling rule that runs wall to wall, and the
+         pane closes with a single floor rule: no floating boxes */
+      document.querySelectorAll(".panel, #jukebox").forEach(box => {
+        box.prepend(frameRow(CAP.teeLeft, CAP.teeRight, "panel"));
+        const head = box.querySelector(".curses-title, h2");
+        if (head) {
+          const divider = frameRow(CAP.teeLeft, CAP.teeRight, "panel");
+          divider.classList.add("frame-divider");
+          head.after(divider);
+        }
+      });
+      const sidePane = document.querySelector(".side-pane");
+      if (sidePane) sidePane.appendChild(frameRow(CAP.teeLeft, CAP.teeRight, "panel"));
+
+      const promptRow = document.getElementById("prompt-row");
+      promptRow.before(frameRow(CAP.teeLeft, CAP.teeRight, "pane"));
+
+      /* only the shell has side walls now; the sections borrow them */
+      screen.appendChild(frameColumn("left"));
+      screen.appendChild(frameColumn("right"));
+
+      terminalPane.appendChild(frameColumn("pane"));
+
+      // every rule draws itself in, one after another
+      document.querySelectorAll(".frame-row").forEach((row, index) => {
+        const delay = (0.1 + index * 0.05).toFixed(2) + "s";
+        row.querySelectorAll(".run, .cap").forEach(node => {
+          node.style.animationDelay = delay;
+        });
+      });
+      document.querySelectorAll(".frame-col").forEach((col, index) => {
+        col.style.animationDelay = (0.2 + index * 0.04).toFixed(2) + "s";
+      });
+    }
+
+    /* clicking a panel title folds it down to just its header bar */
+    function initPanels() {
+      document.querySelectorAll(".panel, #jukebox").forEach(box => {
+        const head = box.querySelector("h2, .curses-title");
+        if (!head) return;
+        head.setAttribute("role", "button");
+        head.setAttribute("tabindex", "0");
+        head.setAttribute("aria-expanded", "true");
+        const toggle = () => {
+          const collapsed = box.classList.toggle("is-collapsed");
+          head.setAttribute("aria-expanded", collapsed ? "false" : "true");
+        };
+        head.addEventListener("click", toggle);
+        head.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            toggle();
+          }
+        });
+      });
+    }
+
+    /* ---------- crt power-on ---------- */
+
+    const introEl = document.getElementById("crt-intro");
+    const introBoxEl = document.getElementById("crt-intro-box");
+    const crtAudio = document.getElementById("crt-sound");
+    const INTRO_MS = 3200;          // the warm-up runs on its own clock, not the audio
+    const INTRO_STEPS = 22;          // discrete ticks the readout is allowed to land on
+    const INTRO_CELLS = 18;
+
+    const introArt = BANNER.split("\n");
+    const INTRO_L = 46;             // window: left cell
+    const INTRO_R = 24;             // window: right cell
+    const INTRO_NL = INTRO_L - 2;   // inner box inside the left cell
+    const INTRO_NA = 29;            // inner box: bar cell
+    const INTRO_NB = INTRO_NL - 3 - INTRO_NA;  // inner box: readout cell
+
+    /* period boot checks, rerolled while the bar fills */
+    const DIAGNOSTICS = [
+      "RAM TEST 0000-7FFF OK",
+      "ROM CHECKSUM 8A3F PASS",
+      "Z80 BUS TIMING OK",
+      "TTY 9600 BAUD 8N1",
+      "FLOPPY TRK 0 SEEK OK",
+      "DMA CHANNEL 1 READY",
+      "CP/M 2.2 LOAD 0100H",
+      "SECTOR 0 HEAD 0 READ",
+      "MEMORY 48K FREE",
+      "BOOT PROM VERIFY OK",
+      "VECTOR TABLE SET",
+      "I/O PORT SCAN 00-FF",
+      "PARITY CHECK PASS",
+      "CRT 80X24 60HZ",
+      "KEYBOARD SCAN OK",
+      "DISK CONTROLLER RDY",
+      "HEAD ALIGN 0A OK",
+      "WARM START 0000H",
+      "BAUD RATE GEN LOCK",
+      "SERIAL LOOPBACK OK",
+      "PROM BURN VERIFY OK"
+    ];
+
+    let introCell = 0;
+    let introProgress = 0;
+    let introNote = "press any key to power on";
+    let introNextDiag = 0;
+    let introWaiting = true;
+    let introDone = false;
+    let introStart = 0;
+    let introRaf = 0;
+    let introFallbackTimer = 0;
+
+    function introPad(text, width) {
+      const value = String(text);
+      return value.length >= width ? value.slice(0, width) : value.padEnd(width, " ");
+    }
+
+    /* the estimate is part of the joke: twelve minutes, then a resigned
+       eight, then a race to two seconds as the bar fills. it never has any
+       relation to the time the machine actually takes. */
+    function introEta(progress) {
+      if (progress < 0.14) return 720;
+      if (progress < 0.26) return 480;
+      const u = (progress - 0.26) / 0.74;
+      return Math.max(2, Math.round(2 + 478 * Math.pow(1 - u, 1.7)));
+    }
+
+    function introEtaLabel(progress) {
+      const left = introEta(progress);
+      const minutes = Math.floor(left / 60);
+      const seconds = left % 60;
+      /* 11 characters: the readout cell is 12 wide including its leading
+         space, and "left 12m 00s" would lose its last glyph */
+      return "eta " + minutes + "m " + String(seconds).padStart(2, "0") + "s";
+    }
+
+    /* The window uses every mixed single/double glyph in the set:
+       ╒ ╕ ╘ ╛ corners, ╞ ╡ outer joints, ╤ ╧ ╪ where the column meets,
+       and an inner box with ╓ ╖ ╙ ╜ ╥ ╨ ╟ ╢ ╫ ║. The bbOS mark sits
+       outside the window, above its top-left corner. */
+    function drawIntro() {
+      const filled = Math.round((introCell / INTRO_CELLS) * 100);
+      const bar =
+        "\u2588".repeat(introCell) + "\u2591".repeat(INTRO_CELLS - introCell);
+
+      const inner = [
+        "\u2553" + "\u2500".repeat(INTRO_NA) + "\u2565" + "\u2500".repeat(INTRO_NB) + "\u2556",
+        "\u2551" + introPad(" load [" + bar + "]", INTRO_NA) + "\u2551" + introPad(" " + filled + "%", INTRO_NB) + "\u2551",
+        "\u255F" + "\u2500".repeat(INTRO_NA) + "\u256B" + "\u2500".repeat(INTRO_NB) + "\u2562",
+        "\u2551" + introPad(" " + introNote.toLowerCase(), INTRO_NA) + "\u2551" + introPad(" " + (introWaiting ? "waiting" : introEtaLabel(introProgress)), INTRO_NB) + "\u2551",
+        "\u2559" + "\u2500".repeat(INTRO_NA) + "\u2568" + "\u2500".repeat(INTRO_NB) + "\u255C"
+      ];
+
+      const line = (left, right) =>
+        "\u2502" + introPad(left, INTRO_L) + "\u2502" + introPad(right, INTRO_R) + "\u2502";
+      const edge = (left, joint, right) =>
+        left + "\u2550".repeat(INTRO_L) + joint + "\u2550".repeat(INTRO_R) + right;
+
+      const rows = [
+        edge("\u2552", "\u2564", "\u2555"),
+        line(" bbOS 0.3 // cold start", " preheating system"),
+        edge("\u255E", "\u256A", "\u2561"),
+        line(" " + inner[0] + " ", " hv rail      24.6 kv"),
+        line(" " + inner[1] + " ", " beam current 0.42 ma"),
+        line(" " + inner[2] + " ", " scan clock   15.7 khz"),
+        line(" " + inner[3] + " ", " degauss      armed"),
+        line(" " + inner[4] + " ", " parity       pass"),
+        edge("\u255E", "\u256A", "\u2561"),
+        line(" rom crc 8a3f ok", introWaiting ? " press any key" : " boot 000001"),
+        edge("\u2558", "\u2567", "\u255B")
+      ];
+
+      introBoxEl.textContent = [...introArt, ...rows].join("\n");
+    }
+
+    function finishIntro() {
+      if (introDone) return;
+      introDone = true;
+      window.clearTimeout(introFallbackTimer);
+      window.cancelAnimationFrame(introRaf);
+      introCell = INTRO_CELLS;
+      introProgress = 1;
+      introNote = "signal acquired";
+      drawIntro();
+      document.body.classList.remove("crt-booting");
+      /* re-measure now the shell has layout, so the field is built from the
+         surface that stays on screen */
+      if (window.bbTubePaint) window.bbTubePaint();
+      introEl.classList.add("crt-intro--off");
+      resizeCrtGlass();
+      runBootSequence();
+      window.setTimeout(() => introEl.remove(), 400);
+    }
+
+    function rollDiagnostic() {
+      introNote = DIAGNOSTICS[Math.floor(Math.random() * DIAGNOSTICS.length)];
+    }
+
+    /* loading is broken into random fill bursts and dead stops that still
+       add up to exactly INTRO_MS, so the bar always lands on 100% */
+    let introSchedule = [];
+    let introFillTotal = 1;
+
+    function buildIntroSchedule() {
+      const segments = [];
+      let left = INTRO_MS;
+      let filling = true;
+      while (left > 0) {
+        const min = filling ? 220 : 140;
+        const max = filling ? Math.round(INTRO_MS * 0.34) : Math.round(INTRO_MS * 0.28);
+        let ms = Math.round(min + Math.random() * Math.max(1, max - min));
+        if (left - ms < 140) ms = left;
+        segments.push({ filling, ms });
+        left -= ms;
+        filling = !filling;
+      }
+      if (segments.length > 1 && !segments[segments.length - 1].filling) {
+        segments[segments.length - 2].ms += segments.pop().ms;
+      }
+      introFillTotal = segments.reduce((sum, s) => sum + (s.filling ? s.ms : 0), 0) || 1;
+      return segments;
+    }
+
+    function introProgressAt(elapsed) {
+      let started = 0;
+      let filled = 0;
+      for (const segment of introSchedule) {
+        if (elapsed >= started + segment.ms) {
+          if (segment.filling) filled += segment.ms;
+          started += segment.ms;
+          continue;
+        }
+        if (segment.filling) filled += Math.max(0, elapsed - started);
+        break;
+      }
+      return Math.min(1, filled / introFillTotal);
+    }
+
+    function tickIntro(now) {
+      const progress = introProgressAt(now - introStart);
+      /* snap to coarse steps: the bar and the estimate jump in chunks
+         instead of sliding, because a machine counting down does not tween */
+      const stepped = Math.min(1, Math.floor(progress * INTRO_STEPS) / INTRO_STEPS);
+      introProgress = stepped;
+      introCell = Math.round(INTRO_CELLS * stepped);
+      if (now >= introNextDiag) {
+        introNextDiag = now + 220;
+        rollDiagnostic();
+      }
+      drawIntro();
+      if (progress < 1) {
+        introRaf = window.requestAnimationFrame(tickIntro);
+      } else {
+        finishIntro();
+      }
+    }
+
+    function startIntro() {
+      if (!introWaiting) return;
+      introWaiting = false;
+      introSchedule = buildIntroSchedule();
+      rollDiagnostic();
+      introNextDiag = 0;
+      introStart = performance.now();
+      drawIntro();
+      introRaf = window.requestAnimationFrame(tickIntro);
+      // frames stop in a background tab; the tube still has to come on
+      introFallbackTimer = window.setTimeout(finishIntro, INTRO_MS + 600);
+    }
+
+    function powerOnGesture() {
+      document.removeEventListener("pointerdown", powerOnGesture);
+      document.removeEventListener("keydown", powerOnGesture);
+      const attempt = crtAudio.play();
+      if (attempt && typeof attempt.then === "function") {
+        attempt.then(startIntro).catch(startIntro);
+      } else {
+        startIntro();
+      }
+    }
+
+    function requestPowerOn() {
+      crtAudio.volume = 0.85;
+      const attempt = crtAudio.play();
+      if (!attempt || typeof attempt.then !== "function") {
+        startIntro();
+        return;
+      }
+      // autoplay is usually blocked, so wait for the first gesture
+      attempt.then(startIntro).catch(() => {
+        introNote = "press any key to power on";
+        drawIntro();
+        document.addEventListener("pointerdown", powerOnGesture);
+        document.addEventListener("keydown", powerOnGesture);
+      });
+    }
+
+    // a missing or broken crton.mp3 must not leave the page dark
+    crtAudio.addEventListener("error", () => {
+      if (introWaiting) window.setTimeout(startIntro, 600);
+    });
+
     /* ---------- startup ---------- */
 
     let savedMode = "advanced";
@@ -1925,7 +2669,221 @@
     renderVolume();
     renderPlayState();
     renderEcho();
-    runBootSequence();
+    buildFrames();
+    initPanels();
+    /* a looping animation repaints the whole shell, so the play-button hint
+       stops blinking once it has been seen */
+    window.setTimeout(() => {
+      const box = document.getElementById("jukebox");
+      if (box) box.classList.remove("hint");
+    }, 10000);
+    drawIntro();
+    requestPowerOn();
+  </script>
+
+  <script type="module">
+    /* the tube: pixi renders the backdrop and filters it in webgl, so the
+       scanlines, neon rim and vignette all bend across the full width */
+    const bootGlass = async () => {
+      const host = document.getElementById("app");
+      const canvas = document.getElementById("crt-glass");
+      if (!host || !canvas) return;
+
+      let pixi;
+      let BulgePinchFilter;
+      let CRTFilter;
+      try {
+        [pixi, { BulgePinchFilter }, { CRTFilter }] = await Promise.all([
+          import("pixi.js"),
+          import("https://cdn.jsdelivr.net/npm/pixi-filters@6/lib/bulge-pinch/BulgePinchFilter.mjs"),
+          import("https://cdn.jsdelivr.net/npm/pixi-filters@6/lib/crt/CRTFilter.mjs")
+        ]);
+      } catch (error) {
+        canvas.remove();
+        return;
+      }
+
+      const app = new pixi.Application();
+      try {
+        await app.init({
+          canvas,
+          width: 2,
+          height: 2,
+          backgroundAlpha: 0,
+          antialias: false,
+          autoDensity: true,
+          resolution: 1,
+          powerPreference: "low-power"
+        });
+      } catch (error) {
+        canvas.remove();
+        return;
+      }
+
+      const stage = new pixi.Container();
+      app.stage.addChild(stage);
+
+      const wash = new pixi.Graphics();
+      stage.addChild(wash);
+
+      /* the tube curve lives in webgl, where it costs one frame instead of a
+         cpu pass over every glyph on the page */
+      const bulge = new BulgePinchFilter({ center: [0.5, 0.5], radius: 600, strength: 0.7 });
+      const crt = new CRTFilter({
+        curvature: 4.6,
+        lineWidth: 1.5,
+        lineContrast: 0.25,
+        vignetting: 0.3,
+        vignettingAlpha: 0.5,
+        noise: 0.06
+      });
+      stage.filters = [bulge, crt];
+
+      const draw = () => {
+        const w = app.screen.width;
+        const h = app.screen.height;
+        wash.clear();
+        wash.rect(0, 0, w, h).fill({ color: 0x000000, alpha: 1 });
+        /* faint phosphor wash: gives the scanlines and the curve something to bend */
+        const bands = 48;
+        for (let i = 0; i < bands; i += 1) {
+          const t = i / bands;
+          wash.rect(0, (h / bands) * i, w, h / bands + 1)
+            .fill({ color: 0x33ff7e, alpha: 0.07 * (1 - t) + 0.014 });
+        }
+        bulge.radius = Math.max(w, h) * 0.72;
+        stage.filterArea = new pixi.Rectangle(0, 0, w, h);
+      };
+
+      const resize = () => {
+        const rect = host.getBoundingClientRect();
+        if (rect.width < 2 || rect.height < 2) return;
+        app.renderer.resize(Math.round(rect.width), Math.round(rect.height));
+        draw();
+        app.render();
+      };
+
+      /* one still frame instead of a live loop: a repainting canvas would
+         re-run both filters sixty times a second for no visual gain */
+      app.stop();
+      window.crtGlassResize = resize;
+      resize();
+      window.addEventListener("resize", resize);
+      if (typeof ResizeObserver === "function") new ResizeObserver(resize).observe(host);
+    };
+
+    bootGlass();
+  </script>
+
+  <script type="module">
+    /* ------------------------------------------------------------------
+       the tube. nothing is copied and nothing is repainted by hand: the
+       shell is displaced by one filter pass, so every glyph, rule and wall
+       bends through the same field and corners keep meeting.
+       gecko renders the shell flat - it runs this filter on the cpu and
+       drops to single figures, so firefox/zen gets the uncurved screen.
+       ------------------------------------------------------------------ */
+    const UA = navigator.userAgent;
+    const GECKO = /Firefox\//i.test(UA) && /Gecko\//i.test(UA);
+    const BRANDS = (navigator.userAgentData && navigator.userAgentData.brands) || [];
+    const CHROMIUM = !GECKO && (BRANDS.some(b => /Chromium/i.test(b.brand)) ||
+      (/Chrome\//i.test(UA) && /Safari\//i.test(UA)));
+
+    const startTube = () => {
+      const shell = document.getElementById("app");
+      const intro = document.getElementById("crt-intro");
+      const mapNode = document.getElementById("tube-map");
+      const shift = document.getElementById("tube-shift");
+      if (!shell || !mapNode || !shift) return;
+      /* the warm-up overlay sits outside the shell but covers the same
+         viewport, so one field can displace both: whichever surface has
+         layout at the time is the one the map is measured against */
+      const surfaces = [shell, intro].filter(Boolean);
+
+      /* how far the corners are pulled in, as a fraction of the half width */
+      const K = 0.06;
+      const RES = 160;
+      let timer = 0;
+
+      const paint = () => {
+        const live = surfaces.find(el => {
+          const r = el.getBoundingClientRect();
+          return r.width >= 8 && r.height >= 8;
+        });
+        if (!live) return;
+        const box = live.getBoundingClientRect();
+        const w = box.width;
+        const h = box.height;
+        const c = document.createElement("canvas");
+        c.width = RES;
+        c.height = RES;
+        const ctx = c.getContext("2d");
+        const img = ctx.createImageData(RES, RES);
+        /* the warm-up screen is one small window sitting in the middle of the
+           glass, where a viewport-anchored field is almost zero - it would
+           render flat. its field is centred on the box instead, with the
+           radius and the pull taken from the box itself. */
+        const focusEl = live === intro ? document.getElementById("crt-intro-box") : null;
+        const focus = focusEl ? focusEl.getBoundingClientRect() : null;
+        const cx = focus ? focus.left + focus.width / 2 - box.left : w / 2;
+        const cy = focus ? focus.top + focus.height / 2 - box.top : h / 2;
+        const rw = focus ? Math.max(140, focus.width / 2) : w / 2;
+        const rh = focus ? Math.max(100, focus.height / 2) : h / 2;
+        const pull = focus ? 0.17 : K;
+        /* the map only carries direction: one shared scale converts it to px */
+        const maxD = pull * rw;
+        for (let y = 0; y < RES; y += 1) {
+          const oy = ((y + 0.5) / RES) * h - cy;
+          for (let x = 0; x < RES; x += 1) {
+            const ox = ((x + 0.5) / RES) * w - cx;
+            const u = ox / rw;
+            const v = oy / rh;
+            const rr = Math.min(1, (u * u + v * v) / 2);
+            /* sample outwards from the centre, so the picture is pulled in at
+               the edges and nothing is sliced off at the borders */
+            const dx = Math.max(-1, Math.min(1, (pull * ox * rr) / maxD));
+            const dy = Math.max(-1, Math.min(1, (pull * oy * rr) / maxD));
+            const i = (y * RES + x) * 4;
+            img.data[i] = Math.round(127.5 * (1 + dx));
+            img.data[i + 1] = Math.round(127.5 * (1 + dy));
+            img.data[i + 2] = 128;
+            img.data[i + 3] = 255;
+          }
+        }
+        ctx.putImageData(img, 0, 0);
+        /* both the filter region and the map are pinned to the box in px:
+           percentages here resolve against the 0x0 svg, not the element */
+        const warp = document.getElementById("tube-warp");
+        const regionW = Math.round(w) + "px";
+        const regionH = Math.round(h) + "px";
+        for (const node of [warp, mapNode]) {
+          node.setAttribute("x", "0");
+          node.setAttribute("y", "0");
+          node.setAttribute("width", regionW);
+          node.setAttribute("height", regionH);
+        }
+        mapNode.setAttribute("href", c.toDataURL("image/png"));
+        mapNode.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", mapNode.getAttribute("href"));
+        /* 2 * maxD, because a channel value of n/255 means n/2 of the scale */
+        shift.setAttribute("scale", String(2 * maxD));
+        for (const el of surfaces) el.style.filter = "url(#tube-warp)";
+      };
+
+      const schedule = () => {
+        if (timer) return;
+        timer = window.setTimeout(() => {
+          timer = 0;
+          paint();
+        }, 150);
+      };
+
+      window.bbTubePaint = paint;
+      paint();
+      window.addEventListener("resize", schedule);
+      if (typeof ResizeObserver === "function") new ResizeObserver(schedule).observe(shell);
+    };
+
+    if (CHROMIUM) startTube();
   </script>
 </body>
 

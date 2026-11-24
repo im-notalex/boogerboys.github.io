@@ -224,7 +224,7 @@ const lyricsState = {
 
 // --- App content data ---
 const windowContent = {
-  'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 17 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid, (BUT I DID DO A BIG MARGIN OF IT OK)</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it ðŸ™Œ</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping nil with hers, so eventually they'll be done, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p><p>abc for bf ahh 🙏🙏</div>`,
+  'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 17 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid, (BUT I DID DO A BIG MARGIN OF IT OK)</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it 🙌</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping nil with hers, so eventually they'll be done, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p><p>abc for bf ahh 🙏🙏</div>`,
   'Programming': `
         <div class="window-entry" style="font-family: var(--xp-font-main); line-height: 1.5; color: #000; font-size: 0.95rem;">
           <h2 style="font-family: var(--xp-font-title); font-size: 1.25rem; margin-top: 0; color: #0a246a;">program </h2>
@@ -246,13 +246,13 @@ const windowContent = {
           </ul>
         </div>
       `,
-  'Interests': `<div class="window-entry"><p>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call people or sm</p><p>im also making a bloody battle remake after it was deleted. try it, its public! <a href="https://www.roblox.com/games/131034154077062/Buggy-Battle">click here.</a></div>`,
-  'DNI': `<p>lowk refining this sometime soon cause i wanna add different stuff</p></div>`,
+  'Interests': `<div class="window-entry"><p><strong>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call people or sm</p><p>im also making a bloody battle remake after it was deleted. try it, its public! <a href="https://www.roblox.com/games/131034154077062/Buggy-Battle">click here.</strong></a></div>`,
+  'DNI': `<p><strong>lowk refining this sometime soon cause i wanna add different stuff</strong></p></div>`,
   'Journal': `<textarea id="journal-text-area" placeholder="wait i forgot this is a input area not a text area, oopsies"></textarea>`,
-  'Drawings': `<p>stuff will be back here soon! :]</p>`,
-  'Games': `<p>i play these games:</p><ul><li>roblox</li><li>minecraft</li><li>terraria (sometimes)</li><li>stardew valley</li><li>ultrakill</li><li>gow:r</li><li>any multiplayer sandbox game pretty much.</li></ul><p>i don't play these games:</p><ul><li>fortnite</li><li>cod</li><li>overwatch</li><li>valorant</li><li>practically any fps game that is massively multiplayer, i dont play. maybe fort though</li></ul><p>things i frequent:</p><ul><li>roblox</li><li>discord</li></ul>`,
-  'My Computer': `<p>i forgot to put something here, uh ohhhh.... (what would i put here anyways?)</p>`,
-  'Recycle Bin': `<p>awesome bin here, i cant wait to make a rm -rf /* joke on a windows os!</p>`,
+  'Drawings': `<p><strong>stuff will be back here soon! :]</strong></p>`,
+  'Games': `<p><strong>i play these games:</strong></p><ul><li>roblox</li><li>minecraft</li><li>terraria (sometimes)</li><li>stardew valley</li><li>ultrakill</li><li>gow:r</li><li>any multiplayer sandbox game pretty much.</li></ul><p>i don't play these games:</p><ul><li>fortnite</li><li>cod</li><li>overwatch</li><li>valorant</li><li>practically any fps game that is massively multiplayer, i dont play. maybe fort though</li></ul><p>things i frequent:</p><ul><li>roblox</li><li>discord</li></ul>`,
+  'My Computer': `<div class="window-entry"><p style="margin-top:0;">local disk (c:) &mdash; 39.8 gb free</p><p>floppy (a:) &mdash; no disk in drive</p><p style="margin-top:10px;">where else could this go?</p></div>`,
+  'Recycle Bin': `<p><strong>awesome bin here, i cant wait to make a rm -rf /* joke on a windows os!</strong></p>`,
   'Browser': `
         <div class="browser-toolbar">
             <img src="12.png" style="width: 16px; height: 16px;">
@@ -952,6 +952,20 @@ function setupDesktopIcons() {
   });
 }
 
+function binUnderIcon(icon) {
+  const bin = document.querySelector('.desktop-icon[data-title="Recycle Bin"]');
+  if (!bin || !icon) return null;
+  const a = icon.getBoundingClientRect();
+  const b = bin.getBoundingClientRect();
+  const overlapX = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+  const overlapY = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+  return overlapX > 24 && overlapY > 24 ? bin : null;
+}
+
+function clearBinTargets() {
+  document.querySelectorAll('.desktop-icon.bin-target').forEach(el => el.classList.remove('bin-target'));
+}
+
 function dragIcon(e) {
   if (activeIcon) {
     let x = e.clientX - offsetX;
@@ -962,13 +976,27 @@ function dragIcon(e) {
 
     activeIcon.style.left = x + 'px';
     activeIcon.style.top = y + 'px';
+
+    /* the bin lights up as the computer is dragged over it */
+    if (activeIcon.dataset.title === 'My Computer') {
+      clearBinTargets();
+      const bin = binUnderIcon(activeIcon);
+      if (bin) bin.classList.add('bin-target');
+    }
   }
 }
 
 function stopDragIcon() {
+  const dragged = activeIcon;
+  const bin = dragged && dragged.dataset.title === 'My Computer' ? binUnderIcon(dragged) : null;
   activeIcon = null;
   document.removeEventListener('mousemove', dragIcon);
   document.removeEventListener('mouseup', stopDragIcon);
+  clearBinTargets();
+  if (dragged && bin) {
+    dragged.style.visibility = 'hidden';
+    crashToBSOD();
+  }
 }
 
 // --- Jukebox Logic ---
@@ -2625,4 +2653,76 @@ if (traySecurityIcon) {
       showTrayBalloon('Security Center', `avast! Antivirus: up to date.\nVPS ${AVAST_ALERT.vps}`);
     }
   });
+}
+// --- blue screen of death --------------------------------------------
+const NL = String.fromCharCode(10);
+const CURSOR = String.fromCharCode(9608);
+
+const BSOD_TEXT = [
+  "An error has occurred. To continue:",
+  "",
+  "Press Enter to return to Windows, or",
+  "",
+  "Press CTRL+ALT+DEL to restart your computer. If you do this,",
+  "you will lose any unsaved information in all open applications.",
+  "",
+  "Error: 0E : 016F : BFF9B3D4",
+  "",
+  "Press any key to continue"
+].join(NL);
+
+let bsodRunning = false;
+let bsodReady = false;
+let bsodTimer = 0;
+
+function bsodEscape(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function crashToBSOD() {
+  if (bsodRunning) return;
+  bsodRunning = true;
+  bsodReady = false;
+
+  /* a machine that just died does not keep playing music */
+  document.querySelectorAll("audio").forEach(audio => {
+    try { audio.pause(); } catch (error) { }
+  });
+
+  const screen = document.getElementById("bsod");
+  const out = document.getElementById("bsod-text");
+  if (!screen || !out) return;
+
+  screen.classList.add("on");
+  screen.setAttribute("aria-hidden", "false");
+  out.innerHTML = "";
+
+  let shown = 0;
+  const type = () => {
+    shown += 1;
+    const typed = BSOD_TEXT.slice(0, shown);
+    const cursor = '<span class="bsod-cursor">' + (shown < BSOD_TEXT.length ? CURSOR : "_") + "</span>";
+    out.innerHTML = bsodEscape(typed) + cursor;
+    if (shown < BSOD_TEXT.length) {
+      const ch = BSOD_TEXT[shown - 1];
+      const wait = ch === NL ? 150 : ch === " " ? 24 : 17;
+      bsodTimer = window.setTimeout(type, wait);
+    } else {
+      bsodReady = true;
+      document.addEventListener("keydown", bsodContinue);
+      screen.addEventListener("pointerdown", bsodContinue);
+    }
+  };
+
+  bsodTimer = window.setTimeout(type, 300);
+}
+
+function bsodContinue() {
+  if (!bsodReady || !bsodRunning) return;
+  bsodRunning = false;
+  window.clearTimeout(bsodTimer);
+  document.removeEventListener("keydown", bsodContinue);
+  const screen = document.getElementById("bsod");
+  if (screen) screen.removeEventListener("pointerdown", bsodContinue);
+  window.location.href = "../index.html";
 }

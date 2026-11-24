@@ -2534,3 +2534,67 @@
       text-align: right;
       max-width: 52%;
     }
+
+/* --- blue screen of death ------------------------------------------- */
+#bsod {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 5vh 6vw;
+  background: #0000aa;
+  color: #ffffff;
+  font-family: "Lucida Console", "Consolas", "Courier New", monospace;
+  font-size: clamp(12px, 1.75vw, 20px);
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  cursor: none;
+}
+
+#bsod.on {
+  display: flex;
+}
+
+.bsod-inner {
+  width: 100%;
+  max-width: 960px;
+}
+
+.bsod-logo {
+  width: fit-content;
+  margin: 0 auto 7vh;
+  padding: 2px 18px;
+  border: 2px solid #ffffff;
+  background: #0000aa;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-align: center;
+}
+
+.bsod-text {
+  margin: 0;
+  font: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.bsod-cursor {
+  animation: bsod-cursor 1.06s steps(1, end) infinite;
+}
+
+@keyframes bsod-cursor {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+/* the bin lights up while the computer is being dragged over it */
+.desktop-icon.bin-target img {
+  filter: drop-shadow(0 0 9px #ffe14d) brightness(1.15);
+}
+
+.desktop-icon.bin-target span {
+  background: #316ac5;
+  color: #ffffff;
+}
