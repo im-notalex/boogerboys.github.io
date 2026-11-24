@@ -353,13 +353,12 @@ const windowContent = {
       `,
   'PowerShell': `
         <div class="powershell-window">
-          <div class="powershell-output" role="log" aria-live="polite"></div>
+          <div class="powershell-output" role="log" aria-label="PowerShell output"></div>
           <form class="powershell-input-row" autocomplete="off">
             <span class="powershell-prompt">PS C:\\alex&gt;</span>
-            <input type="text" class="powershell-input" placeholder="Type a command" spellcheck="false">
-            <button type="submit" class="powershell-submit">Run</button>
+            <input type="text" class="powershell-input" spellcheck="false" autocapitalize="off"
+              autocorrect="off" autocomplete="off" aria-label="PowerShell command">
           </form>
-          <p class="powershell-hint">PRESS [[F1]] FOR HELP!</p>
         </div>
       `,
   'Calculator': `
@@ -743,44 +742,383 @@ function setupChatWindow(win) {
   initializeChatStylesheet();
 }
 
+/* ------------------------------------------------------------------ *
+ * PowerShell 5.1 console
+ * real cmdlet names and aliases, tab-style tables, the red error block
+ * ------------------------------------------------------------------ */
+
+const PS_HOME = 'C:\\alex';
+
+/* a console keeps its working directory, so this outlives the window */
+const psSession = { cwd: PS_HOME };
+
+const PS_SOURCE = {
+  core: 'Microsoft.PowerShell.Core',
+  management: 'Microsoft.PowerShell.Management',
+  utility: 'Microsoft.PowerShell.Utility'
+};
+
+const psTree = {
+  'c:\\alex': [
+    { mode: 'd-----', when: '11/20/2026   7:14 PM', name: 'alex' },
+    { mode: 'd-----', when: '11/12/2026   2:03 PM', name: 'chattables' },
+    { mode: 'd-----', when: '11/18/2026  11:42 AM', name: 'hoodie' },
+    { mode: 'd-----', when: '11/18/2026  11:42 AM', name: 'riley' },
+    { mode: 'd-----', when: '11/22/2026   6:31 PM', name: 'temp' },
+    { mode: '-a----', when: '11/24/2026   9:12 AM', size: 18204, name: 'index.html' },
+    { mode: '-a----', when: '11/24/2026   9:12 AM', size: 96518, name: 'style.css' },
+    { mode: '-a----', when: '11/24/2026   9:12 AM', size: 88207, name: 'main.js' },
+    { mode: '-a----', when: '11/02/2026   4:40 PM', size: 1204, name: 'XP.png' },
+    { mode: '-a----', when: '11/16/2026   8:02 PM', size: 2841, name: 'crton.mp3' },
+    { mode: '-a----', when: '11/16/2026   8:02 PM', size: 3102, name: 'YAAI.mp3' },
+    { mode: '-a----', when: '11/16/2026   8:02 PM', size: 918, name: 'startup.mp3' },
+    { mode: '-a----', when: '11/16/2026   8:02 PM', size: 884, name: 'shutdown.mp3' }
+  ],
+  'c:\\alex\\temp': [
+    { mode: 'd-----', when: '11/22/2026   6:31 PM', name: 'shots' },
+    { mode: '-a----', when: '11/22/2026   6:30 PM', size: 4096, name: 'stage.html' },
+    { mode: '-a----', when: '11/22/2026   6:31 PM', size: 212, name: 'notes.txt' }
+  ],
+  'c:\\alex\\alex': [],
+  'c:\\alex\\chattables': [],
+  'c:\\alex\\hoodie': [],
+  'c:\\alex\\riley': [],
+  'c:\\alex\\temp\\shots': []
+};
+
+const psProcesses = [
+  { name: 'avastui', id: 668, ws: 38104, cpu: 0.31 },
+  { name: 'chattable', id: 2176, ws: 21004, cpu: 2.3 },
+  { name: 'explorer', id: 1488, ws: 18244, cpu: 1.42 },
+  { name: 'iexplore', id: 2024, ws: 64512, cpu: 4.08 },
+  { name: 'jukebox', id: 2520, ws: 12880, cpu: 6.71 },
+  { name: 'powershell', id: 3116, ws: 31744, cpu: 0.16 },
+  { name: 'winlogon', id: 400, ws: 9216, cpu: 0.05 }
+];
+
+function psDisplayPath(path) {
+  return String(path).replace(/^([a-z]):/i, (match, drive) => `${drive.toUpperCase()}:`);
+}
+
+function psPromptLabel() {
+  return `PS ${psDisplayPath(psSession.cwd)}>`;
+}
+
+function psUpdatePrompt(win) {
+  const promptEl = win && win.querySelector('.powershell-prompt');
+  if (promptEl) promptEl.textContent = psPromptLabel();
+}
+
 function appendPowerShellLine(output, text, type = 'system') {
   if (!output) return;
-  const line = document.createElement('div');
-  line.className = `ps-line ps-line-${type}`;
-  line.textContent = text;
-  output.appendChild(line);
+  String(text === undefined || text === null ? '' : text).split('\n').forEach(part => {
+    const line = document.createElement('div');
+    line.className = `ps-line ps-line-${type}`;
+    /* an empty div collapses, and a console needs the gap */
+    line.textContent = part.length ? part : '\u00a0';
+    output.appendChild(line);
+  });
   output.scrollTop = output.scrollHeight;
 }
 
-function handlePowerShellCommand(command, output) {
+function psResolvePath(target) {
+  const raw = String(target === undefined ? '' : target).replace(/\//g, '\\').trim();
+  if (!raw) return psSession.cwd;
+  if (raw === '~') return PS_HOME;
+  const hasDrive = /^[a-zA-Z]:/.test(raw);
+  const parts = hasDrive ? [] : psSession.cwd.split('\\').filter(Boolean);
+  const segments = raw.split('\\').filter(Boolean);
+  if (hasDrive) parts.push(segments.shift().toUpperCase());
+  segments.forEach(segment => {
+    if (segment === '.') return;
+    if (segment === '..') {
+      if (parts.length > 1) parts.pop();
+      return;
+    }
+    parts.push(segment);
+  });
+  return parts.join('\\');
+}
+
+function psItemTable(entries) {
+  const lines = [
+    `${'Mode'.padEnd(9)}${'LastWriteTime'.padEnd(21)}${'Length'.padStart(14)} Name`,
+    `${'----'.padEnd(9)}${'-------------'.padEnd(21)}${'------'.padStart(14)} ----`
+  ];
+  entries.forEach(entry => {
+    const size = typeof entry.size === 'number' ? entry.size.toLocaleString('en-US') : '';
+    lines.push(`${entry.mode.padEnd(9)}${entry.when.padEnd(21)}${size.padStart(14)} ${entry.name}`);
+  });
+  return lines;
+}
+
+function psProcessTable(entries) {
+  const lines = [
+    `${'Id'.padStart(6)}  ${'ProcessName'.padEnd(18)}${'WS(K)'.padStart(12)}${'CPU(s)'.padStart(9)}`,
+    `${'--'.padStart(6)}  ${'-----------'.padEnd(18)}${'-----'.padStart(12)}${'------'.padStart(9)}`
+  ];
+  entries.forEach(proc => {
+    lines.push(
+      `${String(proc.id).padStart(6)}  ${proc.name.padEnd(18)}` +
+      `${proc.ws.toLocaleString('en-US').padStart(12)}${proc.cpu.toFixed(2).padStart(9)}`
+    );
+  });
+  return lines;
+}
+
+function psCommandNotFound(output, term) {
+  appendPowerShellLine(output, `${term} : The term '${term}' is not recognized as the name of a cmdlet, function, script file, or operable program.`, 'error');
+  appendPowerShellLine(output, 'Check the spelling of the name, or if a path was included, verify that the path is correct and try again.', 'error');
+  appendPowerShellLine(output, 'At line:1 char:1', 'error');
+  appendPowerShellLine(output, `+ ${term}`, 'error');
+  appendPowerShellLine(output, `+ ${'~'.repeat(Math.max(4, term.length))}`, 'error');
+  appendPowerShellLine(output, `    + CategoryInfo          : ObjectNotFound: (${term}:String) [], CommandNotFoundException`, 'dim');
+  appendPowerShellLine(output, '    + FullyQualifiedErrorId : CommandNotFoundException', 'dim');
+}
+
+function psPathNotFound(output, cmdlet, path) {
+  const shown = psDisplayPath(path || '');
+  appendPowerShellLine(output, `${cmdlet} : Cannot find path '${shown}' because it does not exist.`, 'error');
+  appendPowerShellLine(output, 'At line:1 char:1', 'error');
+  appendPowerShellLine(output, `+ ${cmdlet} ${shown}`, 'error');
+  appendPowerShellLine(output, `+ ${'~'.repeat(cmdlet.length + shown.length + 1)}`, 'error');
+  appendPowerShellLine(output, `    + CategoryInfo          : ObjectNotFound: (${shown}:String) [${cmdlet}], ItemNotFoundException`, 'dim');
+  appendPowerShellLine(output, `    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.${cmdlet.replace(/-/g, '')}Command`, 'dim');
+}
+
+function psVersionTable(output) {
+  [
+    `${'Name'.padEnd(31)}Value`,
+    `${'----'.padEnd(31)}-----`,
+    `${'PSVersion'.padEnd(31)}5.1.22621.1`,
+    `${'PSEdition'.padEnd(31)}Desktop`,
+    `${'PSCompatibleVersions'.padEnd(31)}{1.0, 2.0, 3.0, 4.0...}`,
+    `${'BuildVersion'.padEnd(31)}10.0.22621.1`,
+    `${'CLRVersion'.padEnd(31)}4.0.30319.42000`,
+    `${'WSManStackVersion'.padEnd(31)}3.0`,
+    `${'PSRemotingProtocolVersion'.padEnd(31)}2.3`,
+    `${'SerializationVersion'.padEnd(31)}1.1.0.1`
+  ].forEach(line => appendPowerShellLine(output, line));
+}
+
+const psCommands = [
+  {
+    name: 'Clear-Host', type: 'Function', version: '3.1.0.0', source: PS_SOURCE.core,
+    aliases: ['cls', 'clear'], synopsis: 'Clears the console screen.',
+    run({ output }) {
+      output.innerHTML = '';
+    }
+  },
+  {
+    name: 'Get-ChildItem', type: 'Cmdlet', version: '3.1.0.0', source: PS_SOURCE.management,
+    aliases: ['gci', 'ls', 'dir'], synopsis: 'Gets the items and child items in one or more locations.',
+    run({ output }, args) {
+      const target = psResolvePath(args[0]);
+      const entries = psTree[target.toLowerCase()];
+      if (!entries) {
+        psPathNotFound(output, 'Get-ChildItem', target);
+        return;
+      }
+      appendPowerShellLine(output, `    Directory: ${psDisplayPath(target)}`);
+      appendPowerShellLine(output, '');
+      psItemTable(entries).forEach(line => appendPowerShellLine(output, line));
+    }
+  },
+  {
+    name: 'Get-Command', type: 'Cmdlet', version: '3.1.0.0', source: PS_SOURCE.core,
+    aliases: ['gcm'], synopsis: 'Gets all the commands available in the session.',
+    run({ output }) {
+      const lines = [
+        `${'CommandType'.padEnd(17)}${'Name'.padEnd(22)}${'Version'.padEnd(11)} Source`,
+        `${'-----------'.padEnd(17)}${'----'.padEnd(22)}${'-------'.padEnd(11)} ------`
+      ];
+      psCommands.forEach(command => {
+        lines.push(`${command.type.padEnd(17)}${command.name.padEnd(22)}${command.version.padEnd(11)}${command.source}`);
+        command.aliases.forEach(alias => {
+          lines.push(`${'Alias'.padEnd(17)}${alias.padEnd(22)}${''.padEnd(11)}${command.name}`);
+        });
+      });
+      lines.forEach(line => appendPowerShellLine(output, line));
+    }
+  },
+  {
+    name: 'Get-Date', type: 'Cmdlet', version: '3.1.0.0', source: PS_SOURCE.utility,
+    aliases: ['date'], synopsis: 'Gets the current date and time.',
+    run({ output }) {
+      const now = new Date();
+      const day = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+      appendPowerShellLine(output, `${day} ${now.toLocaleTimeString('en-US')}`);
+    }
+  },
+  {
+    name: 'Get-Help', type: 'Cmdlet', version: '3.1.0.0', source: PS_SOURCE.core,
+    aliases: ['help', 'man'], synopsis: 'Displays information about the commands on this machine.',
+    run({ output }) {
+      const lines = [
+        `${'Name'.padEnd(22)}${'Aliases'.padEnd(22)}Synopsis`,
+        `${'----'.padEnd(22)}${'-------'.padEnd(22)}--------`
+      ];
+      psCommands.forEach(command => {
+        lines.push(`${command.name.padEnd(22)}${command.aliases.join(', ').padEnd(22)}${command.synopsis}`);
+      });
+      lines.forEach(line => appendPowerShellLine(output, line));
+      appendPowerShellLine(output, '');
+      appendPowerShellLine(output, `alien communication: ${Object.keys(powerShellEasterEggs).join(', ')}`, 'dim');
+      appendPowerShellLine(output, 'tab completes a command, up down walks history, ctrl L clears, f1 reopens this list :}', 'dim');
+    }
+  },
+  {
+    name: 'Get-Host', type: 'Cmdlet', version: '3.1.0.0', source: PS_SOURCE.core,
+    aliases: ['host'], synopsis: 'Gets an object that represents the current host program.',
+    run({ output }) {
+      [
+        'Name             : ConsoleHost',
+        'Version          : 5.1.22621.1',
+        'InstanceId       : 4a1f7f0e-3f3d-4c47-9a1c-2b6f1d9a88c0',
+        'UI               : System.Management.Automation.Internal.Host.InternalHostUserInterface',
+        'CurrentCulture   : en-US',
+        'CurrentUICulture : en-US',
+        'PrivateData      : Microsoft.PowerShell.ConsoleHost+ConsoleColorProxy',
+        'IsRunspacePushed : False',
+        'Runspace         : System.Management.Automation.Runspaces.LocalRunspace'
+      ].forEach(line => appendPowerShellLine(output, line));
+    }
+  },
+  {
+    name: 'Get-Location', type: 'Cmdlet', version: '3.1.0.0', source: PS_SOURCE.management,
+    aliases: ['pwd', 'gl'], synopsis: 'Gets the current working directory.',
+    run({ output }) {
+      appendPowerShellLine(output, 'Path');
+      appendPowerShellLine(output, '----');
+      appendPowerShellLine(output, psDisplayPath(psSession.cwd));
+    }
+  },
+  {
+    name: 'Get-Process', type: 'Cmdlet', version: '3.1.0.0', source: PS_SOURCE.management,
+    aliases: ['gps', 'ps'], synopsis: 'Gets the processes that are running on the computer.',
+    run({ output }, args) {
+      const filter = args.find(arg => !arg.startsWith('-'));
+      const entries = psProcesses
+        .filter(proc => !filter || proc.name.toLowerCase().includes(filter.toLowerCase()))
+        .sort((a, b) => a.name.localeCompare(b.name));
+      if (!entries.length) {
+        appendPowerShellLine(output, `Get-Process : Cannot find a process with the name "${filter}". Verify the process name and call the cmdlet again.`, 'error');
+        return;
+      }
+      psProcessTable(entries).forEach(line => appendPowerShellLine(output, line));
+    }
+  },
+  {
+    name: 'Get-Random', type: 'Cmdlet', version: '3.1.0.0', source: PS_SOURCE.utility,
+    aliases: ['random'], synopsis: 'Gets a random number, or selects objects at random.',
+    run({ output }, args) {
+      let minimum = 0;
+      let maximum = 2147483647;
+      for (let i = 0; i < args.length; i += 1) {
+        const key = args[i].toLowerCase();
+        if (key === '-minimum' || key === '-min') {
+          minimum = parseInt(args[i += 1], 10) || 0;
+        } else if (key === '-maximum' || key === '-max') {
+          maximum = parseInt(args[i += 1], 10) || maximum;
+        } else if (/^-?\d+$/.test(key)) {
+          maximum = parseInt(key, 10);
+        }
+      }
+      if (maximum <= minimum) {
+        appendPowerShellLine(output, 'Get-Random : The maximum value must be greater than the minimum value.', 'error');
+        return;
+      }
+      appendPowerShellLine(output, String(minimum + Math.floor(Math.random() * (maximum - minimum))));
+    }
+  },
+  {
+    name: 'Set-Location', type: 'Cmdlet', version: '3.1.0.0', source: PS_SOURCE.management,
+    aliases: ['cd', 'sl', 'chdir'], synopsis: 'Sets the current working location to a specified location.',
+    run({ output, win }, args) {
+      const target = psResolvePath(args[0]);
+      if (!psTree[target.toLowerCase()]) {
+        psPathNotFound(output, 'Set-Location', target);
+        return;
+      }
+      psSession.cwd = target;
+      psUpdatePrompt(win);
+    }
+  },
+  {
+    name: 'Write-Output', type: 'Cmdlet', version: '3.1.0.0', source: PS_SOURCE.utility,
+    aliases: ['write', 'echo'], synopsis: 'Sends the specified objects to the next command in the pipeline.',
+    run({ output }, args) {
+      if (args.length) appendPowerShellLine(output, args.join(' '));
+    }
+  },
+  {
+    name: 'whoami', type: 'Application', version: '', source: 'C:\\Windows\\system32\\whoami.exe',
+    aliases: [], synopsis: 'Prints the current domain and user name.',
+    run({ output }) {
+      appendPowerShellLine(output, 'desktop-8f3c2\\alex');
+    }
+  },
+  {
+    name: 'exit', type: 'Function', version: '3.1.0.0', source: PS_SOURCE.core,
+    aliases: [], synopsis: 'Closes the console.',
+    run({ win }) {
+      closeWindow(win);
+    }
+  }
+];
+
+const psCommandIndex = {};
+psCommands.forEach(command => {
+  psCommandIndex[command.name.toLowerCase()] = command;
+  command.aliases.forEach(alias => {
+    psCommandIndex[alias.toLowerCase()] = command;
+  });
+});
+
+const psCompletionNames = [...new Set(psCommands.flatMap(command => [command.name, ...command.aliases]))]
+  .sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
+
+function psTokenize(input) {
+  const tokens = [];
+  const pattern = /"([^"]*)"|'([^']*)'|(\S+)/g;
+  let match;
+  while ((match = pattern.exec(input))) {
+    tokens.push(match[1] !== undefined ? match[1] : match[2] !== undefined ? match[2] : match[3]);
+  }
+  return tokens;
+}
+
+function handlePowerShellCommand(command, ctx) {
+  const output = ctx && ctx.output;
   if (!output) return;
-  const trimmed = command.trim();
+  const trimmed = String(command === undefined || command === null ? '' : command).trim();
   if (!trimmed) return;
-  const upper = trimmed.toUpperCase();
 
-  if (upper === 'HELP') {
-    appendPowerShellLine(output, 'Available easter commands:', 'system');
-    Object.keys(powerShellEasterEggs).forEach(key => appendPowerShellLine(output, ` - ${key}`, 'system'));
-    appendPowerShellLine(output, 'Extra: CLS clears the screen.', 'system');
-    return;
-  }
-
-  if (upper === 'CLS') {
-    output.innerHTML = '';
-    appendPowerShellLine(output, 'Console cleared.', 'system');
-    return;
-  }
-
-  const egg = powerShellEasterEggs[upper];
+  const egg = powerShellEasterEggs[trimmed.toUpperCase()];
   if (egg) {
-    appendPowerShellLine(output, egg.message, 'system');
+    appendPowerShellLine(output, egg.message);
     setTimeout(() => {
       window.location.href = egg.url;
     }, 900);
     return;
   }
 
-  appendPowerShellLine(output, `"${trimmed}" is not recognized. Type HELP for available commands.`, 'error');
+  if (/^\$psversiontable$/i.test(trimmed)) {
+    psVersionTable(output);
+    return;
+  }
+  if (/^\$host$/i.test(trimmed)) {
+    psCommandIndex['get-host'].run(ctx, []);
+    return;
+  }
+
+  const tokens = psTokenize(trimmed);
+  const cmdlet = psCommandIndex[tokens[0].toLowerCase()];
+  if (!cmdlet) {
+    psCommandNotFound(output, tokens[0]);
+    return;
+  }
+  cmdlet.run(ctx, tokens.slice(1));
 }
 
 function setupPowerShellWindow(win) {
@@ -790,25 +1128,106 @@ function setupPowerShellWindow(win) {
   const input = win.querySelector('.powershell-input');
   if (!output || !form || !input) return;
 
-  const submitCommand = (event) => {
-    if (event) event.preventDefault();
-    const rawValue = input.value.trim();
-    if (!rawValue) return;
-    appendPowerShellLine(output, `PS C:\\alex>${rawValue}`, 'command');
-    powerShellHistory.push(rawValue);
-    handlePowerShellCommand(rawValue, output);
+  const ctx = { win, output, input };
+  let tabState = null;
+  let historyCursor = powerShellHistory.length;
+  let historyDraft = '';
+
+  psUpdatePrompt(win);
+
+  const run = (value) => {
+    const command = String(value === undefined ? '' : value).trim();
+    if (!command) return;
+    appendPowerShellLine(output, `${psPromptLabel()} ${command}`, 'command');
+    if (powerShellHistory[powerShellHistory.length - 1] !== command) {
+      powerShellHistory.push(command);
+    }
+    historyCursor = powerShellHistory.length;
+    historyDraft = '';
+    handlePowerShellCommand(command, ctx);
+    psUpdatePrompt(win);
     input.value = '';
     input.focus();
   };
 
-  form.addEventListener('submit', submitCommand);
-  const submitBtn = form.querySelector('.powershell-submit');
-  if (submitBtn) {
-    submitBtn.addEventListener('click', submitCommand);
-  }
+  const complete = () => {
+    if (input.value.includes(' ')) return;
+    if (!tabState) {
+      const prefix = input.value.toLowerCase();
+      const matches = psCompletionNames.filter(name => name.toLowerCase().startsWith(prefix));
+      if (!matches.length) return;
+      tabState = { matches, index: 0 };
+    } else {
+      tabState.index = (tabState.index + 1) % tabState.matches.length;
+    }
+    input.value = tabState.matches[tabState.index];
+    input.setSelectionRange(input.value.length, input.value.length);
+  };
 
-  appendPowerShellLine(output, 'Windows PowerShell 1.2', 'system');
-  appendPowerShellLine(output, 'Type HELP for help.', 'system');
+  const walkHistory = (step) => {
+    if (!powerShellHistory.length) return;
+    if (historyCursor === powerShellHistory.length && step < 0) {
+      historyDraft = input.value;
+    }
+    const next = Math.min(powerShellHistory.length, Math.max(0, historyCursor + step));
+    historyCursor = next;
+    input.value = next === powerShellHistory.length ? historyDraft : powerShellHistory[next];
+    input.setSelectionRange(input.value.length, input.value.length);
+  };
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    run(input.value);
+  });
+
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      complete();
+      return;
+    }
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      walkHistory(-1);
+      return;
+    }
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      walkHistory(1);
+      return;
+    }
+    if (event.key === 'F1') {
+      event.preventDefault();
+      handlePowerShellCommand('Get-Help', ctx);
+      return;
+    }
+    if (event.ctrlKey && !event.shiftKey && event.key.toLowerCase() === 'l') {
+      event.preventDefault();
+      output.innerHTML = '';
+      input.focus();
+      return;
+    }
+    if (event.ctrlKey && !event.shiftKey && event.key.toLowerCase() === 'c' && input.selectionStart === input.selectionEnd) {
+      event.preventDefault();
+      appendPowerShellLine(output, `${psPromptLabel()} ${input.value}^C`, 'command');
+      input.value = '';
+      input.focus();
+      return;
+    }
+    tabState = null;
+  });
+
+  /* a console takes the keyboard back whenever you click in it */
+  output.addEventListener('click', () => input.focus());
+
+  appendPowerShellLine(output, 'Windows PowerShell');
+  appendPowerShellLine(output, 'Copyright (C) Microsoft Corporation. All rights reserved.');
+  appendPowerShellLine(output, '');
+  appendPowerShellLine(output, 'Try the new cross-platform PowerShell https://aka.ms/pscore6');
+  appendPowerShellLine(output, '');
+  appendPowerShellLine(output, 'get-help lists the commands. Tab completes, Up/Down walks history, Ctrl+L clears.', 'dim');
+  appendPowerShellLine(output, '');
+
   win.dataset.psReady = 'true';
   setTimeout(() => input.focus(), 50);
 }
@@ -2785,3 +3204,101 @@ function bsodContinue() {
   if (screen) screen.removeEventListener("pointerdown", bsodContinue);
   window.location.href = "../index.html";
 }
+
+/* ------------------------------------------------------------------ *
+ * the tube: the same bulge the terminal side uses. one feDisplacementMap
+ * pass over the glass, so the wallpaper, windows and the taskbar all bend
+ * through the same field. gecko runs this filter on the cpu and drops to
+ * single figures, so firefox/zen gets the flat screen, same as the terminal.
+ * ------------------------------------------------------------------ */
+(() => {
+  const UA = navigator.userAgent;
+  const GECKO = /Firefox\//i.test(UA) && /Gecko\//i.test(UA);
+  const BRANDS = (navigator.userAgentData && navigator.userAgentData.brands) || [];
+  const CHROMIUM = !GECKO && (BRANDS.some(b => /Chromium/i.test(b.brand)) ||
+    (/Chrome\//i.test(UA) && /Safari\//i.test(UA)));
+  if (!CHROMIUM) return;
+
+  const shell = document.getElementById('desktop');
+  const warp = document.getElementById('tube-warp');
+  const mapNode = document.getElementById('tube-map');
+  const shift = document.getElementById('tube-shift');
+  if (!shell || !warp || !mapNode || !shift) return;
+
+  /* one pass over the page itself: the logon screen, the desktop and every
+     overlay sit in this one surface, so their edges cannot double up where
+     the glass pulls in */
+  const glass = document.body;
+
+  /* how far the corners are pulled in, as a fraction of the half width */
+  const K = 0.06;
+  const RES = 160;
+  let timer = 0;
+
+  const paint = () => {
+    /* layout size, not the client rect: in portrait the canvas is rotated,
+       and a client rect would report the swapped footprint */
+    const w = glass.offsetWidth;
+    const h = glass.offsetHeight;
+    if (w < 8 || h < 8) return;
+    const c = document.createElement('canvas');
+    c.width = RES;
+    c.height = RES;
+    const ctx = c.getContext('2d');
+    const img = ctx.createImageData(RES, RES);
+    const cx = w / 2;
+    const cy = h / 2;
+    const rw = w / 2;
+    const rh = h / 2;
+    const pull = K;
+    /* the map only carries direction: one shared scale converts it to px */
+    const maxD = pull * rw;
+    for (let y = 0; y < RES; y += 1) {
+      const oy = ((y + 0.5) / RES) * h - cy;
+      for (let x = 0; x < RES; x += 1) {
+        const ox = ((x + 0.5) / RES) * w - cx;
+        const u = ox / rw;
+        const v = oy / rh;
+        const rr = Math.min(1, (u * u + v * v) / 2);
+        /* sample outwards from the centre, so the picture is pulled in at the
+           edges and nothing is sliced off at the borders */
+        const dx = Math.max(-1, Math.min(1, (pull * ox * rr) / maxD));
+        const dy = Math.max(-1, Math.min(1, (pull * oy * rr) / maxD));
+        const i = (y * RES + x) * 4;
+        img.data[i] = Math.round(127.5 * (1 + dx));
+        img.data[i + 1] = Math.round(127.5 * (1 + dy));
+        img.data[i + 2] = 128;
+        img.data[i + 3] = 255;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    /* both the filter region and the map are pinned to the box in px:
+       percentages here resolve against the 0x0 svg, not the element */
+    const regionW = Math.round(w) + 'px';
+    const regionH = Math.round(h) + 'px';
+    for (const node of [warp, mapNode]) {
+      node.setAttribute('x', '0');
+      node.setAttribute('y', '0');
+      node.setAttribute('width', regionW);
+      node.setAttribute('height', regionH);
+    }
+    mapNode.setAttribute('href', c.toDataURL('image/png'));
+    mapNode.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', mapNode.getAttribute('href'));
+    /* 2 * maxD, because a channel value of n/255 means n/2 of the scale */
+    shift.setAttribute('scale', String(2 * maxD));
+    glass.style.filter = 'url(#tube-warp)';
+  };
+
+  const schedule = () => {
+    if (timer) return;
+    timer = window.setTimeout(() => {
+      timer = 0;
+      paint();
+    }, 150);
+  };
+
+  window.bbTubePaint = paint;
+  paint();
+  window.addEventListener('resize', schedule);
+  if (typeof window.ResizeObserver === 'function') new ResizeObserver(schedule).observe(shell);
+})();

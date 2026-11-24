@@ -16,10 +16,22 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#3a6ea5">
   <!-- im gonna intentionally leave this blank cause i dont wanna add font pointers lmao -->
-  <link rel="stylesheet" href="style.css?v=20261124g">
+  <link rel="stylesheet" href="style.css?v=20261124k">
 </head>
 
 <body>
+
+  <!-- the bulge: one displacement pass over the whole glass, the same field
+       as the terminal side. gecko skips it in main.js. -->
+  <svg id="tube-defs" aria-hidden="true" focusable="false" width="0" height="0"
+    style="position:absolute;width:0;height:0;overflow:hidden">
+    <filter id="tube-warp" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="100"
+      height="100" color-interpolation-filters="sRGB">
+      <feImage id="tube-map" x="0" y="0" width="100" height="100" preserveAspectRatio="none" result="barrel"></feImage>
+      <feDisplacementMap id="tube-shift" in="SourceGraphic" in2="barrel" scale="1" xChannelSelector="R"
+        yChannelSelector="G"></feDisplacementMap>
+    </filter>
+  </svg>
 
   <div id="login-screen">
     <div id="login-welcome">
@@ -54,11 +66,12 @@
     </div>
     <div id="login-hint" role="status" aria-live="polite" aria-hidden="true">
       Hint: Double tap the desktop icons to open them, and press the toolbar windows at the bottom of the screen to
-      easily minimize tabs.
-      Also, tell hoodie he smells like a dingus. :]
+      easily minimize tabs
+      Also, go send a really funny picture of a gorilla to hoobean
     </div>
     <div id="login-warning" role="status" aria-live="polite" aria-hidden="true">
-      Photosensitivity warning: some parts are flashing colors (black and white). Please look away if you are sensitive
+      Photosensitivity warning!!! some parts are flashing colors (black and white). Please look away if you are
+      sensitive
       to strobing visuals.
     </div>
   </div>
@@ -134,20 +147,23 @@
     <div id="taskbar-apps"></div>
     <div id="system-tray">
       <div id="notification-area">
-        <button id="tray-network" class="tray-icon" type="button" title="Local Area Connection" aria-label="Network"></button>
+        <button id="tray-network" class="tray-icon" type="button" title="Local Area Connection"
+          aria-label="Network"></button>
         <button id="tray-security" class="tray-icon" type="button" title="Security Center" aria-label="Security Center">
           <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-            <path d="M8 1.1 13.5 2.9v5.2c0 3.3-2.3 5.8-5.5 6.9-3.2-1.1-5.5-3.6-5.5-6.9V2.9z" fill="#c8202a" stroke="#6d0d13" stroke-width="0.9" stroke-linejoin="round"/>
-            <path d="M5.5 5.6 10.5 10.4M10.5 5.6 5.5 10.4" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round"/>
+            <path d="M8 1.1 13.5 2.9v5.2c0 3.3-2.3 5.8-5.5 6.9-3.2-1.1-5.5-3.6-5.5-6.9V2.9z" fill="#c8202a"
+              stroke="#6d0d13" stroke-width="0.9" stroke-linejoin="round" />
+            <path d="M5.5 5.6 10.5 10.4M10.5 5.6 5.5 10.4" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" />
           </svg>
         </button>
         <button id="tray-volume" class="tray-icon" type="button" title="Volume" aria-label="Volume">
           <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-            <path d="M1.5 6.1h2.1L6.8 3.3v9.4L3.6 9.9H1.5z" fill="#dcdfe4" stroke="#1d232b" stroke-width="0.8" stroke-linejoin="round"/>
-            <path d="M6.8 3.5v9" stroke="#8b929a" stroke-width="0.7"/>
-            <path d="M2 7.1h1.4v1.8H2z" fill="#f3f5f8"/>
-            <path d="M8.7 5.7a3.2 3.2 0 0 1 0 4.6" fill="none" stroke="#bfdcf7" stroke-width="1"/>
-            <path d="M10.6 4.3a5.5 5.5 0 0 1 0 7.4" fill="none" stroke="#bfdcf7" stroke-width="1"/>
+            <path d="M1.5 6.1h2.1L6.8 3.3v9.4L3.6 9.9H1.5z" fill="#dcdfe4" stroke="#1d232b" stroke-width="0.8"
+              stroke-linejoin="round" />
+            <path d="M6.8 3.5v9" stroke="#8b929a" stroke-width="0.7" />
+            <path d="M2 7.1h1.4v1.8H2z" fill="#f3f5f8" />
+            <path d="M8.7 5.7a3.2 3.2 0 0 1 0 4.6" fill="none" stroke="#bfdcf7" stroke-width="1" />
+            <path d="M10.6 4.3a5.5 5.5 0 0 1 0 7.4" fill="none" stroke="#bfdcf7" stroke-width="1" />
           </svg>
         </button>
       </div>
@@ -219,11 +235,13 @@
             <img src="8.png" alt="My Computer">
             <span>My Computer</span>
           </div>
-          <div class="start-menu-entry" onclick="openWindow('Jukebox', 10, Math.max(12, window.innerWidth / 2 - 160), Math.max(32, window.innerHeight / 3 - 120)); toggleStartMenu(); clickSound.play();">
+          <div class="start-menu-entry"
+            onclick="openWindow('Jukebox', 10, Math.max(12, window.innerWidth / 2 - 160), Math.max(32, window.innerHeight / 3 - 120)); toggleStartMenu(); clickSound.play();">
             <img src="10.png" alt="Jukebox">
             <span>Jukebox</span>
           </div>
-          <div class="start-menu-entry" onclick="openWindow('Browser', 'browser'); toggleStartMenu(); clickSound.play();">
+          <div class="start-menu-entry"
+            onclick="openWindow('Browser', 'browser'); toggleStartMenu(); clickSound.play();">
             <img src="12.png" alt="Browser">
             <span>Browser</span>
           </div>
@@ -237,11 +255,13 @@
             <img src="ps.png" alt="PowerShell">
             <span>PowerShell</span>
           </div>
-          <div class="start-menu-entry" onclick="openWindow('Calculator', 'calculator'); toggleStartMenu(); clickSound.play();">
+          <div class="start-menu-entry"
+            onclick="openWindow('Calculator', 'calculator'); toggleStartMenu(); clickSound.play();">
             <img src="calculator.png" alt="Calculator">
             <span>Calculator</span>
           </div>
-          <div class="start-menu-entry" onclick="openWindow('Minesweeper', 'minesweeper'); toggleStartMenu(); clickSound.play();">
+          <div class="start-menu-entry"
+            onclick="openWindow('Minesweeper', 'minesweeper'); toggleStartMenu(); clickSound.play();">
             <img src="minesweeper.png" alt="Minesweeper">
             <span>Minesweeper</span>
           </div>
@@ -276,7 +296,7 @@
   <audio id="shutdown-sound" src="XPshutdown.mp3"></audio>
   <audio id="notification-sound" src="notif.mp3"></audio>
 
-  <script src="main.js?v=20261124g"></script>
+  <script src="main.js?v=20261124k"></script>
   <script src="https://iframe.chat/scripts/main.min.js" async></script>
 </body>
 
