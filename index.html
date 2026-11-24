@@ -15,6 +15,21 @@
   <meta name="twitter:card" content="summary">
   <meta name="theme-color" content="#000000">
   <style>
+    /* every rule, bar and frame in this page is built out of glyphs, so all
+       of them have to advance by the same amount. phones have no mono face
+       with box-drawing in it, and whatever they substitute draws those
+       glyphs on a different advance, which shears every line apart. this is
+       a 17k subset of dejavu sans mono: latin, box drawing, blocks, arrows,
+       all on one 0.6021em advance. */
+    @font-face {
+      font-family: "bb mono";
+      src: url("fonts/bbmono-regular.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      /* block, not swap: a fallback frame first would redraw the grid */
+      font-display: block;
+    }
+
     :root {
       color-scheme: dark;
       --bg: #000000;
@@ -60,12 +75,11 @@
     }
 
     body {
-      /* the platform monos come first: on a phone the old stack fell through
-         to whatever face the system had, and box-drawing glyphs from a second
-         fallback font shift the whole character grid off its cells */
-      font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, "Roboto Mono",
-        "Droid Sans Mono", "Noto Sans Mono", "DejaVu Sans Mono", "Liberation Mono",
-        Consolas, "Courier New", monospace;
+      /* the bundled mono comes first so the grid measures the same on every
+         device; the rest is only a fallback if that file fails to load */
+      font-family: "bb mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo,
+        "Roboto Mono", "DejaVu Sans Mono", "Liberation Mono", Consolas,
+        "Courier New", monospace;
       /* every rule and bar is built from repeated glyphs, so a face that
          ligates, kerns or renders them full-width breaks the alignment */
       font-variant-ligatures: none;
