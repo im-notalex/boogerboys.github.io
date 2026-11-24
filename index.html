@@ -60,7 +60,18 @@
     }
 
     body {
-      font-family: "Consolas", "Liberation Mono", "Courier New", monospace;
+      /* the platform monos come first: on a phone the old stack fell through
+         to whatever face the system had, and box-drawing glyphs from a second
+         fallback font shift the whole character grid off its cells */
+      font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, "Roboto Mono",
+        "Droid Sans Mono", "Noto Sans Mono", "DejaVu Sans Mono", "Liberation Mono",
+        Consolas, "Courier New", monospace;
+      /* every rule and bar is built from repeated glyphs, so a face that
+         ligates, kerns or renders them full-width breaks the alignment */
+      font-variant-ligatures: none;
+      font-variant-east-asian: proportional-width;
+      font-feature-settings: "liga" 0, "calt" 0;
+      font-kerning: none;
       color: var(--text);
       min-height: 100vh;
       background-color: #000000;
@@ -1234,6 +1245,8 @@
 
       .screen {
         min-height: 100vh;
+        /* phones: 100vh hides the statusline behind the url bar */
+        min-height: 100dvh;
       }
 
       .content {
@@ -1258,11 +1271,133 @@
       }
     }
 
+    /* smallest phones: the mode label is the segment that can go */
+    @media (max-width: 340px) {
+      .status-seg:nth-child(2) {
+        display: none;
+      }
+    }
+
     /* narrow phones: keep the ASCII wordmark inside the terminal */
     @media (max-width: 640px) {
+      html {
+        /* one step down so the 46-column grids fit a phone without
+           overflowing; every ch/rem measurement follows it */
+        font-size: 14px;
+      }
+
+      /* the panel is 73 columns wide: this keeps all of them on screen
+         (100vw minus the overlay padding) instead of scrolling them */
+      .crt-intro-box {
+        font-size: clamp(0.42rem, 2.2vw, 0.9rem);
+        /* the warm-up box is the same glyph grid, so its shine shrinks too */
+        text-shadow:
+          0 0 3px rgba(214, 255, 128, 1),
+          0 0 8px rgba(180, 255, 80, 0.9),
+          0 0 16px rgba(150, 255, 50, 0.4);
+      }
+
+      body {
+        padding: 6px;
+      }
+
+      .titlebar {
+        padding: 5px 10px;
+      }
+
+      .terminal-pane {
+        padding: 10px;
+      }
+
+      /* cap the scrollback so the prompt is not pushed a screen away */
+      .terminal-output {
+        min-height: 34vh;
+        max-height: 52vh;
+        padding-right: 2px;
+      }
+
+      .prompt-row {
+        gap: 6px;
+        padding-top: 8px;
+        margin-top: 8px;
+      }
+
+      .panel h2,
+      .panel .dir-list,
+      .panel .help-list,
+      .curses-title,
+      .jukebox-now,
+      .jukebox-progress-row,
+      .jukebox-keys,
+      .jukebox-vol {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      .statusline {
+        font-size: 0.66rem;
+        padding: 0 0.6ch;
+      }
+
+      .status-seg {
+        padding: 3px 4px;
+      }
+
+      .status-seg+.status-seg::before {
+        margin-right: 4px;
+      }
+
+      /* the clock is the last thing to survive: it never shrinks */
+      .status-seg:last-child {
+        flex: none;
+      }
+
+      /* the release string is the segment that never fits a phone */
+      .status-seg:nth-child(3) {
+        display: none;
+      }
+
+      /* the desktop bloom is measured in px, so on phone-sized type a 22px
+         halo lands on the next two characters and the grid reads as smeared.
+         the radii scale with the glyphs here, keeping the neon core. */
+      .screen {
+        text-shadow:
+          0.3px 0 rgba(196, 255, 122, 0.62),
+          -0.3px 0 rgba(150, 255, 78, 0.42),
+          0 0 3px rgba(182, 255, 96, 1),
+          0 0 8px rgba(150, 255, 74, 0.5);
+      }
+
+      /* the wordmark is block ascii: at this size a wide ring turns the
+         strokes into one lump, so its glow stays close to the glyph */
       .banner {
         font-size: 0.7rem;
         line-height: 1.12;
+        text-shadow: 0 0 3px rgba(51, 255, 126, 0.92), 0 0 7px rgba(51, 255, 126, 0.34);
+      }
+
+      .panel h2,
+      .curses-title {
+        text-shadow: 0 0 5px var(--glow), 0 0 11px var(--glow);
+      }
+
+      .frame-row,
+      .frame-col {
+        text-shadow: 0 0 4px rgba(51, 255, 126, 1), 0 0 10px rgba(51, 255, 126, 0.55);
+      }
+
+      #jukebox.hint #play-button {
+        text-shadow: 0 0 6px rgba(51, 255, 126, 1), 0 0 14px rgba(51, 255, 126, 0.6);
+      }
+
+      /* the scrollback scrolls by touch; the desktop bar only eats width */
+      .terminal-output {
+        scrollbar-width: none;
+      }
+
+      .terminal-output::-webkit-scrollbar {
+        width: 0;
+        height: 0;
       }
 
       .banner-line {
@@ -2337,17 +2472,24 @@
     /* vertical │ glyphs have a font advance taller than their em box, which
        would draw a dashed rule; tighten the spacing so they butt together */
     function calibrateFrameColumns() {
+      /* phones resolve their monospace late and can swap the face on rotate,
+         so this measures whatever the live wall is actually using now */
+      const live = document.querySelector(".frame-col");
+      const liveStyle = live ? getComputedStyle(live) : null;
+      const size = liveStyle ? parseFloat(liveStyle.fontSize) || 0 : 0;
       const probe = document.createElement("span");
       probe.style.cssText =
         "position:absolute;top:-9999px;left:0;visibility:hidden;white-space:pre;" +
-        "writing-mode:vertical-rl;text-orientation:upright;font-family:inherit;" +
-        "font-size:0.86rem;line-height:1;letter-spacing:0";
+        "writing-mode:vertical-rl;text-orientation:upright;font-family:" +
+        (liveStyle ? liveStyle.fontFamily : "inherit") +
+        ";font-size:" + (size > 0 ? size + "px" : "0.86rem") +
+        ";line-height:1;letter-spacing:0";
       probe.textContent = "\u2502".repeat(10);
       document.body.appendChild(probe);
       const advance = probe.getBoundingClientRect().height / 10;
       probe.remove();
       const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-      const em = 0.86 * rootPx;
+      const em = size > 0 ? size : 0.86 * rootPx;
       if (advance > 0) {
         document.documentElement.style.setProperty(
           "--frame-squeeze", (advance - em).toFixed(2) + "px"
@@ -2355,8 +2497,20 @@
       }
     }
 
+    let frameCalTimer = 0;
+    function scheduleFrameCalibration() {
+      window.clearTimeout(frameCalTimer);
+      frameCalTimer = window.setTimeout(calibrateFrameColumns, 160);
+    }
+
     function buildFrames() {
       calibrateFrameColumns();
+      // re-measure whenever the device changes face or size under us
+      window.addEventListener("resize", scheduleFrameCalibration);
+      window.addEventListener("orientationchange", scheduleFrameCalibration);
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(calibrateFrameColumns).catch(() => { });
+      }
 
       const screen = document.getElementById("app");
       const titlebar = screen.querySelector(".titlebar");
