@@ -442,8 +442,9 @@ function attemptLogin() {
   setTimeout(() => {
     loginScreen.classList.add('hidden');
     desktop.classList.add('visible');
-    const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 360;
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 640;
+    const layoutBox = measureLayoutBox();
+    const viewportWidth = layoutBox.width;
+    const viewportHeight = layoutBox.height;
     const isCompactViewport = window.matchMedia
       ? window.matchMedia('(max-width: 600px)').matches
       : viewportWidth <= 600;
@@ -584,13 +585,23 @@ function toggleCRT(force) {
 
 setCRTEnabled(true, true);
 
+/* on phones the page becomes a rotated landscape canvas, so the browser
+   viewport is not the layout box: measure the page itself */
+function measureLayoutBox() {
+  const body = document.body;
+  const width = body.clientWidth || window.innerWidth || 360;
+  const height = body.clientHeight || window.innerHeight || 640;
+  return { width, height };
+}
+
 function constrainWindowToViewport(win) {
   if (!win) return;
   const rect = win.getBoundingClientRect();
   const desiredLeft = parseFloat(win.style.left) || rect.left;
   const desiredTop = parseFloat(win.style.top) || rect.top;
-  const maxLeft = Math.max(8, window.innerWidth - rect.width - 8);
-  const maxTop = Math.max(32, window.innerHeight - rect.height - 16);
+  const box = measureLayoutBox();
+  const maxLeft = Math.max(8, box.width - rect.width - 8);
+  const maxTop = Math.max(32, box.height - rect.height - 16);
   const clampedLeft = Math.min(Math.max(desiredLeft, 8), maxLeft);
   const clampedTop = Math.min(Math.max(desiredTop, 32), maxTop);
   win.style.left = `${clampedLeft}px`;

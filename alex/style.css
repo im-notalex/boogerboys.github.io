@@ -387,7 +387,7 @@
       box-sizing: border-box;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 900px) and (pointer: fine) {
       .login-frame {
         width: 100%;
       }
@@ -431,7 +431,7 @@
 
     @media (max-width: 520px) {}
 
-    @media (max-width: 768px) {
+    @media (max-width: 768px) and (pointer: fine) {
 
       html,
       body {
@@ -446,7 +446,7 @@
       }
     }
 
-    @media (max-width: 600px) {}
+    @media (max-width: 600px) and (pointer: fine) {}
 
     .login-footer-text {
       font-size: 12px;
@@ -1193,7 +1193,7 @@
       background: repeating-linear-gradient(135deg, #919b9c 0 1px, transparent 1px 3px);
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 600px) and (pointer: fine) {
       #window-Jukebox {
         width: calc(100vw - 12px);
       }
@@ -2598,3 +2598,30 @@
   background: #316ac5;
   color: #ffffff;
 }
+
+    /* phones are held upright, but this is a 16:9 desktop. in portrait the
+       whole canvas is turned on its side so the layout keeps the wide ratio
+       instead of being squeezed into a column; turning the device leaves it
+       the right way up. */
+    @media (orientation: portrait) and (pointer: coarse) and (max-width: 1024px) {
+      :root {
+        /* inside the rotated canvas the screen's width is the height */
+        --viewport-height: 100dvw;
+      }
+
+      html {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100dvh;
+        height: 100dvw;
+        min-height: 0;
+        transform: rotate(90deg) translateY(-100%);
+        transform-origin: top left;
+      }
+    }

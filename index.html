@@ -1238,7 +1238,10 @@
       }
     }
 
-    @media (max-width: 900px) {
+    /* the narrow layout is a fallback for genuinely short landscape
+       windows; a phone in portrait is rotated into a wide canvas instead,
+       so these must not fire there and restack it into a column */
+    @media (max-width: 600px) and (orientation: landscape) {
       body {
         padding: 10px;
       }
@@ -1279,7 +1282,7 @@
     }
 
     /* narrow phones: keep the ASCII wordmark inside the terminal */
-    @media (max-width: 640px) {
+    @media (max-width: 640px) and (orientation: landscape) {
       html {
         /* one step down so the 46-column grids fit a phone without
            overflowing; every ch/rem measurement follows it */
@@ -1403,6 +1406,46 @@
       .banner-line {
         /* rows clip their own overflow, which chopped the "S" on phones */
         overflow: visible;
+      }
+    }
+
+    /* phones are held upright, but this page is a 16:9 tube. in portrait the
+       whole canvas is turned on its side, so the layout keeps the wide ratio
+       instead of being squeezed into a column - turn the device and it is
+       already the right way up. */
+    @media (orientation: portrait) and (pointer: coarse) and (max-width: 1024px) {
+      html {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        position: absolute;
+        top: 0;
+        left: 0;
+        box-sizing: border-box;
+        /* the long side of the screen becomes the width of the canvas */
+        width: 100dvh;
+        height: 100dvw;
+        min-height: 0;
+        padding: 8px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        transform: rotate(90deg) translateY(-100%);
+        transform-origin: top left;
+      }
+
+      /* exactly the canvas, so the statusline stays on screen and the side
+         pane scrolls inside itself instead of pushing the page taller */
+      .screen {
+        height: 100%;
+        min-height: 0;
+      }
+
+      /* the warm-up has to scale to the canvas, and vw here is still the
+         narrow browser viewport - vh is the canvas width */
+      .crt-intro-box {
+        font-size: clamp(0.42rem, 2.2vh, 0.9rem);
       }
     }
   </style>
@@ -2979,9 +3022,10 @@
           return r.width >= 8 && r.height >= 8;
         });
         if (!live) return;
-        const box = live.getBoundingClientRect();
-        const w = box.width;
-        const h = box.height;
+        /* layout size, not the client rect: in portrait the canvas is
+           rotated, and a client rect would report the swapped footprint */
+        const w = live.offsetWidth;
+        const h = live.offsetHeight;
         const c = document.createElement("canvas");
         c.width = RES;
         c.height = RES;
@@ -2992,12 +3036,13 @@
            render flat. its field is centred on the box instead, with the
            radius and the pull taken from the box itself. */
         const focusEl = live === intro ? document.getElementById("crt-intro-box") : null;
-        const focus = focusEl ? focusEl.getBoundingClientRect() : null;
-        const cx = focus ? focus.left + focus.width / 2 - box.left : w / 2;
-        const cy = focus ? focus.top + focus.height / 2 - box.top : h / 2;
-        const rw = focus ? Math.max(140, focus.width / 2) : w / 2;
-        const rh = focus ? Math.max(100, focus.height / 2) : h / 2;
-        const pull = focus ? 0.17 : K;
+        /* both boxes are centred in the canvas, so their centres coincide:
+           only the focus radius has to come from the box itself */
+        const cx = w / 2;
+        const cy = h / 2;
+        const rw = focusEl ? Math.max(140, focusEl.offsetWidth / 2) : w / 2;
+        const rh = focusEl ? Math.max(100, focusEl.offsetHeight / 2) : h / 2;
+        const pull = focusEl ? 0.17 : K;
         /* the map only carries direction: one shared scale converts it to px */
         const maxD = pull * rw;
         for (let y = 0; y < RES; y += 1) {
