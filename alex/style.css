@@ -1167,8 +1167,11 @@
       animation: window-open 0.3s ease-out;
       font-family: var(--xp-font-main);
       transition: filter 0.2s ease, box-shadow 0.2s ease;
-      max-width: calc(100vw - 24px);
-      max-height: calc(100vh - 32px);
+      /* measured against the desktop box, never the browser viewport: on a
+         phone the desktop is a rotated canvas whose height is the screen's
+         width, so vw/vh would size windows to the wrong axis */
+      max-width: calc(100% - 16px);
+      max-height: calc(100% - 32px);
     }
 
     .xp-window:not(.active-window) {
@@ -1177,7 +1180,7 @@
     }
 
     #window-Jukebox {
-      width: min(360px, calc(100vw - 24px));
+      width: min(360px, calc(100% - 16px));
       min-width: 300px;
       min-height: 320px;
     }
@@ -1200,7 +1203,7 @@
     }
 
     #window-Chat {
-      width: min(540px, calc(100vw - 24px));
+      width: min(540px, calc(100% - 16px));
       min-width: 260px;
       min-height: clamp(520px, 72vh, 760px);
     }

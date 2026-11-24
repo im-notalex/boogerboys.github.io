@@ -594,16 +594,52 @@ function measureLayoutBox() {
   return { width, height };
 }
 
+const WINDOW_EDGE = 8;
+const WINDOW_TOP = 24;
+
 function constrainWindowToViewport(win) {
   if (!win) return;
-  const rect = win.getBoundingClientRect();
-  const desiredLeft = parseFloat(win.style.left) || rect.left;
-  const desiredTop = parseFloat(win.style.top) || rect.top;
+
   const box = measureLayoutBox();
-  const maxLeft = Math.max(8, box.width - rect.width - 8);
-  const maxTop = Math.max(32, box.height - rect.height - 16);
-  const clampedLeft = Math.min(Math.max(desiredLeft, 8), maxLeft);
-  const clampedTop = Math.min(Math.max(desiredTop, 32), maxTop);
+  const maxWidth = Math.max(200, box.width - WINDOW_EDGE * 2);
+  const maxHeight = Math.max(160, box.height - WINDOW_TOP - WINDOW_EDGE);
+
+  /* a window's own min-width/min-height beats max-* in CSS, so a chat or a
+     jukebox window would still hang off a short screen. clear our own caps to
+     read what the stylesheet asks for, remember the largest value seen so a
+     wide screen still gets the full size back, and cap that to the box. */
+  win.style.minWidth = '';
+  win.style.minHeight = '';
+  const computed = getComputedStyle(win);
+  win.dataset.fitMinWidth = `${Math.max(parseFloat(win.dataset.fitMinWidth) || 0, parseFloat(computed.minWidth) || 0)}`;
+  win.dataset.fitMinHeight = `${Math.max(parseFloat(win.dataset.fitMinHeight) || 0, parseFloat(computed.minHeight) || 0)}`;
+  win.style.maxWidth = `${maxWidth}px`;
+  win.style.maxHeight = `${maxHeight}px`;
+  win.style.minWidth = `${Math.min(parseFloat(win.dataset.fitMinWidth), maxWidth)}px`;
+  win.style.minHeight = `${Math.min(parseFloat(win.dataset.fitMinHeight), maxHeight)}px`;
+
+  /* when the content wants more room than the box has, give the window a real
+     height: percentage heights need a definite parent, and without one the
+     content just runs past the frame instead of scrolling in it. */
+  if (win.dataset.fitHeight === '1') {
+    win.style.height = '';
+    delete win.dataset.fitHeight;
+  }
+  if (win.scrollHeight > win.clientHeight + 1) {
+    win.style.height = `${win.clientHeight}px`;
+    win.dataset.fitHeight = '1';
+  }
+
+  /* offsets, not getBoundingClientRect: inside the rotated phone canvas the
+     client rect is in turned screen space and would not compare to the box */
+  const width = win.offsetWidth;
+  const height = win.offsetHeight;
+  const desiredLeft = parseFloat(win.style.left) || win.offsetLeft;
+  const desiredTop = parseFloat(win.style.top) || win.offsetTop;
+  const maxLeft = Math.max(WINDOW_EDGE, box.width - width - WINDOW_EDGE);
+  const maxTop = Math.max(WINDOW_TOP, box.height - height - WINDOW_EDGE);
+  const clampedLeft = Math.min(Math.max(desiredLeft, WINDOW_EDGE), maxLeft);
+  const clampedTop = Math.min(Math.max(desiredTop, WINDOW_TOP), maxTop);
   win.style.left = `${clampedLeft}px`;
   win.style.top = `${clampedTop}px`;
 }
@@ -616,6 +652,15 @@ function handleViewportResize() {
 }
 
 window.addEventListener('resize', handleViewportResize);
+window.addEventListener('orientationchange', handleViewportResize);
+/* the desktop box is the canvas: on a phone it is the rotated one, and its
+   size changes when the device turns, so refit whenever it changes. the
+   observer is held in a binding so it is not collected while idle. */
+let desktopSizeObserver = null;
+if (typeof ResizeObserver === 'function' && desktop) {
+  desktopSizeObserver = new ResizeObserver(() => handleViewportResize());
+  desktopSizeObserver.observe(desktop);
+}
 
 function getSongVolumeMultiplier(song) {
   if (!song) return 1;
@@ -2061,6 +2106,7 @@ function showAvastWarning() {
   win.style.width = Math.min(430, Math.max(260, rect.width - 24)) + 'px';
   win.style.left = Math.max(8, Math.round((rect.width - win.offsetWidth) / 2)) + 'px';
   win.style.top = Math.max(8, Math.round((rect.height - win.offsetHeight) / 2)) + 'px';
+  constrainWindowToViewport(win);
 
   playAvastVirusSound();
 
