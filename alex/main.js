@@ -1,10 +1,4 @@
-/*
-  ==========================================================================
-  JAVASCRIPT LOGIC
-  ==========================================================================
-*/
-
-// --- Core UI elements ---
+// core UI elements
 const loginScreen = document.getElementById('login-screen');
 const loginWelcome = document.getElementById('login-welcome');
 const loginHint = document.getElementById('login-hint');
@@ -17,16 +11,16 @@ const clock = document.getElementById('clock');
 const dragPreview = document.getElementById('window-drag-preview');
 const crtOverlay = document.querySelector('.crt-effect');
 
-// NEW: Calendar elements
+// calendar elements
 const calendarPopup = document.getElementById('calendar-popup');
 const calendarTitle = document.getElementById('calendar-title');
 const calendarGrid = document.getElementById('calendar-grid');
 
-// Calendar state
+// calendar state
 let currentCalendarDate = new Date();
 let crtEnabled = true;
 
-// --- Audio Elements ---
+// audio
 const jukeboxAudio = document.getElementById('bg-music');
 let jukeboxBaseVolume = 0.35;
 let currentSongVolumeMultiplier = 1;
@@ -61,10 +55,10 @@ let analyser = null;
 let source = null;
 let loginUsed = false; // prevent login button spam
 
-// YAAI State
+// yaai state
 let yaaiWindowsClosed = 0;
 
-// --- Easter Egg Messages ---
+// easteregg
 const easterEggs = [
   "wait, hold on, i can edit these?",
   "windows xp was a kinda fun operating system.",
@@ -90,7 +84,7 @@ const easterEggs = [
   "Claude Opus 4.7 was here. hi alex. -anthropic"
 ];
 
-// --- State variables ---
+// state variables
 let openWindows = {};
 let zIndexCounter = 100;
 let chatEmbedInitialized = false;
@@ -108,7 +102,7 @@ const powerShellEasterEggs = {
 let idiotAudio = null;
 let angelSummoned = false;
 
-// --- Jukebox songs data ---
+// jukebox songs data
 const songs = [
   { file: "Music1.mp3", credit: "Spawn! - Evan Fong", icon: "Music1.jpg", lyricsId: "spawn" },
   { file: "Music2.mp3", credit: "Vapor Buster - Deltarune Chapter 3 + 4 - Toby Fox", icon: "Music2.jpg" },
@@ -222,7 +216,7 @@ const lyricsState = {
   ui: null
 };
 
-// --- App content data ---
+// app content data
 const windowContent = {
   'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 17 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid, (BUT I DID DO A BIG MARGIN OF IT OK)</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it 🙌</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping nil with hers, so eventually they'll be done, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p><p>abc for bf ahh 🙏🙏</div>`,
   'Programming': `
@@ -251,7 +245,7 @@ const windowContent = {
   'Journal': `<textarea id="journal-text-area" placeholder="wait i forgot this is a input area not a text area, oopsies"></textarea>`,
   'Drawings': `<p><strong>stuff will be back here soon! :]</strong></p>`,
   'Games': `<p><strong>i play these games:</strong></p><ul><li>roblox</li><li>minecraft</li><li>terraria (sometimes)</li><li>stardew valley</li><li>ultrakill</li><li>gow:r</li><li>any multiplayer sandbox game pretty much.</li></ul><p>i don't play these games:</p><ul><li>fortnite</li><li>cod</li><li>overwatch</li><li>valorant</li><li>practically any fps game that is massively multiplayer, i dont play. maybe fort though</li></ul><p>things i frequent:</p><ul><li>roblox</li><li>discord</li></ul>`,
-  'My Computer': `<div class="window-entry"><p style="margin-top:0;">local disk (c:) &mdash; 39.8 gb free</p><p>floppy (a:) &mdash; no disk in drive</p><p style="margin-top:10px;">where else could this go?</p></div>`,
+  'My Computer': `<div class="window-entry"><p style="margin-top:0;">local disk (c:) // 39.8 gb free</p><p>floppy (a:) // no disk in drive</p><p style="margin-top:10px;">where else could this go?</p></div>`,
   'Recycle Bin': `<p><strong>awesome bin here, i cant wait to make a rm -rf /* joke on a windows os!</strong></p>`,
   'Browser': `
         <div class="browser-toolbar">
